@@ -37,7 +37,7 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         own = score_image(img)
         hf = pretrained.image_fake(img, "image")
         face_hf = pretrained.image_fake(img, "face")
-        p = own if hf is None else 0.4 * own + 0.6 * hf
+        p = own if hf is None else 0.3 * own + 0.7 * hf
         heat = imgdsp.ela_heatmap(img)
         feats = dict(zip(imgdsp.FEATURE_NAMES, map(float, imgdsp.features(img))))
 
@@ -49,7 +49,7 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
             text=markers["generator_tag"] or "PNG 'parameters' chunk",
             detail="The file carries metadata written by an image-generation tool.",
         ))
-    if p >= 0.6:
+    if p >= 0.55:
         res.evidence.append(Evidence(
             witness="provenance", kind="ai_generated_pixels", label="AI-generation artefacts", score=round(p, 3),
             severity=3 if p >= 0.85 else 2, artifact_id=artifact_id,
