@@ -62,7 +62,7 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
                          r"\blogin\b.*\bverify\b", r"\bverify your (account|password)\b"]),
     ("remote_access", 1.0, [r"\banydesk\b", r"\bteamviewer\b", r"\bremote access\b", r"\baccess code\b",
                             r"\binstall .{0,20}app\b"]),
-    ("payment", 1.0, [r"\b(wire|transfer|process|release|send|pay|move|deposit|bhej|daal)\b.{0,60}(₹|rs\.?|inr|lakh|crore|\d{4,}|account|upi|payment)",
+    ("payment", 1.0, [r"\b(wire|transfer|process|release|send|pay|move|deposit|bhej|daal)\b.{0,60}(₹|rs\.?|inr|rupees?|lakh|crore|\d{4,}|account|upi|payment)",
                       r"(₹|rs\.?|inr)\s?[\d,.]+.{0,40}\b(transfer|bhej|send|wire|pay)", r"\b(paise|pise|paisa|pais)\b.{0,20}\bbhej", r"\bbhej\w*\b.{0,25}\d{3,}", r"\d[\d,]{3,}.{0,25}\bbhej",
                       r"\bपैसे\b|\bभेज\b|\bट्रांसफर\b", r"\bbank details have changed\b", r"\bnew (beneficiary|account)\b",
                       r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)"]),
@@ -219,7 +219,7 @@ def lookalike_domains(urls: list[str]) -> list[str]:
 
 def analyse(text: str, style_profile: dict | None = None, source: str = "message", t_offset: dict | None = None) -> WitnessResult:
     res = WitnessResult(witness="words", model_version="tfidf-lr-calibrated@1.0 + tactic-lexicon@1.0")
-    text = (text or "").strip()
+    text = re.sub(r"\s*\.{2,}\s*|…", " ", (text or "")).strip()  # transcripts break phrases with ellipses
     if len(text) < 4:
         res.status = "not_applicable"
         res.summary = "No message text or transcript to read."
