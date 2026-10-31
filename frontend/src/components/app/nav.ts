@@ -1,4 +1,4 @@
-import { BookOpenText, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Waypoints, type LucideIcon } from "lucide-react";
+import { AudioLines, BookOpenText, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Skull, Waypoints, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -13,6 +13,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { to: "/app/dashboard", label: "Command centre", icon: Gauge, roles: ["analyst", "admin", "employee"] },
       { to: "/app/investigate", label: "New investigation", icon: ScanSearch },
+      { to: "/app/voice", label: "Voice check", icon: AudioLines },
       { to: "/app/shield", label: "Live call shield", icon: Radio },
       { to: "/app/cases", label: "Cases", icon: Waypoints },
       { to: "/app/tribunal", label: "Tribunal", icon: Gavel, roles: ["analyst", "admin", "employee"] },
@@ -24,6 +25,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/app/identity", label: "Identity graph", icon: Network, roles: ["analyst", "admin"] },
       { to: "/app/attack-chain", label: "Attack chains", icon: Route, roles: ["analyst", "admin"] },
       { to: "/app/casebook", label: "Casebook", icon: BookOpenText },
+      { to: "/app/redteam", label: "Red-team lab", icon: Skull, roles: ["analyst", "admin"] },
     ],
   },
   {

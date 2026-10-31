@@ -54,15 +54,17 @@ upload / speak / paste ──▶ 5 witnesses (parallel) ──▶ request-aware 
 
 ## Quick start
 
-Requirements: **Python 3.11+**, **Node 20+**, about 4 GB of free disk for the optional pretrained models. FFmpeg is
-bundled through `imageio-ffmpeg`. Tested on macOS (Apple Silicon) with CPU-only inference.
+Requirements: **Python 3.11+**, **Node 20+**, about 7 GB of free disk for the pretrained detectors. FFmpeg is
+bundled through `imageio-ffmpeg`. Tested on macOS (Apple Silicon, CPU) and Windows 11 (RTX 4060, CUDA 12.8). An NVIDIA
+GPU is optional; for one, install the CUDA build of PyTorch first:
+`pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128`.
 
 ```bash
 # 1 · backend
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python scripts/download_models.py     # optional but recommended: pretrained detectors
+python scripts/download_models.py     # recommended: the pretrained detectors (~7 GB, see docs/DETECTION.md)
 uvicorn app.main:app --port 8000
 ```
 
@@ -79,8 +81,19 @@ dashboards show real output. More detail, environment variables and troubleshoot
 [docs/SETUP.md](docs/SETUP.md). Docker: `docker compose up --build` (web :5173, api :8000, PostgreSQL :5432).
 
 ```bash
-cd backend && python -m pytest -q       # 16 tests: scenario verdicts, policy rules, Shapley, audit chain
+cd backend && python -m pytest -q       # 19 tests: scenario verdicts, policy rules, voice-check matrix, response plans, laundering
 ```
+
+## New: attack lab, voice check, response plans, Chrome extension
+
+| | What it adds | Doc |
+|---|---|---|
+| **Red-team lab** | Thinks like the attacker: forges labelled scam content (neural voices, SD-Turbo portraits, avatar video, scripts) for six real scheme types, launders it through phone, WhatsApp, MP3, reverb, noise, replay, JPEG and screenshot pipelines, and measures what MIRAGE catches. Latest campaigns: 40/42 voice and 15/15 image variants caught; noise is the measured weak spot. | [RED_TEAM](docs/RED_TEAM.md), [ATTACKER_PLAYBOOK](docs/ATTACKER_PLAYBOOK.md) |
+| **Voice check** | Two stages: is the voice AI-generated or human, then what it is asking for (tactics, request, category, like emails and chats), combined in a 2x2 verdict. | [AFTER_DETECTION](docs/AFTER_DETECTION.md) |
+| **What now** | Every result ends in an emergency plan: steps, a "say this, then hang up" line, Sanchar Saathi / 1930 / cybercrime.gov.in, an already-paid golden-hour countdown. | [AFTER_DETECTION](docs/AFTER_DETECTION.md) |
+| **MIRAGE Shield** | Chrome extension prototype: check messages, images and voice notes, right-click checks, live shield for a call tab, opt-in Gmail auto-scan. | [EXTENSION](docs/EXTENSION.md) |
+
+The time-boxed plan for what comes next, including the UI direction, is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Feature overview
 
@@ -123,6 +136,8 @@ The full catalogue with implementation status is in [docs/FEATURES.md](docs/FEAT
 | `/auth` | Persona sign-in as security access passes |
 | `/app/dashboard` | Command centre |
 | `/app/investigate` | New investigation and live processing |
+| `/app/voice` | Voice check: AI or human, what it asks for, combined verdict, what now |
+| `/app/redteam` | Red-team lab: attacker playbook, forge-and-test, robustness campaigns |
 | `/app/shield` | Live Call Shield |
 | `/app/cases`, `/app/cases/:id/:tab` | Case list; case Evidence / Tribunal / Verify / Report |
 | `/app/tribunal/:id` | Courtroom view with docket |
@@ -157,23 +172,24 @@ The step-by-step walkthrough with a worked example is in [docs/HOW_IT_WORKS.md](
 
 ## Models
 
-| Witness | Model | Status |
-|---|---|---|
-| Voice | MIRAGE spoof model (calibrated gradient boosting on spectral and prosodic features) **+** `MelodyMachine/Deepfake-audio-detection-V2` (wav2vec2), averaged 50/50 | **In use** |
-| Voiceprint | MIRAGE pitch + long-term-spectrum embedding (EER 0.24, weak, weighted accordingly) | In use; `microsoft/wavlm-base-plus-sv` selected as replacement ([ROADMAP](ROADMAP.md)) |
-| Face | Haar tracking + MIRAGE pixel model **+** `prithivMLmods/Deep-Fake-Detector-v2-Model` (ViT) on face crops, 40/60 | **In use**; OpenCV YuNet detector selected |
-| Provenance | MIRAGE pixel-forensics model **+** `umm-maybe/AI-image-detector`, 30/70; ELA, EXIF, C2PA presence | **In use** |
-| Words | TF-IDF (char + word) logistic regression, sigmoid-calibrated, + tactic lexicon | **In use**; `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` selected as zero-shot second opinion |
-| Identity | Trustbook rules + Isolation Forest | **In use** |
-| Speech-to-text | faster-whisper `base`, int8, CPU | **In use** |
-| OCR | RapidOCR (ONNX) | **In use** |
-| Casebook | BM25 + character TF-IDF, Reciprocal Rank Fusion | **In use**; `paraphrase-multilingual-MiniLM-L12-v2` selected for semantic retrieval |
-| Narration (optional) | Claude or a local Llama via Ollama, behind a citation guard | Off unless a key is set |
+Every media witness now uses **pretrained detectors as its primary layer**, ensembled and calibrated on public
+samples, with MIRAGE's own explainable models as a supporting layer. Full design and benchmark: [docs/DETECTION.md](docs/DETECTION.md).
 
-Held-out metrics (regenerated by `python -m ml.train_all`): Words AUC 0.943 on unseen templates · Voice AUC 1.00 on
-the simulator (0.970 on a held-out μ-law channel) · Provenance AUC 0.997 · Voiceprint EER 0.244 · Request-anomaly AUC
-0.997. **MIRAGE's own media models are trained on simulated data**; read [docs/MODEL_CARDS.md](docs/MODEL_CARDS.md)
-before quoting any number.
+| Witness | Primary (pretrained ensemble) | Supporting / hard signals |
+|---|---|---|
+| Voice | `Speech-Arena-2025/DF_Arena_500M_V_1` (In-the-Wild EER 1.87%) ⊕ NII `Wav2Vec2-Large-AntiDeepfake` (EER 2.9%), per 4 s window | MIRAGE spectral/prosodic model; codec profile |
+| Voiceprint | `microsoft/wavlm-base-plus-sv` x-vectors (VoxCeleb1 EER 0.84%) for WavLM-enrolled people | legacy pitch + spectrum embedding for old prints |
+| Face (video) | YuNet → GenD CLIP ⊕ GenD Perception-Encoder (WACV 2026) per face crop; image ensemble on keyframes | lip-sync cross-correlation, track jitter |
+| Provenance | Community Forensics ViT (CVPR 2025, 4,803 generators) ⊕ SwinV2 AI-image detector; GenD on any face | ELA, noise, CFA, EXIF, generator metadata, C2PA |
+| Words | MIRAGE TF-IDF ⊕ DistilBERT phishing ⊕ mDeBERTa multilingual zero-shot intent ⊕ optional Claude judge | tactic lexicon, entities, look-alike domains, `.eml` headers |
+| Identity | Trustbook rules + Isolation Forest | — |
+| Speech-to-text / OCR | faster-whisper `base` / RapidOCR | — |
+
+Our benchmark on public samples (`scripts/fetch_benchmark.py` + `scripts/benchmark_models.py`): synthetic speech AUC
+1.00 · AI images (Flux, DALL-E 3, SDXL, Midjourney vs real photos) AUC 0.98, 94% accuracy · FaceForensics++/Celeb-DF
+faces AUC 0.92 · in-the-wild face swaps AUC 0.71 · Indian SMS scams AUC 0.92. MIRAGE's own simulator-trained models
+(Words AUC 0.943 on unseen templates, Voice AUC 1.00 on the simulator) now only support the pretrained layer; read
+[docs/MODEL_CARDS.md](docs/MODEL_CARDS.md) before quoting any number.
 
 ## Scenario Lab
 
@@ -189,8 +205,8 @@ before quoting any number.
 | H | Vendor BEC email with an AI headshot | `.eml` + PNG | HIGH |
 | I | A 1.5-second clip, nothing else | short WAV | INCONCLUSIVE |
 
-The tests assert every outcome. All media is generated by our own code (macOS `say` voices and procedural images and
-video) and labelled `MIRAGE SAMPLE`; no real person's voice or face is used.
+The tests assert every outcome. All media is generated by our own code (macOS `say` or Windows SAPI voices and procedural images
+and video) and labelled `MIRAGE SAMPLE`; no real person's voice or face is used.
 
 ## Tech stack
 
@@ -215,7 +231,8 @@ backend/
     agents/            tribunal.py (LangGraph) · llm.py (guarded optional narration)
     rag/               index.py (hybrid retrieval) · corpus/*.md
     routers/           auth.py · cases.py · misc.py
-    graphs.py report.py samples.py seed.py history.py
+    graphs.py report.py samples.py seed.py history.py redteam.py
+    routers/triage.py routers/redteam.py fusion/response.py   voice check, red-team lab, what-now plans
   ml/                  synth_text synth_audio synth_images synth_org · train_all · calibrate_fusion
   models_store/        trained artefacts + metrics.json + fusion.json (committed)
   models_hf/           pretrained weights (git-ignored; scripts/download_models.py)
@@ -223,6 +240,7 @@ backend/
   tests/test_mirage.py
 frontend/
   src/components/{three,landing,app,case,ui,reactbits}  src/pages/{landing,app}  src/lib
+extension/             MIRAGE Shield Chrome extension (Manifest V3)
 docs/                  see index below
 ROADMAP.md
 ```
@@ -230,8 +248,8 @@ ROADMAP.md
 ## Status, limitations and roadmap
 
 MIRAGE is a working prototype: every screen above is wired to the real backend and every scenario runs end to end.
-What is honestly weak (simulated training data for our own media models, a weak voiceprint, Haar face detection,
-template-based Hinglish), what is selected but not integrated yet, and the prioritised next steps are listed in
+What is honestly weak (face-swap detection in the wild, fully generated video, text without an LLM, template-based
+Hinglish), what is selected but not integrated yet, and the prioritised next steps are listed in
 **[ROADMAP.md](ROADMAP.md)**. Limitations, ethics and the recommended response workflow are in
 [docs/LIMITATIONS_AND_RESPONSE.md](docs/LIMITATIONS_AND_RESPONSE.md).
 
@@ -246,7 +264,13 @@ template-based Hinglish), what is selected but not integrated yet, and the prior
 | [docs/USE_CASES.md](docs/USE_CASES.md) | Personas, use cases and scenario behaviour |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, data flow, schema, security |
 | [docs/API.md](docs/API.md) | Every endpoint with inputs and outputs |
-| [docs/MODEL_CARDS.md](docs/MODEL_CARDS.md) | Detection methodology, data, metrics, pretrained models |
+| [docs/PLAN.md](docs/PLAN.md) | Build plan: attack, detect, respond, deploy; priorities and UI direction |
+| [docs/ATTACKER_PLAYBOOK.md](docs/ATTACKER_PLAYBOOK.md) | How deepfake scam crews operate and evade detectors, with sources |
+| [docs/RED_TEAM.md](docs/RED_TEAM.md) | Red-team lab: guardrails, generators, laundering, findings |
+| [docs/AFTER_DETECTION.md](docs/AFTER_DETECTION.md) | Two-stage voice check and the "what now" response plan |
+| [docs/EXTENSION.md](docs/EXTENSION.md) | MIRAGE Shield Chrome extension: install, features, status |
+| [docs/DETECTION.md](docs/DETECTION.md) | Layered pretrained detection stack, calibration and benchmark |
+| [docs/MODEL_CARDS.md](docs/MODEL_CARDS.md) | MIRAGE's own models: methodology, data, metrics |
 | [docs/FRONTEND.md](docs/FRONTEND.md) | Design system, screens, 3D world, motion, libraries |
 | [docs/SETUP.md](docs/SETUP.md) | Installation, environment variables, troubleshooting |
 | [docs/DEMO.md](docs/DEMO.md) | Five-minute demo script |

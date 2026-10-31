@@ -117,13 +117,21 @@ function EmailCard({ email }: { email: any }) {
   );
 }
 
-/** Second-opinion chip: the pretrained Hugging Face model's score and whether it agrees with MIRAGE's own model. */
-function Pretrained({ info }: { info?: { model: string; score: number; own_score: number; agree: boolean } }) {
-  if (!info) return null;
+/** Detector chips: each pretrained model's score, the ensemble, and whether the independent models agree. */
+function Pretrained({ info }: { info?: { models: Record<string, number>; score: number; own_score: number; agree: boolean; agreement?: number } }) {
+  if (!info?.models) return null;
+  const short = (m: string) => m.split("/").pop()!.replace(/-deploy$/, "");
   return (
-    <span className={cx("inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[10.5px]", info.agree ? "border-mint/30 text-mint" : "border-amber/40 text-amber")}
-      title={`MIRAGE model ${info.own_score.toFixed(2)} · ${info.model} ${info.score.toFixed(2)}`}>
-      {info.model.split("/")[1]} {info.score.toFixed(2)} · {info.agree ? "agrees" : "disagrees"}
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {Object.entries(info.models).map(([m, v]) => (
+        <span key={m} title={m} className={cx("rounded-md border px-1.5 py-0.5 font-mono text-[10px]", v >= 0.5 ? "border-crimson/40 text-crimson" : "border-mint/30 text-mint")}>
+          {short(m)} {v.toFixed(2)}
+        </span>
+      ))}
+      <span className={cx("rounded-md border px-1.5 py-0.5 font-mono text-[10px]", info.agree ? "border-mint/30 text-mint" : "border-amber/40 text-amber")}
+        title={`Ensemble ${info.score.toFixed(2)} · MIRAGE supporting model ${info.own_score.toFixed(2)}`}>
+        ensemble {info.score.toFixed(2)} · {info.agree ? "models agree" : "models disagree"}
+      </span>
     </span>
   );
 }
@@ -174,7 +182,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                   <video key={videoT ?? 0} src={url + (videoT != null ? `#t=${videoT}` : "")} controls className="w-full rounded-xl border border-line bg-black" />
                   {face?.details?.timeline && (
                     <div>
-                      <p className="label mb-2">Frame inspection · face artefact score</p>
+                      <p className="label mb-2 flex flex-wrap items-center gap-2">Frame inspection · face artefact score <Pretrained info={face.details.pretrained} /></p>
                       <FrameTimeline timeline={face.details.timeline} keyframes={face.details.keyframes ?? []} duration={face.details.duration_s || a.duration_s || 1} onSeek={setVideoT} />
                       {face.details.lip_sync && (
                         <div className="mt-4">
@@ -193,7 +201,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                     <p className="label flex items-center gap-2">Audio waveform · synthetic-speech windows <Pretrained info={voice.details.pretrained} /></p>
                     <p className="font-mono text-[10.5px] text-dim">
                       {voice.details.channel?.codec_guess} · SNR {voice.details.channel?.snr_db} dB
-                      {voice.details.voiceprint_similarity != null && <> · voiceprint <span className={voice.details.voiceprint_similarity < 0.43 ? "text-crimson" : "text-mint"}>{voice.details.voiceprint_similarity.toFixed(2)}</span></>}
+                      {voice.details.voiceprint_similarity != null && <> · voiceprint <span className={voice.details.voiceprint_similarity < (voice.details.voiceprint_threshold ?? 0.43) ? "text-crimson" : "text-mint"}>{voice.details.voiceprint_similarity.toFixed(2)}</span></>}
                     </p>
                   </div>
                   <Waveform peaks={voice.details.waveform} duration={voice.details.duration_s} src={a.kind === "audio" ? url : undefined}

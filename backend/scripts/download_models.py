@@ -1,45 +1,70 @@
-"""Download every pretrained model MIRAGE uses (about 2.4 GB). Stored in backend/models_hf/ (git-ignored).
+"""Download every pretrained model MIRAGE uses (about 7 GB). Stored in backend/models_hf/ (git-ignored).
 
-    python scripts/download_models.py
+    python scripts/download_models.py            # everything
+    python scripts/download_models.py audio face # only some groups
 
-Each witness keeps working without its model; the model adds a second, stronger opinion.
+Each witness keeps working without its models; the models are the primary detectors when present.
 
-  witness       model                                                     role
-  voice         MelodyMachine/Deepfake-audio-detection-V2                 synthetic-speech detection (wav2vec2)
-  voiceprint    microsoft/wavlm-base-plus-sv                              speaker verification x-vectors
-  face          prithivMLmods/Deep-Fake-Detector-v2-Model                 deepfake face classification (ViT)
-  face detect   OpenCV Zoo YuNet (face_detection_yunet_2023mar.onnx)      face localisation
-  provenance    umm-maybe/AI-image-detector                               AI-generated image detection
-  words         MoritzLaurer/mDeBERTa-v3-base-mnli-xnli                   multilingual zero-shot intent
-  casebook      sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2  multilingual semantic retrieval
-  speech-to-text  faster-whisper base (downloaded on first use)
+  group   model                                                   role (published result)
+  audio   Speech-Arena-2025/DF_Arena_500M_V_1                     anti-spoofing, XLS-R 300M + Conformer (In-the-Wild EER 1.87%)
+  audio   SpeechAntiSpoofingBenchmarks/Wav2Vec2-Large-AntiDeepfake NII AntiDeepfake, ONNX (In-the-Wild EER 2.9%)
+  audio   microsoft/wavlm-base-plus-sv                            speaker verification x-vectors (VoxCeleb1 EER 0.84%)
+  image   OwensLab/commfor-model-384                              Community Forensics ViT, 4,803 generators (CVPR 2025)
+  image   haywoodsloan/ai-image-detector-deploy                   SwinV2 AI-image detector (modern generators, 2025)
+  face    yermandy/GenD_CLIP_L_14 (+ openai/clip-vit-large-patch14 config) GenD deepfake-face detector (WACV 2026)
+  face    yermandy/GenD_PE_L                                      GenD, Perception Encoder backbone (WACV 2026)
+  face    OpenCV Zoo YuNet                                        face localisation
+  text    cybersectony/phishing-email-detection-distilbert_v2.4.1 phishing / scam message classifier
+  text    MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7 multilingual zero-shot intent (100 languages)
+  redteam stabilityai/sd-turbo (fp16)                             image generator for the red-team lab (optional)
+  speech-to-text  faster-whisper (downloaded on first use)
 """
-from pathlib import Path
+import sys
 import urllib.request
+from pathlib import Path
 
-from huggingface_hub import list_repo_files, snapshot_download
+from huggingface_hub import snapshot_download
 
 ROOT = Path(__file__).resolve().parent.parent / "models_hf"
-HF = [
-    "MelodyMachine/Deepfake-audio-detection-V2",
-    "umm-maybe/AI-image-detector",
-    "prithivMLmods/Deep-Fake-Detector-v2-Model",
-    "microsoft/wavlm-base-plus-sv",
-    "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli",
-    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-]
+# configs and tokenizers only: no repository code is downloaded (DF_Arena and GenD are vendored in app/witnesses)
+CFG = ["*.json", "*.txt", "*.model", "tokenizer*", "vocab*", "merges*", "spm*", "sentencepiece*"]
+GROUPS = {
+    "audio": [
+        ("Speech-Arena-2025/DF_Arena_500M_V_1", [*CFG, "pytorch_model.bin"]),  # the 1B sibling (EER 0.91%) also works
+        ("SpeechAntiSpoofingBenchmarks/Wav2Vec2-Large-AntiDeepfake", ["config.json", "README.md", "*.onnx"]),
+        ("microsoft/wavlm-base-plus-sv", [*CFG, "pytorch_model.bin"]),
+    ],
+    "image": [
+        ("OwensLab/commfor-model-384", ["config.json", "model.safetensors"]),
+        ("haywoodsloan/ai-image-detector-deploy", ["config.json", "preprocessor_config.json", "model.safetensors"]),
+    ],
+    "face": [
+        ("yermandy/GenD_CLIP_L_14", [*CFG, "model.safetensors"]),
+        ("openai/clip-vit-large-patch14", ["config.json", "preprocessor_config.json"]),  # GenD holds the weights
+        ("yermandy/GenD_PE_L", ["config.json", "model.safetensors"]),
+    ],
+    "text": [
+        ("cybersectony/phishing-email-detection-distilbert_v2.4.1", [*CFG, "model.safetensors"]),
+        ("MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7", [*CFG, "model.safetensors"]),
+    ],
+    "redteam": [
+        ("stabilityai/sd-turbo", ["model_index.json", "scheduler/*", "tokenizer/*", "text_encoder/config.json",
+                                  "text_encoder/model.fp16.safetensors", "unet/config.json",
+                                  "unet/diffusion_pytorch_model.fp16.safetensors", "vae/config.json",
+                                  "vae/diffusion_pytorch_model.fp16.safetensors"]),
+    ],
+}
 YUNET = "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
 
-for repo in HF:
-    files = list_repo_files(repo)
-    top = [f for f in files if "/" not in f]
-    weights = ["model.safetensors"] if "model.safetensors" in top else ["pytorch_model.bin"]
-    allow = ["*.json", "*.txt", "*.model", "spm.model", "sentencepiece.bpe.model", "tokenizer*", *weights]
-    path = snapshot_download(repo, local_dir=ROOT / repo.split("/")[1], allow_patterns=allow)
-    print("ready:", path)
+wanted = sys.argv[1:] or [g for g in GROUPS if g != "redteam"]
+for group in wanted:
+    for repo, allow in GROUPS[group]:
+        path = snapshot_download(repo, local_dir=ROOT / repo.split("/")[1], allow_patterns=allow)
+        print("ready:", path, flush=True)
 
-yunet = ROOT / "yunet" / "face_detection_yunet_2023mar.onnx"
-yunet.parent.mkdir(parents=True, exist_ok=True)
-if not yunet.exists():
-    urllib.request.urlretrieve(YUNET, yunet)
-print("ready:", yunet)
+if "face" in wanted:
+    yunet = ROOT / "yunet" / "face_detection_yunet_2023mar.onnx"
+    yunet.parent.mkdir(parents=True, exist_ok=True)
+    if not yunet.exists():
+        urllib.request.urlretrieve(YUNET, yunet)
+    print("ready:", yunet)

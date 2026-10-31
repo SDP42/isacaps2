@@ -19,20 +19,21 @@ Legend: ✅ built and wired end to end · 🟡 partial · ⬜ planned (see [ROAD
 ## Witnesses
 | Feature | Status | Notes |
 |---|---|---|
-| Synthetic-speech windows, pooled score, waveform regions | ✅ | Own model + wav2vec2 pretrained |
+| Synthetic-speech windows, pooled score, waveform regions | ✅ | DF_Arena ⊕ NII AntiDeepfake ensemble (primary) + own model |
 | Codec / channel profile used by the Skeptic | ✅ | Codec cliff detection |
-| Voiceprint match against the Trustbook | 🟡 | Works but weak (EER 0.24); WavLM replacement selected |
-| Face tracking, frame scores, temporal pooling, keyframes | ✅ | Haar + ViT pretrained |
+| Voiceprint match against the Trustbook | ✅ | WavLM x-vectors for WavLM-enrolled people; seeded prints are legacy (re-enrol) |
+| Face tracking, frame scores, temporal pooling, keyframes | ✅ | YuNet + GenD CLIP ⊕ GenD PE |
 | Lip-sync drift | ✅ | Mouth-motion vs speech-envelope cross-correlation |
-| Better face detector (YuNet) | ⬜ | Downloaded by the script |
-| AI-generated image probability | ✅ | Own model + Swin/ViT pretrained |
+| Better face detector (YuNet) | ✅ | Haar fallback |
+| Fully generated video check | 🟡 | Image ensemble on keyframes |
+| AI-generated image probability | ✅ | Community Forensics ⊕ SwinV2 (calibrated) + own model |
 | ELA heat-map, EXIF, generator metadata, C2PA presence | ✅ | |
 | C2PA signature validation | ⬜ | |
 | Scam classifier EN / HI / Hinglish | ✅ | |
 | Tactic spans (7 tactics) | ✅ | |
 | Requested action, sensitivity, entities, deadline | ✅ | |
 | Look-alike domains, style drift | ✅ | |
-| Zero-shot multilingual intent | ⬜ | mDeBERTa selected |
+| Zero-shot multilingual intent | ✅ | mDeBERTa-v3 2mil7; plus DistilBERT phishing and an optional Claude judge |
 | Trustbook checks (contact, channel, hours, authority, credential policy, code word) | ✅ | |
 | Beneficiary memory and flagging | ✅ | |
 | Pattern memory, "linked to confirmed fraud" | ✅ | |
@@ -73,7 +74,7 @@ Legend: ✅ built and wired end to end · 🟡 partial · ⬜ planned (see [ROAD
 | Spot the Fake audience challenge | ✅ |
 | Scenario Lab (9 cases with expected outcomes) | ✅ |
 | Personal Safety mobile mode with plain-language reasons | ✅ |
-| Models & audit page | 🟡 own-model metrics shown; pretrained model status not yet listed |
+| Models & audit page | ✅ pretrained registry with published and measured numbers |
 | Webcam liveness challenge | ⬜ |
 | Browser extension for meetings | ⬜ |
 | Deepfake Drill mode | ⬜ |
@@ -88,3 +89,18 @@ Legend: ✅ built and wired end to end · 🟡 partial · ⬜ planned (see [ROAD
 | Command palette, toasts, skeletons, page transitions | ✅ |
 | Reduced-motion and no-WebGL fallbacks | ✅ |
 | Responsive layouts (desktop to 375 px) | ✅ |
+
+## Attack lab, voice check, response and extension (31 October 2026)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Attacker playbook (6 schemes, MITRE, real cases, antidote) | ✅ | docs/ATTACKER_PLAYBOOK.md |
+| Red-team generation: neural voice, SD-Turbo image, avatar video, script | ✅ | Stock voices and generated faces only; stamped and audited |
+| Laundering: phone, WhatsApp, MP3, reverb, noise, replay, JPEG, resize, screenshot, social | ✅ | |
+| Robustness campaigns with heatmap and insights | ✅ | 40/42 voice, 15/15 image caught |
+| Send a red-team sample to a full investigation | ✅ | |
+| Two-stage voice check (AI vs human, then semantics) with 2x2 verdict | ✅ | Noise-aware uncertain band |
+| "What now" response plan everywhere | ✅ | Call script, helplines, golden-hour countdown |
+| Quick text and media checks API | ✅ | Used by the extension |
+| Chrome extension: popup, right-click checks, tab-call shield, Gmail auto-scan | 🟡 | Popup verified against the API; in-Chrome run pending |
+| Neural-codec laundering, real-time voice conversion, face-swap video in the lab | ⬜ | docs/PLAN.md |

@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="wrap">
+  <h1><span class="dot"></span>MIRAGE Shield</h1>
+  <div class="sub">Is this voice real, and is it safe to act on?</div>
+
+  <section id="login" hidden>
+    <div class="label">MIRAGE server</div>
+    <input id="api" placeholder="http://localhost:8000">
+    <div class="label">Sign in as</div>
+    <select id="persona"></select>
+    <button class="btn" id="signin">Sign in</button>
+    <div class="err" id="loginErr"></div>
+  </section>
+
+  <section id="main" hidden>
+    <div class="tabs">
+      <button data-tab="text" class="on">Message</button>
+      <button data-tab="file">Voice / image</button>
+      <button data-tab="shield">Shield call</button>
+    </div>
+
+    <div data-pane="text">
+      <textarea id="text" placeholder="Paste the message, email or chat you received"></textarea>
+      <button class="btn" id="checkText">Check message</button>
+    </div>
+
+    <div data-pane="file" hidden>
+      <input type="file" id="file" accept="audio/*,video/*,image/*,.ogg,.opus,.m4a">
+      <div class="muted" style="margin-top:6px">Voice notes go through the two-stage voice check; images and videos through the deepfake detectors.</div>
+      <button class="btn" id="checkFile">Check file</button>
+    </div>
+
+    <div data-pane="shield" hidden>
+      <div class="muted">Listens to this tab (Meet, Zoom, Teams, WhatsApp Web) and checks every 3 seconds for a cloned voice and scam requests. You keep hearing the call.</div>
+      <button class="btn" id="shieldBtn">Shield this tab</button>
+      <div id="shieldOut"></div>
+    </div>
+
+    <div id="out"></div>
+    <div class="err" id="err"></div>
+
+    <div class="label">Settings</div>
+    <label class="row"><input type="checkbox" id="autoGmail" style="width:auto"> Auto-scan emails I open in Gmail</label>
+    <div class="row muted" style="margin-top:6px;justify-content:space-between"><span id="who"></span><a href="#" id="signout" style="color:var(--cyan)">Sign out</a></div>
+  </section>
+</div>
+<script src="common.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
