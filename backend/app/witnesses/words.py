@@ -71,7 +71,7 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
     ("info", 0.3, [r"\bshare\b", r"\bupdate\b", r"\bconfirm\b"]),
 ]
 
-_AMOUNT = re.compile(r"(?:₹|rs\.?|inr)\s?([\d,]+(?:\.\d+)?)\s*(lakh|lac|crore|cr|k)?|([\d.]+)\s*(lakh|lac|crore|cr)\b", re.I)
+_AMOUNT = re.compile(r"(?:₹|rs\.?|inr)\s?([\d,]+(?:\.\d+)?)(?:\s*(lakh|lac|crore|cr|k)\b)?|([\d.]+)\s*(lakh|lac|crore|cr)\b", re.I)
 ENTITY_RX = {
     "upi": re.compile(r"\b[\w.\-]{2,40}@(ok\w+|ybl|paytm|ibl|axl|upi|icici|sbi|hdfc\w*|apl|kotak)\b", re.I),
     "ifsc": re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b"),
