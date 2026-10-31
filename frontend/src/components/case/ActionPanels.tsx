@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
+import { CallbackSheet } from "./CallbackSheet";
 import { ETag, PanelHead, Segmented } from "@/components/ui/primitives";
 import { downloadReport, post } from "@/lib/api";
 import { bytes, clock, cx } from "@/lib/format";
@@ -14,6 +15,7 @@ export function VerifyPanel({ detail, onChange, compact = false }: { detail: Cas
   const [mode, setMode] = useState<"verify" | "paid">("verify");
   const { data: paid } = useApi<{ id: string; title: string; why: string }[]>(mode === "paid" ? "/v1/playbooks/already-paid" : null, [mode]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [calling, setCalling] = useState(false);
   const done = v.verification_plan.filter((s) => s.done).length;
 
   const mark = async (step: string) => {
@@ -46,7 +48,7 @@ export function VerifyPanel({ detail, onChange, compact = false }: { detail: Cas
             <motion.ul key="v" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-1.5">
               {v.verification_plan.map((s) => (
                 <li key={s.id}>
-                  <button disabled={s.done || busy !== null} onClick={() => mark(s.id)}
+                  <button disabled={s.done || busy !== null} onClick={() => (s.id === "call_directory" ? setCalling(true) : mark(s.id))}
                     className="group flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/[0.03] disabled:cursor-default">
                     <span className={cx("mt-0.5 grid size-5 shrink-0 place-items-center rounded-md border transition-colors", s.done ? "border-mint bg-mint text-ink-0" : "border-line-2 group-hover:border-mint/60")}>
                       {s.done ? <Check size={12} strokeWidth={3} /> : busy === s.id ? <span className="size-2 animate-ping rounded-full bg-mint" /> : null}
@@ -71,10 +73,11 @@ export function VerifyPanel({ detail, onChange, compact = false }: { detail: Cas
           )}
         </AnimatePresence>
         {call && mode === "verify" && (
-          <Button variant="safe" className="mt-4 w-full" icon={<Phone size={15} />} onClick={() => mark("call_directory")} disabled={call.done}>
+          <Button variant="safe" className="mt-4 w-full" icon={<Phone size={15} />} onClick={() => setCalling(true)} disabled={call.done}>
             {call.done ? "Callback recorded" : call.title}
           </Button>
         )}
+        <CallbackSheet detail={detail} open={calling} onClose={() => setCalling(false)} onDone={onChange} />
         {!compact && (
           <div className="mt-4 border-t border-line pt-4">
             <p className="label mb-2">Close the case</p>
