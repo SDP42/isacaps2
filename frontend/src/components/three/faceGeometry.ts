@@ -8,7 +8,7 @@ const g = (x: number, y: number, cx: number, cy: number, sx: number, sy: number)
 
 function halfWidth(y: number): number {
   // skull above, tapering jaw below
-  if (y > 0.15) return 0.74 * Math.sqrt(Math.max(0, 1 - ((y - 0.15) / 1.0) ** 2));
+  if (y > 0.15) return 0.74 * Math.pow(Math.max(0, 1 - Math.pow((y - 0.15) / 1.0, 2.6)), 1 / 2.6); // rounder cranium
   const t = (0.15 - y) / 1.15;
   return 0.74 * (1 - 0.55 * Math.pow(Math.max(0, t), 1.7));
 }
@@ -40,12 +40,31 @@ export function depthAt(x: number, y: number): number | null {
 export interface FaceCloud {
   positions: Float32Array;
   seeds: Float32Array;
+  shade: Float32Array;
   count: number;
+}
+
+const LIGHT = (() => {
+  const l = [-0.45, 0.55, 0.7];
+  const n = Math.hypot(...l);
+  return l.map((v) => v / n);
+})();
+
+/** Lambert shading from the height field's surface normal, so features read as relief. */
+function shadeAt(x: number, y: number, z: number): number {
+  const e = 0.008;
+  const zx = depthAt(x + e, y) ?? z;
+  const zy = depthAt(x, y + e) ?? z;
+  const nx = -(zx - z) / e, ny = -(zy - z) / e, nz = 1;
+  const len = Math.hypot(nx, ny, nz);
+  const d = (nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2]) / len;
+  return Math.pow(Math.max(0, d), 1.6);
 }
 
 export function buildFace(density = 1): FaceCloud {
   const pos: number[] = [];
   const seeds: number[] = [];
+  const shade: number[] = [];
   const rowStep = 0.016 / Math.sqrt(density);
   const colStep = 0.0062 / Math.sqrt(density);
   let row = 0;
@@ -59,6 +78,7 @@ export function buildFace(density = 1): FaceCloud {
       if (Math.random() < 0.12) continue;
       pos.push(x + (Math.random() - 0.5) * 0.002, y, z);
       seeds.push(Math.random());
+      shade.push(shadeAt(x, y, z));
     }
     // neck
   }
@@ -69,7 +89,8 @@ export function buildFace(density = 1): FaceCloud {
       const u = x / hw;
       pos.push(x, y, 0.25 * Math.sqrt(Math.max(0, 1 - u * u)) - 0.12);
       seeds.push(Math.random());
+      shade.push(0.25 + 0.35 * Math.sqrt(Math.max(0, 1 - u * u)));
     }
   }
-  return { positions: new Float32Array(pos), seeds: new Float32Array(seeds), count: seeds.length };
+  return { positions: new Float32Array(pos), seeds: new Float32Array(seeds), shade: new Float32Array(shade), count: seeds.length };
 }

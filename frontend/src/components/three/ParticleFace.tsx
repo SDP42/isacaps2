@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { buildFace } from "./faceGeometry";
 
@@ -22,6 +22,8 @@ uniform float uPixel;
 uniform float uScanY;
 uniform float uSize;
 attribute float aSeed;
+attribute float aShade;
+varying float vShade;
 varying float vBand;
 varying float vSide;
 varying float vSeed;
@@ -32,6 +34,7 @@ float hash(float n){ return fract(sin(n)*43758.5453); }
 void main(){
   vec3 p = position;
   vSeed = aSeed;
+  vShade = aShade;
   vSide = step(0.0, p.x);
   // breathing
   p.z += sin(uTime*1.1 + p.y*3.0)*0.004;
@@ -71,17 +74,19 @@ varying float vBand;
 varying float vSide;
 varying float vSeed;
 varying float vDepth;
+varying float vShade;
 void main(){
   vec2 c = gl_PointCoord - 0.5;
   float d = length(c);
   if (d > 0.5) discard;
   float a = smoothstep(0.5, 0.0, d);
-  vec3 base = mix(vec3(0.62,0.72,0.82), uCyan, 0.35 + vDepth*0.6);
-  // warm highlight across the eye line, like the concept render
-  base = mix(base, uWarm, 0.0);
+  vec3 base = mix(vec3(0.55,0.66,0.78), uCyan, 0.25 + vShade*0.45);
+  base *= 0.35 + 1.1*vShade;
+  // a warm key light on the brow and cheek, like the concept render
+  base = mix(base, uWarm, smoothstep(0.75, 1.0, vShade) * 0.35);
   vec3 col = mix(base, uCrimson, vSide * uSplit);
   col += vBand * vec3(0.55, 0.95, 1.0) * 0.9;
-  float alpha = a * (0.42 + 0.5*vDepth + vBand*0.6) * (1.0 - uDim);
+  float alpha = a * (0.25 + 0.85*vShade + vBand*0.7) * (1.0 - uDim);
   gl_FragColor = vec4(col, alpha);
 }`;
 
@@ -92,6 +97,12 @@ export function ParticleFace({ density = 1, interactive = true }: { density?: nu
   const mouseTarget = useRef(new THREE.Vector3(9, 9, 0));
   const { pointer, viewport, gl } = useThree();
   const state = useRef({ split: 0, dissolve: 0, dim: 0, reveal: 0, yaw: 0 });
+  const moved = useRef(false);
+  useEffect(() => {
+    const on = () => { moved.current = true; };
+    window.addEventListener("pointermove", on, { once: true });
+    return () => window.removeEventListener("pointermove", on);
+  }, []);
 
   const uniforms = useMemo(
     () => ({
@@ -103,7 +114,7 @@ export function ParticleFace({ density = 1, interactive = true }: { density?: nu
       uMouse: { value: new THREE.Vector3(9, 9, 0) },
       uPixel: { value: Math.min(gl.getPixelRatio(), 2) * 1.0 },
       uScanY: { value: 0 },
-      uSize: { value: 4.2 },
+      uSize: { value: 5.6 },
       uCyan: { value: new THREE.Color("#67e8f9") },
       uCrimson: { value: new THREE.Color("#fb7185") },
       uWarm: { value: new THREE.Color("#fde68a") },
@@ -119,7 +130,7 @@ export function ParticleFace({ density = 1, interactive = true }: { density?: nu
     s.split += (faceControls.split - s.split) * k * 0.9;
     s.dissolve += (faceControls.dissolve - s.dissolve) * k * 0.9;
     s.dim += (faceControls.dim - s.dim) * k;
-    s.reveal += (1 - s.reveal) * k * 0.35;
+    s.reveal += (1 - s.reveal) * k * 0.55;
     s.yaw += (faceControls.rotate - s.yaw) * k * 0.6;
     m.uniforms.uTime.value += dt;
     m.uniforms.uSplit.value = s.split;
@@ -129,7 +140,7 @@ export function ParticleFace({ density = 1, interactive = true }: { density?: nu
     const t = m.uniforms.uTime.value;
     m.uniforms.uScanY.value = faceControls.scan > 0 ? 1.15 - ((t * 0.32) % 1) * 2.4 : 9;
 
-    if (interactive) {
+    if (interactive && moved.current) {
       // project the pointer onto the face plane (local space)
       const px = (pointer.x * viewport.width) / 2 / group.current.scale.x - group.current.position.x / group.current.scale.x;
       const py = (pointer.y * viewport.height) / 2 / group.current.scale.y - group.current.position.y / group.current.scale.y;
@@ -148,6 +159,7 @@ export function ParticleFace({ density = 1, interactive = true }: { density?: nu
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[cloud.positions, 3]} />
           <bufferAttribute attach="attributes-aSeed" args={[cloud.seeds, 1]} />
+          <bufferAttribute attach="attributes-aShade" args={[cloud.shade, 1]} />
         </bufferGeometry>
         <shaderMaterial
           ref={mat}

@@ -43,7 +43,7 @@ export default function HeroCanvas({ className }: { className?: string }) {
       >
         <PerformanceMonitor onDecline={() => setDensity((d) => Math.max(0.35, d * 0.7))} />
         <AdaptiveDpr pixelated />
-        <group position={[mobile ? 0 : 0.95, mobile ? 0.35 : 0.05, 0]} scale={mobile ? 0.82 : 1.05}>
+        <group position={[mobile ? 0 : 0.9, mobile ? 0.3 : 0.06, 0]} scale={mobile ? 0.58 : 0.64}>
           <ParticleFace density={density} interactive={!mobile} />
         </group>
       </Canvas>
