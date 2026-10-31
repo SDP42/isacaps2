@@ -31,3 +31,4 @@ dist/
 .agents/
 .claude/skills/
 .taste-skill/
+skills-lock.json
