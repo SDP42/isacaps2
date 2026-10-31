@@ -63,7 +63,7 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
     ("remote_access", 1.0, [r"\banydesk\b", r"\bteamviewer\b", r"\bremote access\b", r"\baccess code\b",
                             r"\binstall .{0,20}app\b"]),
     ("payment", 1.0, [r"\b(wire|transfer|process|release|send|pay|move|deposit|bhej|daal)\b.{0,60}(₹|rs\.?|inr|lakh|crore|\d{4,}|account|upi|payment)",
-                      r"(₹|rs\.?|inr)\s?[\d,.]+.{0,40}\b(transfer|bhej|send|wire|pay)", r"\bpaise\b.{0,20}\bbhej",
+                      r"(₹|rs\.?|inr)\s?[\d,.]+.{0,40}\b(transfer|bhej|send|wire|pay)", r"\b(paise|pise|paisa|pais)\b.{0,20}\bbhej", r"\bbhej\w*\b.{0,25}\d{3,}", r"\d[\d,]{3,}.{0,25}\bbhej",
                       r"\bपैसे\b|\bभेज\b|\bट्रांसफर\b", r"\bbank details have changed\b", r"\bnew (beneficiary|account)\b",
                       r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)"]),
     ("data", 0.6, [r"\bsend (me )?(the )?(employee|customer|payroll) (data|list|records)\b", r"\bpan card\b",
