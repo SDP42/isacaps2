@@ -1,0 +1,72 @@
+{
+  "words": {
+    "auc": 0.9428,
+    "eer": 0.146,
+    "accuracy": 0.7555,
+    "f1": 0.7538,
+    "brier": 0.1275,
+    "ece": 0.176,
+    "n_test": 732,
+    "split": "held-out templates",
+    "auc_by_language": {
+      "en": 0.75,
+      "hinglish": 1.0,
+      "hi": 1.0
+    },
+    "n_train": 2906,
+    "train_seconds": 3.7
+  },
+  "voice": {
+    "auc": 1.0,
+    "eer": 0.0,
+    "accuracy": 1.0,
+    "f1": 1.0,
+    "brier": 0.0031,
+    "ece": 0.0111,
+    "n_test": 300,
+    "split": "held-out speakers + channels",
+    "auc_mulaw_channel": 0.9696,
+    "feature_importance": {
+      "shimmer": 0.3191,
+      "mfcc_delta_var": 0.024,
+      "frame_periodicity": 0.005,
+      "hf_ratio_std": 0.0002,
+      "voiced_ratio": 0.0002,
+      "flatness_std": 0.0001,
+      "jitter": 0.0,
+      "f0_cv": 0.0,
+      "flatness_mean": 0.0,
+      "hf_ratio": 0.0,
+      "flux_std": 0.0,
+      "rolloff_std": 0.0,
+      "silence_ratio": 0.0,
+      "band_8k_floor": 0.0
+    },
+    "n_train": 900,
+    "train_seconds": 37.8
+  },
+  "provenance": {
+    "auc": 0.9971,
+    "eer": 0.0127,
+    "accuracy": 0.9667,
+    "f1": 0.9636,
+    "brier": 0.0214,
+    "ece": 0.0269,
+    "n_test": 240,
+    "split": "held-out seeds",
+    "n_train": 700,
+    "train_seconds": 35.8
+  },
+  "request_anomaly": {
+    "auc": 0.9969,
+    "n_train": 3105,
+    "n_attacks": 75,
+    "split": "fit on normal traffic, scored on injected attacks",
+    "train_seconds": 0.3
+  },
+  "_meta": {
+    "trained_at": "2026-10-31T15:06:58",
+    "total_seconds": 77.5,
+    "data": "synthetic (see ml/synth_*.py and docs/MODEL_CARDS.md)"
+  }
+}
