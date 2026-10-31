@@ -14,6 +14,26 @@ const PLAIN: Record<string, { head: string; body: string; color: string }> = {
   INCONCLUSIVE: { head: "We can't tell from this alone.", body: "Add the message text or the number it came from, or simply call them back to check.", color: "#c7cfdd" },
 };
 
+const PLAIN_REASON: Record<string, string> = {
+  secrecy: "It asks you to keep it secret.",
+  channel_switch: "It says they can't talk, or that they're on a new number.",
+  urgency: "It pushes you to act right now.",
+  fear: "It tries to scare you.",
+  authority: "It leans on someone's authority to rush you.",
+  reward: "It promises money or a prize if you pay first.",
+  bypass: "It asks you to skip the usual checks.",
+  requested_action: "It asks you to send money or share a code.",
+  contact_mismatch: "It isn't from the number saved for this person.",
+  unknown_sender: "We don't know this sender.",
+  synthetic_speech: "The voice shows signs of being computer-generated.",
+  voiceprint_mismatch: "The voice doesn't match the person it claims to be.",
+  new_beneficiary: "The account has never been paid before.",
+  flagged_beneficiary: "This account was used in an earlier scam.",
+  lookalike_domain: "The link imitates a real website.",
+  ai_generated_pixels: "The picture looks AI-generated.",
+  credential_policy: "Real banks and IT teams never ask for your OTP.",
+};
+
 /** Personal safety mode: mobile-first, plain language, no percentages, one primary action per screen. */
 export default function Safety() {
   const [text, setText] = useState("");
@@ -93,8 +113,8 @@ export default function Safety() {
               <div className="rounded-2xl border border-line bg-ink-1 p-5">
                 <p className="text-[14px] text-silver">Why we think so</p>
                 <ul className="mt-3 space-y-2.5">
-                  {v.reasons.filter((r) => r.kind !== "policy" && r.kind !== "mitigating").slice(0, 3).map((r, i) => (
-                    <li key={i} className="flex gap-3 text-[15px] leading-snug text-fg"><span className="mt-2 size-1.5 shrink-0 rounded-full" style={{ background: plain?.color }} />{r.text}</li>
+                  {Array.from(new Set(result!.evidence.filter((e) => !e.exculpatory && e.severity >= 2).map((e) => PLAIN_REASON[e.kind]).filter(Boolean))).slice(0, 4).map((t, i) => (
+                    <li key={i} className="flex gap-3 text-[15px] leading-snug text-fg"><span className="mt-2 size-1.5 shrink-0 rounded-full" style={{ background: plain?.color }} />{t}</li>
                   ))}
                 </ul>
               </div>
