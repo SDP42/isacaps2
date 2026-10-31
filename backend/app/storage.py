@@ -53,6 +53,8 @@ def sniff(head: bytes, filename: str) -> tuple[str, str]:
             return "image", "image/webp"
         if head[8:12] == b"AVI ":
             return "video", "video/x-msvideo"
+    if head.startswith(b"\x1aE\xdf\xa3") and Path(filename).suffix.lower() in (".weba", ".opus", ".oga"):
+        return "audio", "audio/webm"  # browser voice recordings are audio-only WebM
     for sig, off, kind, mime in _SIGNATURES:
         if head[off : off + len(sig)] == sig and sig != b"RIFF":
             return kind, mime
