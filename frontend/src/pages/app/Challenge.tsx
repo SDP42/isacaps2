@@ -142,7 +142,7 @@ export default function Challenge() {
                       <p className="mt-2 text-[15px] leading-relaxed text-fg">{item.why}</p>
                     </div>
                     <div className="rounded-xl border border-line bg-ink-1 p-3 font-mono text-[11.5px] text-muted">
-                      live witness · score {v.score?.toFixed(2)} · {v.summary}
+                      single-witness check · score {v.score?.toFixed(2)} · {v.summary}
                       {v.tactics && v.tactics.length > 0 && <div className="mt-1.5 text-amber">{v.tactics.join(" · ")}</div>}
                     </div>
                     <p className={cx("text-[14px]", votes[i] === item.truth ? "text-mint" : "text-crimson")}>
@@ -164,7 +164,8 @@ export default function Challenge() {
               </div>
               <div>
                 <p className="tnum text-[64px] font-light leading-none text-cyan">{ITEMS.length}<span className="text-[28px] text-dim">/{ITEMS.length}</span></p>
-                <p className="mt-2 text-[14px] text-muted">MIRAGE + context</p>
+                <p className="mt-2 text-[14px] text-muted">MIRAGE full pipeline</p>
+                <p className="text-[11.5px] text-dim">same files, verdicts asserted by the test suite</p>
               </div>
             </div>
             <p className="mx-auto mt-8 max-w-xl text-[16px] leading-relaxed text-silver">
