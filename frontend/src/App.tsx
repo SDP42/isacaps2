@@ -17,6 +17,7 @@ const Casebook = lazy(() => import("./pages/app/Casebook"));
 const ScenarioLab = lazy(() => import("./pages/app/ScenarioLab"));
 const System = lazy(() => import("./pages/app/System"));
 const Safety = lazy(() => import("./pages/app/Safety"));
+const AttackReplay = lazy(() => import("./pages/app/AttackReplay"));
 
 function Splash() {
   return (
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="lab" element={<ScenarioLab />} />
               <Route path="system" element={<System />} />
               <Route path="safety" element={<Safety />} />
+              <Route path="replay" element={<AttackReplay />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
