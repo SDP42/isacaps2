@@ -13,7 +13,7 @@ type Kind = "email" | "chat" | "voice" | "video" | "payment";
 interface Stage { at: number; kind: Kind; from: string; title: string; body: string; channel: string }
 
 const SCRIPT: Stage[] = [
-  { at: 0, kind: "email", from: "Orbit Supplies Accounts", channel: "Email", title: "Updated bank details · INV-20931",
+  { at: 1, kind: "email", from: "Orbit Supplies Accounts", channel: "Email", title: "Updated bank details · INV-20931",
     body: "Dear Accounts, our bank details have changed due to an internal audit. Kindly release the pending invoice to the new account 918273645501 by EOD today. Please keep this confidential." },
   { at: 7, kind: "chat", from: "+91 70451 88213", channel: "WhatsApp-style chat", title: "Rajesh (CFO)?",
     body: "Hi Kavita, Rajesh here. In a board meeting, can't take calls. Orbit's new account is correct, process it today. Keep this between us until audit closes." },
