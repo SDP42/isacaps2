@@ -466,8 +466,10 @@ def detect_faces(frame_bgr: np.ndarray) -> list[tuple[int, int, int, int, float]
     try:
         h, w = frame_bgr.shape[:2]
         det = _yunet()
-        det.setInputSize((w, h))
-        _, faces = det.detect(frame_bgr)
+        # one shared OpenCV detector: setInputSize + detect from two witness threads corrupts the native heap
+        with _LOCK:
+            det.setInputSize((w, h))
+            _, faces = det.detect(np.ascontiguousarray(frame_bgr))
         if faces is None:
             return []
         boxes = [(int(f[0]), int(f[1]), int(f[2]), int(f[3]), float(f[14])) for f in faces]

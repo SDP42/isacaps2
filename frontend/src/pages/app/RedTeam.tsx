@@ -1,6 +1,6 @@
 import { Crosshair, FlaskConical, Grid3x3, Loader2, Play, ScanSearch, ShieldCheck, Skull, TriangleAlert } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ModelJury, type JuryMeta } from "@/components/app/ModelJury";
 import { Button } from "@/components/ui/Button";
@@ -119,7 +119,8 @@ function Heatmap({ c, cat }: { c: CampaignState; cat: Catalog }) {
 export default function RedTeam() {
   const nav = useNavigate();
   const { data: cat, error } = useApi<Catalog>("/v1/redteam/catalog");
-  const [sel, setSel] = useState<string>("ceo_voice_wire");
+  const [params] = useSearchParams();
+  const [sel, setSel] = useState<string>(params.get("attack") ?? "ceo_voice_wire");
   const [modality, setModality] = useState<"audio" | "image" | "video" | "text">("audio");
   const [launder, setLaunder] = useState("clean");
   const [busy, setBusy] = useState(false);

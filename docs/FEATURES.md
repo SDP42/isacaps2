@@ -104,3 +104,16 @@ Legend: ✅ built and wired end to end · 🟡 partial · ⬜ planned (see [ROAD
 | Quick text and media checks API | ✅ | Used by the extension |
 | Chrome extension: popup, right-click checks, tab-call shield, Gmail auto-scan | 🟡 | Popup verified against the API; in-Chrome run pending |
 | Neural-codec laundering, real-time voice conversion, face-swap video in the lab | ⬜ | docs/PLAN.md |
+
+## The cure (1 November 2026)
+
+| Feature | Status | Notes |
+|---|---|---|
+| Cure Console: Contain → Verify → Recover → Report → Immunise per scam type | ✅ | `backend/app/cure.py` |
+| Exposure meter and golden-hour clock | ✅ | Recovery actions unlock when money moved |
+| Challenge questions, callback outcome closes the case | ✅ | |
+| Pre-filled complaint, 1930 script, bank recall, Chakshu, CERT-In, warning broadcast | ✅ | |
+| Evidence-pack ZIP with SHA-256 manifest | ✅ | |
+| Identifier blocklist and "who else was targeted" | ✅ | |
+| Immunise: code word, dual-approval policy, red-team drill | ✅ | |
+| Bank / identity / SOC connectors | 🟡 | Simulated, labelled |

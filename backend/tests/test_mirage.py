@@ -159,3 +159,33 @@ def test_redteam_laundering_keeps_audio(tmp_path):
     for kind in redteam.AUDIO_LAUNDER:
         out = redteam.launder_audio(src, kind, tmp_path / f"{kind}.wav")
         assert abs(len(dsp.load_audio(out)) / dsp.SR - 3) < 0.3, kind
+
+
+def test_cure_console_family_emergency(client, token):
+    """The cure run: scenario plan, simulated hold, golden hour after 'paid', blocklist, drafts and evidence pack."""
+    import io
+    import zipfile
+
+    h = {"authorization": f"Bearer {token}"}
+    cid = client.post("/v1/scenarios/papa_emergency/run", headers=h).json()["id"]
+    assert _wait(client, token, cid)["status"] == "complete"
+    v = client.get(f"/v1/cases/{cid}/cure", headers=h).json()
+    assert v["context"]["category"] == "family_emergency"
+    ids = [a["id"] for s in v["stages"] for a in s["actions"]]
+    assert {"hold_payment", "callback", "call_1930", "set_code_word"} <= set(ids)
+    assert not next(a for s in v["stages"] for a in s["actions"] if a["id"] == "call_1930")["active"]  # locked until paid
+
+    v = client.post(f"/v1/cases/{cid}/cure/actions/hold_payment", headers=h, json={}).json()
+    hold = next(a for s in v["stages"] for a in s["actions"] if a["id"] == "hold_payment")
+    assert hold["status"] == "done" and hold["result"]["simulated"] and v["exposure"]["remaining_pct"] < 100
+
+    v = client.post(f"/v1/cases/{cid}/cure/paid", headers=h, json={"amount_inr": 75000, "txn": "UTR123"}).json()
+    assert v["golden"]["window"] == "golden hour" and v["paid"]["txn"] == "UTR123"
+    assert next(a for s in v["stages"] for a in s["actions"] if a["id"] == "call_1930")["active"]
+    assert client.get(f"/v1/cases/{cid}/cure", headers=h).json()["paid"]["txn"] == "UTR123"  # persisted
+
+    client.post(f"/v1/cases/{cid}/cure/actions/block_identifiers", headers=h, json={})
+    d = client.get(f"/v1/cases/{cid}/cure/drafts", headers=h).json()
+    assert "UTR123" in d["complaint"]["text"] and "code word" in d["challenge"]["text"]
+    z = zipfile.ZipFile(io.BytesIO(client.get(f"/v1/cases/{cid}/cure/evidence-pack", headers=h).content))
+    assert "MANIFEST.json" in z.namelist() and any(n.startswith("drafts/") for n in z.namelist())

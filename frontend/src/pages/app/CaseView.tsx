@@ -9,6 +9,7 @@ import { IdentityPanel, MessageIntel } from "@/components/case/MessagePanels";
 import { TribunalFlow } from "@/components/case/TribunalFlow";
 import { EvidenceLedger, VerdictPanel, WitnessPanel } from "@/components/case/VerdictPanels";
 import { WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
+import { CureConsole } from "@/components/case/CureConsole";
 import { RiskWaterfall } from "@/components/case/RiskWaterfall";
 import { WhatIf } from "@/components/case/WhatIf";
 import { Button } from "@/components/ui/Button";
@@ -17,7 +18,7 @@ import { downloadReport } from "@/lib/api";
 import { clock } from "@/lib/format";
 import { useApi, useLiveCase } from "@/lib/hooks";
 
-type Tab = "evidence" | "tribunal" | "verify" | "report";
+type Tab = "evidence" | "tribunal" | "respond" | "verify" | "report";
 
 export default function CaseView() {
   const { id, tab = "evidence" } = useParams<{ id: string; tab?: Tab }>();
@@ -69,7 +70,7 @@ export default function CaseView() {
       ) : (
         <>
           <Segmented value={tab} onChange={(t) => nav(`/app/cases/${id}/${t}`)}
-            options={[{ value: "evidence", label: "Evidence" }, { value: "tribunal", label: `Tribunal · ${detail.tribunal.length}` }, { value: "verify", label: "Verify" }, { value: "report", label: "Report" }]} />
+            options={[{ value: "evidence", label: "Evidence" }, { value: "tribunal", label: `Tribunal · ${detail.tribunal.length}` }, { value: "respond", label: "Respond" }, { value: "verify", label: "Verify" }, { value: "report", label: "Report" }]} />
 
           {tab === "evidence" && (
             <div className="grid gap-4 2xl:grid-cols-[minmax(0,1fr)_380px]">
@@ -95,6 +96,7 @@ export default function CaseView() {
             </div>
           )}
           {tab === "tribunal" && <div className="panel p-5 sm:p-6"><TribunalFlow messages={detail.tribunal} evidence={detail.evidence} onCite={cite} /></div>}
+          {tab === "respond" && <CureConsole caseId={detail.id} />}
           {tab === "verify" && (
             <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
               <div className="lg:col-span-2"><CaseResponse caseId={detail.id} /></div>

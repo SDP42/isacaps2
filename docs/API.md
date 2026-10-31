@@ -84,3 +84,15 @@ See [RED_TEAM.md](RED_TEAM.md): `GET /v1/redteam/catalog`, `POST /v1/redteam/gen
 `POST /v1/redteam/samples/{id}/investigate`, `POST /v1/redteam/campaign`, `GET /v1/redteam/campaign/{id}`.
 
 CORS also accepts `chrome-extension://<id>` origins for the MIRAGE Shield extension.
+
+## Cure Console (response run per case)
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| GET | `/v1/cases/{id}/cure` | | `{context, stages[{id, title, actions[{id, title, why, kind, status, result, active}]}], exposure, paid, golden, others[], drill_attack}` |
+| POST | `/v1/cases/{id}/cure/actions/{action}` | `{outcome?: confirmed\|denied, undo?}` | updated run; connectors return a `SIMULATED` reference; `callback` closes the case; `block_identifiers` flags accounts |
+| POST | `/v1/cases/{id}/cure/paid` | `{amount_inr, at, txn, to, method}` or `{clear: true}` | updated run with the golden-hour clock |
+| GET | `/v1/cases/{id}/cure/drafts` | | `{complaint, call_1930, bank_recall, chakshu, cert_in, warn_network, challenge}` each `{title, text, link?}` |
+| GET | `/v1/cases/{id}/cure/evidence-pack` | | ZIP: originals, SHA-256 manifest, incident report PDF, drafts |
+| GET | `/v1/cases/{id}/response` | | the compact "what now" plan |
+
+See [CURE.md](CURE.md).

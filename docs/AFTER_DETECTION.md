@@ -36,9 +36,15 @@ Screen: **Voice check** (`/app/voice`); API: `POST /v1/voice/triage`.
 | Already paid? | Starts a golden-hour countdown and lists 1930, the bank fraud line, UPI freeze, the complaint with the MIRAGE report, and telling someone |
 | Keep the evidence | Originals and the SHA-256 hashes MIRAGE recorded |
 
+## The Cure Console
+
+The compact plan above is the first minute. The full response run (exposure meter, golden-hour clock, pre-filled
+paperwork, evidence pack, blocklist and drill) lives in each case's **Respond** tab: see [CURE.md](CURE.md).
+
 ## What comes next (planned)
 
-- Pre-filled cybercrime.gov.in complaint text and a one-tap bank-fraud call list per bank.
-- Organisation playbooks: automatic payment hold through a webhook, SOC ticket, user notification.
+Built in the Cure Console: the pre-filled complaint and recall paperwork, simulated payment-hold and SOC connectors,
+and post-incident learning (blocklist, Trustbook and policy changes, red-team drill). Still planned:
+
+- A one-tap bank-fraud call list per bank, and real payment-hold / SOC webhooks behind the simulated connectors.
 - Family mode: notify a trusted contact when a CRITICAL voice check happens on a parent's phone.
-- Post-incident learning: confirmed fraud updates the Trustbook, blocks the beneficiary and joins the red-team set.
