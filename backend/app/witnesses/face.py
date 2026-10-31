@@ -17,7 +17,9 @@ from . import dsp, pretrained
 from .base import Evidence, Timer, WitnessResult
 from .provenance import score_image
 
-_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+# Haar is the fallback when YuNet is not installed; OpenCV 5 removed it, so never let its absence break imports
+_CASCADE = (cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+            if hasattr(cv2, "CascadeClassifier") else None)
 
 
 def _thumb(frame_bgr: np.ndarray, box: tuple[int, int, int, int] | None, w: int = 200) -> str:
@@ -78,7 +80,7 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                 if yu is not None:
                     box = tuple(yu[0][:4]) if yu and min(yu[0][2], yu[0][3]) >= 32 else None
                 else:
-                    faces = _CASCADE.detectMultiScale(gray, 1.15, 5, minSize=(48, 48))
+                    faces = _CASCADE.detectMultiScale(gray, 1.15, 5, minSize=(48, 48)) if _CASCADE is not None else []
                     box = tuple(int(v) for v in max(faces, key=lambda f: f[2] * f[3])) if len(faces) else None
                 region = frame[max(0, box[1]) : box[1] + box[3], max(0, box[0]) : box[0] + box[2]] if box else frame
                 crop = Image.fromarray(cv2.cvtColor(region, cv2.COLOR_BGR2RGB))
