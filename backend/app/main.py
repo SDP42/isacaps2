@@ -27,6 +27,19 @@ def _warm() -> None:
         load_model(m)
     casebook()
     ensure_samples()
+    # warm the pretrained detectors and Whisper so the first live demo case is fast
+    from .witnesses import pretrained, transcribe
+
+    for kind in ("audio", "image", "face"):
+        if pretrained.available(kind):
+            try:
+                pretrained._pipe(kind)
+            except Exception as exc:
+                log.warning("pretrained %s unavailable: %s", kind, exc)
+    try:
+        transcribe._whisper()
+    except Exception as exc:
+        log.warning("speech-to-text unavailable: %s", exc)
     history.populate()
     STATE["ready"] = True
     log.info("MIRAGE ready")

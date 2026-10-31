@@ -83,6 +83,28 @@ cd backend && python -m pytest -q
 docker compose up --build      # web on :5173, api on :8000, PostgreSQL on :5432
 ```
 
+### Pretrained detectors (recommended)
+
+```bash
+cd backend && python scripts/download_models.py   # ~1 GB into backend/models_hf/
+```
+
+MIRAGE blends three public Hugging Face models with its own explainable models and shows both scores
+("agrees" / "disagrees") in the media studio: `MelodyMachine/Deepfake-audio-detection-V2` (wav2vec2 voice
+deepfakes), `umm-maybe/AI-image-detector` (AI-generated images) and `prithivMLmods/Deep-Fake-Detector-v2-Model`
+(ViT face deepfakes). Speech-to-text uses faster-whisper (base, CPU) and screenshots are read with RapidOCR.
+
+### Demo features
+
+| Page | What it shows |
+|---|---|
+| **Attack replay** | A five-channel attack (email → chat → voice note → video call → payment) hits a phone in real time; MIRAGE intercepts each stage. Toggle *Without MIRAGE* to see the money leave. Space / → / R to drive it. |
+| **Live call shield** | Mic or a sample call analysed every 3 s: synthetic-voice score, live transcript (Hinglish aware), tactic chips and a challenge alert when money or an OTP is requested. |
+| **Spot the fake** | The room votes "safe to act" or "scam" on six exhibits, then MIRAGE reveals its analysis. |
+| **What-if lab** (on every case) | Withdraw exhibits ("number matches the Trustbook", "nothing requested") and watch the verdict re-fuse instantly. |
+| **Callback** (Verify step) | A staged call to the Trustbook number with a real voice reply; confirmed fraud flags the account, and *Replay from a new number* shows the learning loop catching it. |
+| **Dictation** | Speak the message instead of typing it, on New investigation and Personal safety. |
+
 ### Optional: LLM narration
 
 Set `ANTHROPIC_API_KEY` (Claude) or `OLLAMA_URL` (a local Llama) before starting the API. The LLM only rephrases
