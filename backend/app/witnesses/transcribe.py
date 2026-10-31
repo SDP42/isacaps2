@@ -31,7 +31,7 @@ def transcribe(path: Path) -> dict | None:
         return None
     try:
         x = dsp.load_audio(path)
-        if len(x) < dsp.SR:
+        if len(x) < dsp.SR * 2.5:  # too short to transcribe honestly; Whisper hallucinates on tiny clips
             return None
         audio = x.astype(np.float32)
         model = _whisper()
