@@ -123,3 +123,39 @@ def test_audit_chain_detects_tampering(client):
         db.commit()
         assert not audit.verify_chain(db)["intact"]
         db.rollback()
+
+
+def test_voice_triage_matrix():
+    from app.routers.triage import _decide
+
+    sem = {"action": "payment", "category": "payment_fraud", "tactics": ["urgency", "secrecy"]}
+    assert _decide("ai", sem)[:2] == ("CRITICAL", "voice_clone_scam")
+    assert _decide("human", sem)[:2] == ("HIGH", "human_social_engineering")
+    assert _decide("uncertain", sem)[0] == "HIGH"  # an uncertain detector never downgrades a sensitive request
+    assert _decide("ai", {"action": "none", "category": "benign", "tactics": []})[:2] == ("LOW", "synthetic_benign")
+    assert _decide("human", None)[0] == "LOW"
+
+
+def test_response_plan_categories():
+    from app.fusion import response as resp
+
+    assert resp.categorise("payment", {"fear", "authority"}, "CBI arrest warrant, transfer now") == "digital_arrest"
+    assert resp.categorise("payment", {"fear"}, "Papa accident hospital") == "family_emergency"
+    assert resp.categorise("credential", set(), "share the OTP") == "credential_theft"
+    plan = resp.build("credential_theft", "CRITICAL", True, org=True)
+    assert plan["say_this"] and any(r["id"] == "1930" for r in plan["report_to"]) and plan["if_paid"]
+    assert resp.build("benign", "LOW", False)["report_to"] == []
+
+
+def test_redteam_laundering_keeps_audio(tmp_path):
+    import numpy as np
+
+    from app import redteam
+    from app.witnesses import dsp
+
+    t = np.arange(dsp.SR * 3) / dsp.SR
+    src = tmp_path / "tone.wav"
+    src.write_bytes(dsp.write_wav((0.3 * np.sin(2 * np.pi * 220 * t)).astype(np.float32)))
+    for kind in redteam.AUDIO_LAUNDER:
+        out = redteam.launder_audio(src, kind, tmp_path / f"{kind}.wav")
+        assert abs(len(dsp.load_audio(out)) / dsp.SR - 3) < 0.3, kind

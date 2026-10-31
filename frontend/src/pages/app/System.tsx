@@ -4,7 +4,8 @@ import { Empty, PanelHead, Segmented, Skeleton } from "@/components/ui/primitive
 import { clock, cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 
-interface Models { metrics: Record<string, any>; llm: string; model_version: string; policy_version: string }
+interface Pretrained { key: string; model: string; witness: string; role: string; published: string; installed: boolean; benchmark?: Record<string, { auc?: number; eer?: number; n: number }> }
+interface Models { metrics: Record<string, any>; pretrained?: Pretrained[]; llm: string; model_version: string; policy_version: string }
 interface Audit { chain: { intact: boolean; checked: number; head?: string; broken_at?: number }; entries: { id: number; case_id: string | null; actor: string; action: string; payload_hash: string; prev_hash: string; this_hash: string; ts: string }[] }
 
 const CARDS: Record<string, { title: string; what: string; data: string; upgrade: string }> = {
@@ -48,6 +49,30 @@ export default function System() {
               <span><span className="text-dim">narration </span><span className="text-fg">{models.llm}</span></span>
               <span><span className="text-dim">trained </span><span className="text-fg">{models.metrics._meta?.trained_at}</span></span>
             </div>
+            {models.pretrained && (
+              <section className="panel overflow-x-auto">
+                <PanelHead title="Pretrained detectors · primary layer" meta={`${models.pretrained.filter((m) => m.installed).length} of ${models.pretrained.length} installed`} />
+                <table className="w-full min-w-[860px] text-[12.5px]">
+                  <thead><tr className="border-b border-line text-left font-mono text-[10px] tracking-[0.12em] text-dim">
+                    <th className="px-4 py-2.5 font-normal">MODEL</th><th className="font-normal">WITNESS</th><th className="font-normal">ROLE</th><th className="font-normal">PUBLISHED RESULT</th><th className="font-normal">OUR BENCHMARK (AUC)</th><th className="px-4 font-normal">STATUS</th>
+                  </tr></thead>
+                  <tbody>
+                    {models.pretrained.map((m) => (
+                      <tr key={m.key} className="border-b border-line/60 align-top">
+                        <td className="px-4 py-2.5 font-mono text-[11.5px] text-fg">{m.model}</td>
+                        <td className="py-2.5 text-muted">{m.witness}</td>
+                        <td className="py-2.5 text-silver">{m.role}</td>
+                        <td className="py-2.5 text-silver">{m.published}</td>
+                        <td className="py-2.5 font-mono text-[11px] text-muted">
+                          {m.benchmark ? Object.entries(m.benchmark).map(([set, v]) => `${set} ${v.auc != null ? v.auc.toFixed(2) : "–"} (n ${v.n})`).join(" · ") : "—"}
+                        </td>
+                        <td className={cx("px-4 py-2.5 font-mono text-[11px]", m.installed ? "text-mint" : "text-dim")}>{m.installed ? "loaded" : "not installed"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </section>
+            )}
             <div className="grid gap-4 lg:grid-cols-2">
               {Object.entries(CARDS).map(([k, card]) => {
                 const m = models.metrics[k] ?? {};
@@ -95,7 +120,8 @@ export default function System() {
               <section className="panel">
                 <PanelHead title="Limitations, said out loud" />
                 <ul className="space-y-2 p-5 text-[13px] leading-relaxed text-silver">
-                  <li>Media witnesses are trained on simulated data, so their near-perfect proxy scores will not hold on real deepfakes. They are evidence, not proof.</li>
+                  <li>MIRAGE's own media models (cards below) are trained on simulated data and only support the pretrained detectors above; their proxy scores will not hold on real deepfakes.</li>
+                  <li>Pretrained detectors still miss unseen generators and heavy compression. Disagreement between them lowers confidence instead of being hidden.</li>
                   <li>The voiceprint EER is high; a mismatch is weak evidence and is weighted that way.</li>
                   <li>Hard policy rules mean an uncertain detector can never downgrade a credential or unverified money request.</li>
                   <li>Missing C2PA credentials are never treated as evidence of fakery.</li>

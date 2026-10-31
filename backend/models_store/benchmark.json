@@ -1,0 +1,250 @@
+{
+ "df_arena": {
+  "audio_df": {
+   "n": 80,
+   "auc": 1.0,
+   "eer": 0.0,
+   "eer_thr": 0.997,
+   "acc@0.5": 0.988
+  },
+  "audio_tts": {
+   "n": 10,
+   "acc@0.5": 1.0
+  }
+ },
+ "nii": {
+  "audio_df": {
+   "n": 80,
+   "auc": 1.0,
+   "eer": 0.0,
+   "eer_thr": 0.021,
+   "acc@0.5": 0.975
+  },
+  "audio_tts": {
+   "n": 10,
+   "acc@0.5": 1.0
+  }
+ },
+ "ensemble": {
+  "audio_df": {
+   "n": 80,
+   "auc": 1.0,
+   "eer": 0.0,
+   "eer_thr": 0.91,
+   "acc@0.5": 0.988
+  },
+  "audio_tts": {
+   "n": 10,
+   "acc@0.5": 1.0
+  },
+  "img_modern": {
+   "n": 105,
+   "auc": 0.982,
+   "eer": 0.056,
+   "eer_thr": 0.238,
+   "acc@0.5": 0.943
+  }
+ },
+ "gend": {
+  "face_ff": {
+   "n": 32,
+   "auc": 0.883,
+   "eer": 0.25,
+   "eer_thr": 0.962,
+   "acc@0.5": 0.75
+  },
+  "face_openforensics": {
+   "n": 80,
+   "auc": 0.756,
+   "eer": 0.325,
+   "eer_thr": 0.35,
+   "acc@0.5": 0.688
+  }
+ },
+ "gend_pe": {
+  "face_ff": {
+   "n": 32,
+   "auc": 0.925,
+   "eer": 0.158,
+   "eer_thr": 0.967,
+   "acc@0.5": 0.812
+  },
+  "face_openforensics": {
+   "n": 80,
+   "auc": 0.68,
+   "eer": 0.375,
+   "eer_thr": 0.394,
+   "acc@0.5": 0.65
+  }
+ },
+ "face_ensemble": {
+  "face_ff": {
+   "n": 32,
+   "auc": 0.917,
+   "eer": 0.158,
+   "eer_thr": 0.883,
+   "acc@0.5": 0.844
+  },
+  "face_openforensics": {
+   "n": 80,
+   "auc": 0.71,
+   "eer": 0.362,
+   "eer_thr": 0.152,
+   "acc@0.5": 0.637
+  }
+ },
+ "image_ensemble": {
+  "face_ff": {
+   "n": 32,
+   "auc": 0.733,
+   "eer": 0.342,
+   "eer_thr": 0.14,
+   "acc@0.5": 0.5
+  },
+  "face_openforensics": {
+   "n": 80,
+   "auc": 0.633,
+   "eer": 0.475,
+   "eer_thr": 0.015,
+   "acc@0.5": 0.537
+  }
+ },
+ "commfor": {
+  "img_modern": {
+   "n": 105,
+   "auc": 0.979,
+   "eer": 0.05,
+   "eer_thr": 0.002,
+   "acc@0.5": 0.762
+  }
+ },
+ "swinv2": {
+  "img_modern": {
+   "n": 105,
+   "auc": 0.955,
+   "eer": 0.086,
+   "eer_thr": 0.02,
+   "acc@0.5": 0.867
+  }
+ },
+ "tfidf(own)": {
+  "india_multi": {
+   "n": 120,
+   "auc": 0.894,
+   "eer": 0.183,
+   "eer_thr": 0.608,
+   "acc@0.5": 0.85
+  },
+  "india_sms": {
+   "n": 120,
+   "auc": 0.78,
+   "eer": 0.283,
+   "eer_thr": 0.305,
+   "acc@0.5": 0.683
+  },
+  "scam_dialogue": {
+   "n": 120,
+   "auc": 0.977,
+   "eer": 0.117,
+   "eer_thr": 0.754,
+   "acc@0.5": 0.825
+  },
+  "sms_uci": {
+   "n": 119,
+   "auc": 0.762,
+   "eer": 0.261,
+   "eer_thr": 0.166,
+   "acc@0.5": 0.597
+  }
+ },
+ "phishing": {
+  "india_multi": {
+   "n": 120,
+   "auc": 0.578,
+   "eer": 0.392,
+   "eer_thr": 1.0,
+   "acc@0.5": 0.517
+  },
+  "india_sms": {
+   "n": 120,
+   "auc": 0.904,
+   "eer": 0.133,
+   "eer_thr": 0.998,
+   "acc@0.5": 0.775
+  },
+  "scam_dialogue": {
+   "n": 120,
+   "auc": 0.647,
+   "eer": 0.4,
+   "eer_thr": 0.999,
+   "acc@0.5": 0.658
+  },
+  "sms_uci": {
+   "n": 117,
+   "auc": 0.743,
+   "eer": 0.299,
+   "eer_thr": 0.999,
+   "acc@0.5": 0.59
+  }
+ },
+ "nli": {
+  "india_multi": {
+   "n": 120,
+   "auc": 0.719,
+   "eer": 0.358,
+   "eer_thr": 0.822,
+   "acc@0.5": 0.567
+  },
+  "india_sms": {
+   "n": 120,
+   "auc": 0.517,
+   "eer": 0.542,
+   "eer_thr": 0.758,
+   "acc@0.5": 0.558
+  },
+  "scam_dialogue": {
+   "n": 120,
+   "auc": 0.777,
+   "eer": 0.308,
+   "eer_thr": 0.936,
+   "acc@0.5": 0.483
+  },
+  "sms_uci": {
+   "n": 117,
+   "auc": 0.348,
+   "eer": 0.59,
+   "eer_thr": 0.519,
+   "acc@0.5": 0.402
+  }
+ },
+ "words_witness": {
+  "india_multi": {
+   "n": 120,
+   "auc": 0.829,
+   "eer": 0.192,
+   "eer_thr": 0.736,
+   "acc@0.5": 0.65
+  },
+  "india_sms": {
+   "n": 120,
+   "auc": 0.924,
+   "eer": 0.15,
+   "eer_thr": 0.482,
+   "acc@0.5": 0.85
+  },
+  "scam_dialogue": {
+   "n": 120,
+   "auc": 0.904,
+   "eer": 0.183,
+   "eer_thr": 0.783,
+   "acc@0.5": 0.733
+  },
+  "sms_uci": {
+   "n": 119,
+   "auc": 0.615,
+   "eer": 0.403,
+   "eer_thr": 0.429,
+   "acc@0.5": 0.605
+  }
+ }
+}

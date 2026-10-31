@@ -212,17 +212,38 @@ def _video(path: Path, audio: np.ndarray, drift_s: float = 0.32) -> None:
     wav.unlink(missing_ok=True)
 
 
-def _say(text: str, voice: str, telephony: bool = False) -> np.ndarray | None:
-    """Real, intelligible synthetic speech from the OS text-to-speech engine (macOS `say`), so the clones in the
-    Scenario Lab are genuinely machine-generated and speech-to-text can transcribe them. Returns None elsewhere."""
+WINDOWS_VOICE = {"Rishi": "Microsoft David Desktop", "Aman": "Microsoft David Desktop",
+                 "Tara": "Microsoft Zira Desktop", "Lekha": "Microsoft Zira Desktop"}
+
+
+def tts_file(text: str, voice: str, out: Path) -> bool:
+    """Write real synthetic speech to `out` with the OS text-to-speech engine: macOS `say` (AIFF) or the Windows
+    SAPI voices (WAV). Returns False where neither exists."""
     import shutil
+
+    if shutil.which("say"):
+        return subprocess.run(["say", "-v", voice, "-r", "175", "-o", str(out), text], capture_output=True).returncode == 0
+    ps = shutil.which("powershell") or shutil.which("pwsh")
+    if ps:
+        win_voice = WINDOWS_VOICE.get(voice, "Microsoft David Desktop")
+        script = ("Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+                  f"try {{ $s.SelectVoice('{win_voice}') }} catch {{}}; $s.Rate = 0; "
+                  f"$s.SetOutputToWaveFile('{out}'); $s.Speak([Console]::In.ReadToEnd()); $s.Dispose()")
+        r = subprocess.run([ps, "-NoProfile", "-NonInteractive", "-Command", script], input=text, capture_output=True,
+                           text=True, timeout=120)
+        return r.returncode == 0 and out.exists() and out.stat().st_size > 1000
+    return False
+
+
+def _say(text: str, voice: str, telephony: bool = False) -> np.ndarray | None:
+    """Real, intelligible synthetic speech from the OS text-to-speech engine (macOS `say` or Windows SAPI), so the
+    clones in the Scenario Lab are genuinely machine-generated and speech-to-text can transcribe them. Returns None
+    where no engine exists (the simulator is used instead)."""
     import tempfile
 
-    if not shutil.which("say"):
-        return None
     with tempfile.TemporaryDirectory() as d:
         out = Path(d) / "v.aiff"
-        if subprocess.run(["say", "-v", voice, "-r", "175", "-o", str(out), text], capture_output=True).returncode:
+        if not tts_file(text, voice, out):
             return None
         x = dsp.load_audio(out)
     if telephony:
@@ -248,7 +269,7 @@ SPOKEN = {
 
 def ensure_samples() -> Path:
     SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
-    if (SAMPLES_DIR / ".v5").exists():
+    if (SAMPLES_DIR / ".v6").exists():
         return SAMPLES_DIR
     spoken = {k: _say(t, v, telephony=(k == "it")) for k, (t, v) in SPOKEN.items()}
     # speaker seeds match the Trustbook voiceprints (ml/synth_org.py voice_seed); simulator is the fallback
@@ -262,5 +283,5 @@ def ensure_samples() -> Path:
     _headshot(SAMPLES_DIR / "vendor_headshot.png")
     _write("vendor_invoice.eml", VENDOR_EML.encode())
     _video(SAMPLES_DIR / "ceo_meeting.mp4", spoken["ceo"] if spoken["ceo"] is not None else _voice(7, True, 10.0, 101, f0_scale=1.08, quality=0.2, channel="none"))
-    (SAMPLES_DIR / ".v5").write_text("ok")
+    (SAMPLES_DIR / ".v6").write_text("ok")
     return SAMPLES_DIR

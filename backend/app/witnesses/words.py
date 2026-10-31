@@ -217,7 +217,18 @@ def lookalike_domains(urls: list[str]) -> list[str]:
     return flagged
 
 
-def analyse(text: str, style_profile: dict | None = None, source: str = "message", t_offset: dict | None = None) -> WitnessResult:
+def _lg(v: float) -> float:
+    v = min(max(float(v), 1e-4), 1 - 1e-4)
+    return float(np.log(v / (1 - v)))
+
+
+def res_lang_en(text: str) -> bool:
+    """Mostly English (the phishing classifier is English-only)."""
+    return not re.search(r"[ऀ-ॿ]", text) and style_features(text)["hinglish_ratio"] <= 0.06
+
+
+def analyse(text: str, style_profile: dict | None = None, source: str = "message", t_offset: dict | None = None,
+            live: bool = False) -> WitnessResult:
     res = WitnessResult(witness="words", model_version="tfidf-lr-calibrated@1.0 + tactic-lexicon@1.0")
     text = re.sub(r"\s*\.{2,}\s*|…", " ", (text or "")).strip()  # transcripts break phrases with ellipses
     if len(text) < 4:
@@ -236,6 +247,7 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
         bad_domains = lookalike_domains(ents.get("url", []))
 
     tactics = sorted({s[0] for s in spans})
+    from . import pretrained
     for tactic, a, b, frag in spans:
         res.evidence.append(Evidence(
             witness="words", kind=tactic, label=tactic.replace("_", " "), text=frag, span=[a, b],
@@ -256,13 +268,60 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
         res.evidence.append(Evidence(witness="words", kind="style_drift", label="writing style drift", score=round(drift, 2),
                                      severity=2, detail="Sentence length, greeting and code-mix ratio differ from the claimed sender's baseline."))
 
+    # Pretrained layers: an English phishing/scam classifier and a multilingual zero-shot intent reader. They replace
+    # most of the template-trained TF-IDF score, which generalises weakly to real messages (ECE 0.18).
+    with Timer() as t2:
+        ph = pretrained.phishing_prob(text) if not live else None
+        it = pretrained.intents(text) if not live else None
+    # Logit-space blend chosen on public SMS / scam-call / Indian-SMS samples (scripts/benchmark_models.py): our TF-IDF
+    # 0.5, phishing model 0.3 (0.12 off-English) recentred at its 0.99 operating point, zero-shot intent 0.2 at 0.8.
+    # An optional Claude judge joins at weight 0.6 when ANTHROPIC_API_KEY is set.
+    from ..agents import llm
+
+    judge = llm.judge_message(text) if not live else None
+    parts = [(0.5, _lg(p))]
+    if ph is not None:
+        parts.append((0.3 if res_lang_en(text) else 0.12, _lg(ph) - _lg(0.99)))
+    if it is not None:
+        parts.append((0.2, _lg(pretrained.intent_scam_prob(it)) - _lg(0.8)))
+    if judge:
+        parts.append((0.6, _lg(judge["scam_probability"])))
+    p_text = float(1 / (1 + np.exp(-sum(w * z for w, z in parts) / sum(w for w, _ in parts))))
+    extra = ([pretrained.name("phishing")] if ph is not None else []) + ([pretrained.name("nli")] if it is not None else []) \
+        + ([f"{judge['model']} judge"] if judge else [])
+    if extra:
+        res.model_version += " + " + " + ".join(extra)
+    if judge:
+        for tactic in judge["tactics"]:
+            if tactic not in tactics:
+                tactics.append(tactic)
+                res.evidence.append(Evidence(witness="words", kind=tactic, label=tactic.replace("_", " "), severity=2,
+                                             detail=f"{tactic.replace('_', ' ').capitalize()} read by the LLM judge: {judge['reason'][:160]}"))
+        if action == "none" and judge["requested_action"] not in ("none", "info"):
+            action, sens = judge["requested_action"], 1.0 if judge["requested_action"] != "data" else 0.6
+    if it:
+        # zero-shot intents add tactics the lexicon missed (paraphrases, Devanagari, other Indian languages)
+        for lever, tactic in (("urgency", "urgency"), ("secrecy", "secrecy"), ("impersonation", "authority"), ("threat", "fear"), ("reward", "reward")):
+            if it.get(lever, 0) >= 0.85 and tactic not in tactics:
+                tactics.append(tactic)
+                res.evidence.append(Evidence(witness="words", kind=tactic, label=tactic.replace("_", " "), score=it[lever], severity=2,
+                                             detail=f"{tactic.capitalize()} intent read by the multilingual model ({it[lever]:.2f}), "
+                                                    f"without a fixed phrase."))
+        if action == "none":
+            ask = max(("payment", "credential", "remote_access"), key=lambda k: it.get(k, 0))
+            if it.get(ask, 0) >= 0.85:
+                action, sens = ask, 1.0
+                res.evidence.append(Evidence(witness="words", kind="requested_action", label=f"requests {ask.replace('_', ' ')}",
+                                             score=it[ask], severity=3,
+                                             detail=f"The multilingual model reads a {ask.replace('_', ' ')} request ({it[ask]:.2f})."))
     tactic_weight = min(1.0, 0.18 * len(tactics) + 0.12 * sum(t in tactics for t in ("secrecy", "bypass", "channel_switch")))
-    score = 1 - (1 - p * 0.85) * (1 - tactic_weight) * (1 - (0.35 if bad_domains else 0))
+    score = 1 - (1 - p_text * 0.85) * (1 - tactic_weight) * (1 - (0.35 if bad_domains else 0))
     res.score = round(float(score), 4)
     res.confidence = round(0.55 + 0.4 * abs(p - 0.5) * 2 * min(1.0, len(text.split()) / 25), 3)
-    res.latency_ms = t.ms
+    res.latency_ms = t.ms + t2.ms
     res.details = {
-        "classifier_p": round(p, 4), "tactics": tactics, "requested_action": action, "sensitivity": sens,
+        "classifier_p": round(p, 4), "text_p": round(p_text, 4), "phishing_p": round(ph, 4) if ph is not None else None,
+        "intents": it, "llm_judge": judge, "tactics": tactics, "requested_action": action, "sensitivity": sens,
         "amount_inr": amount, "deadline": dl.group(0) if dl else None, "entities": ents, "style_drift": drift,
         "language": "devanagari" if re.search(r"[ऀ-ॿ]", text) else
                     ("hinglish" if style_features(text)["hinglish_ratio"] > 0.06 else "english"),
@@ -273,6 +332,6 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
         parts.append(f"{len(tactics)} manipulation tactic{'s' if len(tactics) > 1 else ''} ({', '.join(t.replace('_', ' ') for t in tactics)})")
     if action != "none":
         parts.append(f"{_article(action)} {action.replace('_', ' ')} request" + (f" for {fmt_inr(amount)}" if amount and action == 'payment' else ""))
-    res.summary = ("Found " + " and ".join(parts) + f"; scam-language probability {p:.2f}.") if parts else \
-        f"No manipulation tactics found; scam-language probability {p:.2f}."
+    res.summary = ("Found " + " and ".join(parts) + f"; scam-language probability {p_text:.2f}.") if parts else \
+        f"No manipulation tactics found; scam-language probability {p_text:.2f}."
     return res

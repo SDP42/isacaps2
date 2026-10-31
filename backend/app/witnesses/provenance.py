@@ -19,6 +19,23 @@ def score_image(img: Image.Image) -> float:
     return float(bundle["model"].predict_proba(imgdsp.features(img)[None, :])[0, 1])
 
 
+def _blend(primary: float, support: float, w: float) -> float:
+    lg = lambda v: np.log(min(max(v, 1e-4), 1 - 1e-4) / (1 - min(max(v, 1e-4), 1 - 1e-4)))
+    return float(1 / (1 + np.exp(-(w * lg(primary) + (1 - w) * lg(support)))))
+
+
+def _face_check(img: Image.Image) -> tuple[float | None, list[int] | None]:
+    if not pretrained.face_available():
+        return None, None
+    rgb = np.asarray(img.convert("RGB"))
+    bgr = np.ascontiguousarray(rgb[..., ::-1])
+    boxes = pretrained.detect_faces(bgr)
+    if not boxes or min(boxes[0][2], boxes[0][3]) < 40:
+        return None, None
+    score = pretrained.face_fake([pretrained.face_crop(bgr, boxes[0])])
+    return (score[0] if score else None), list(boxes[0][:4])
+
+
 def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
     res = WitnessResult(witness="provenance", artifact_id=artifact_id,
                         model_version="pixel-forensics-hgb@1.0 + ela + exif + c2pa-presence")
@@ -35,9 +52,12 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         exif = imgdsp.exif_info(img)
         markers = imgdsp.provenance_markers(path)
         own = score_image(img)
-        hf = pretrained.image_fake(img, "image")
-        face_hf = pretrained.image_fake(img, "face")
-        p = own if hf is None else 0.3 * own + 0.7 * hf
+        # Layer 1 (primary): pretrained AI-image detectors, ensembled in logit space. Layer 2: our pixel-forensics
+        # model (trained on procedural images) only nudges the score and explains it.
+        pre = pretrained.image_scores(img)
+        p = own if pre is None else _blend(pre["p"], own, 0.85)
+        # Layer 3: a face in the image goes to the face-swap detector (GenD), independent of whole-image generation
+        face_hf, face_box = _face_check(img)
         heat = imgdsp.ela_heatmap(img)
         feats = dict(zip(imgdsp.FEATURE_NAMES, map(float, imgdsp.features(img))))
 
@@ -53,7 +73,9 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         res.evidence.append(Evidence(
             witness="provenance", kind="ai_generated_pixels", label="AI-generation artefacts", score=round(p, 3),
             severity=3 if p >= 0.85 else 2, artifact_id=artifact_id,
-            detail="Weak sensor noise, no colour-filter-array correlation and periodic upsampling peaks in the spectrum.",
+            detail=(f"Independent AI-image detectors agree the pixels were generated ({p:.2f})." if pre and pre["agree"] >= 0.67 else
+                    f"AI-generation probability {p:.2f}; weak sensor noise and generator-like spectral traces." if pre else
+                    "Weak sensor noise, no colour-filter-array correlation and periodic upsampling peaks in the spectrum."),
         ))
     if markers["c2pa_manifest"]:
         score *= 0.5
@@ -85,15 +107,23 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
     res.score = round(float(min(score, 1.0)), 4)
     res.confidence = round(0.5 + 0.45 * abs(p - 0.5) * 2, 3)
     res.latency_ms = t.ms
-    if hf is not None:
-        res.model_version += f" + {pretrained.name('image')}"
-        res.details["pretrained"] = {"model": pretrained.name("image"), "score": round(hf, 4), "own_score": round(own, 4),
-                                     "agree": (hf >= 0.5) == (own >= 0.5)}
-    if face_hf is not None and face_hf >= 0.7:
-        res.evidence.append(Evidence(witness="provenance", kind="face_deepfake", label="deepfake face (pretrained ViT)",
-                                     score=round(face_hf, 3), severity=2, artifact_id=artifact_id,
-                                     detail=f"{pretrained.name('face')} scores the face as manipulated ({face_hf:.2f})."))
+    if pre is not None:
+        names = {k: pretrained.name(k) for k in pre["models"]}
+        res.model_version = " + ".join(names.values()) + " (primary) + " + res.model_version
+        res.details["pretrained"] = {"models": {names[k]: round(v, 4) for k, v in pre["models"].items()},
+                                     "score": round(pre["p"], 4), "own_score": round(own, 4),
+                                     "agreement": round(pre["agree"], 3), "agree": pre["agree"] >= 0.67}
+        # disagreement between independent detectors lowers confidence instead of hiding it
+        res.confidence = round(float(np.clip(0.45 + 0.5 * abs(p - 0.5) * 2 * pre["agree"], 0.3, 0.95)), 3)
+    if face_hf is not None:
+        res.model_version += " + GenD deepfake-face ensemble"
+        if face_hf >= 0.6:
+            res.evidence.append(Evidence(witness="provenance", kind="face_deepfake", label="face-swap / reenactment artefacts",
+                                         score=round(face_hf, 3), severity=3 if face_hf >= 0.85 else 2, artifact_id=artifact_id,
+                                         detail=f"The deepfake-face models score the face region as manipulated ({face_hf:.2f})."))
+            res.score = round(float(max(res.score, face_hf * 0.95)), 4)
     res.details["face_model"] = round(face_hf, 4) if face_hf is not None else None
+    res.details["face_box"] = face_box
     res.details.update({"ai_probability": round(p, 4), "exif": exif, "markers": markers, "ela_grid": heat,
                    "features": {k: round(v, 4) for k, v in feats.items()}, "size": list(img.size)})
     res.summary = (f"AI-generation probability {p:.2f}; "

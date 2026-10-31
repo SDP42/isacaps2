@@ -1,22 +1,20 @@
 # Detection methodology and model cards
 
-MIRAGE runs two kinds of models side by side: **its own explainable models** (trained here on synthetic data, small,
-fast, feature-level explanations) and **public pretrained detectors** (trained on real deepfake data). Witnesses blend
-them and keep both scores, so agreement or disagreement is visible in the case view.
+MIRAGE runs two kinds of models side by side: **public pretrained detectors** (trained on real deepfake data; the
+primary layer, see [DETECTION.md](DETECTION.md)) and **its own explainable models** (trained here on synthetic data,
+small, fast, feature-level explanations). Witnesses blend them and keep every score, so agreement or disagreement is
+visible in the case view. This file documents MIRAGE's own models.
 
 ## Pretrained models
 
-| Witness | Model | Blend | Notes |
-|---|---|---|---|
-| Voice | `MelodyMachine/Deepfake-audio-detection-V2` (wav2vec2, labels fake/real, Apache-2.0) | 50% own + 50% pretrained, clip level (first 20 s) | On our samples: TTS clones 0.9999 fake, simulated genuine voice 0.00002 |
-| Provenance | `umm-maybe/AI-image-detector` (labels artificial/human, CC-BY-4.0) | 30% own + 70% pretrained; evidence above 0.55 | AI headshot 0.72; the same image re-saved as JPEG 0.66 (our model alone: 0.41) |
-| Face / provenance | `prithivMLmods/Deep-Fake-Detector-v2-Model` (ViT, labels Realism/Deepfake, Apache-2.0) | per face crop: 40% own + 60% pretrained; on images an extra exhibit above 0.70 | Loaded from the repo's checkpoint folder when the top-level weights are missing |
-| Speech-to-text | faster-whisper `base` (int8, CPU) | n/a | Language detected; Hindi-family languages transcribed in Roman script with a Hinglish prompt; skipped under 2.5 s; low-confidence or repetitive output dropped |
-| OCR | RapidOCR (ONNX) | n/a | Line text and boxes; flagged lines are drawn on the screenshot |
+The pretrained detectors are now the **primary** layer of every media witness, and MIRAGE's own models below are the
+supporting layer (10–15% in logit space plus the explanation features). Models, calibration, ensembling and our
+benchmark are documented in [DETECTION.md](DETECTION.md).
 
-**Selected, downloaded by `scripts/download_models.py`, not yet integrated:** `microsoft/wavlm-base-plus-sv`
-(voiceprints), OpenCV YuNet (face detection), `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` (zero-shot intent),
-`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (casebook retrieval). See [ROADMAP](../ROADMAP.md).
+| Component | Model | Notes |
+|---|---|---|
+| Speech-to-text | faster-whisper `base` (int8) | Language detected; Hindi-family languages transcribed in Roman script with a Hinglish prompt; skipped under 2.5 s; low-confidence or repetitive output dropped |
+| OCR | RapidOCR (ONNX) | Line text and boxes; flagged lines are drawn on the screenshot |
 
 Pretrained models are optional (`MIRAGE_PRETRAINED=off`); every witness falls back to MIRAGE's own model.
 

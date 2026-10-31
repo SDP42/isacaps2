@@ -59,9 +59,10 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         dur = total / fps if total else 0.0
-        target = min(24 if pretrained.available("face") else 48, max(8, int(dur * 3)))
+        use_gend = pretrained.face_available()
+        target = min(32 if use_gend else 48, max(8, int(dur * 3)))
         step = max(1, total // target) if total else 1
-        frames, boxes, scores, times, mouth = [], [], [], [], []
+        frames, boxes, scores, times, mouth, crops = [], [], [], [], [], []
         prev_mouth = None
         idx = 0
         while True:
@@ -73,19 +74,23 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                 if not ok:
                     break
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = _CASCADE.detectMultiScale(gray, 1.15, 5, minSize=(48, 48))
-                box = tuple(int(v) for v in max(faces, key=lambda f: f[2] * f[3])) if len(faces) else None
-                region = frame[box[1] : box[1] + box[3], box[0] : box[0] + box[2]] if box else frame
+                yu = pretrained.detect_faces(frame)  # YuNet when installed (profile / low light), Haar otherwise
+                if yu is not None:
+                    box = tuple(yu[0][:4]) if yu and min(yu[0][2], yu[0][3]) >= 32 else None
+                else:
+                    faces = _CASCADE.detectMultiScale(gray, 1.15, 5, minSize=(48, 48))
+                    box = tuple(int(v) for v in max(faces, key=lambda f: f[2] * f[3])) if len(faces) else None
+                region = frame[max(0, box[1]) : box[1] + box[3], max(0, box[0]) : box[0] + box[2]] if box else frame
                 crop = Image.fromarray(cv2.cvtColor(region, cv2.COLOR_BGR2RGB))
-                own = score_image(crop) if min(crop.size) >= 64 else 0.5
-                hf = pretrained.image_fake(crop, "face") if box and min(crop.size) >= 48 else None
-                scores.append(own if hf is None else 0.4 * own + 0.6 * hf)
+                scores.append(score_image(crop) if min(crop.size) >= 64 else 0.5)
+                crops.append(pretrained.face_crop(frame, box) if box and use_gend else None)
                 boxes.append(box)
                 times.append(idx / fps)
                 frames.append(frame)
                 if box:
                     x, y, w, h = box
-                    m = cv2.resize(gray[y + int(h * 0.62) : y + h, x + int(w * 0.25) : x + int(w * 0.75)], (48, 24))
+                    m = gray[max(0, y + int(h * 0.62)) : y + h, max(0, x + int(w * 0.25)) : x + int(w * 0.75)]
+                    m = cv2.resize(m if m.size else gray[gray.shape[0] // 2 :, :], (48, 24))
                 else:
                     m = cv2.resize(gray[gray.shape[0] // 2 :, :], (48, 24))
                 m = m.astype(np.float32)
@@ -102,13 +107,35 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         except Exception:
             audio = None
         sync = lip_sync(np.array(mouth), fps / step, audio)
+        # Layer 1 (primary): GenD on every tracked face crop, batched on the GPU
+        own_scores = list(scores)
+        per_model = pretrained.face_models([c for c in crops if c is not None]) if any(c is not None for c in crops) else None
+        gend = ([pretrained.ensemble({k: v[i] for k, v in per_model.items()})[0] for i in range(len(next(iter(per_model.values()))))]
+                if per_model else None)
+        if gend:
+            it = iter(gend)
+            # frames without a face keep a neutral prior instead of our weak whole-frame score
+            scores = [0.9 * next(it) + 0.1 * o if c is not None else 0.5 for c, o in zip(crops, own_scores)]
+        # Layer 2: whole-frame AI-generation check on a few keyframes, for fully generated (text-to-video) clips
+        key_idx = np.linspace(0, len(frames) - 1, min(4, len(frames))).astype(int) if frames else []
+        synth = [pretrained.image_scores(Image.fromarray(cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB))) for i in key_idx]
+        synth = [v for v in synth if v]
 
     s = np.array(scores)
     faces_found = sum(b is not None for b in boxes)
+    if gend and faces_found:
+        face_idx = [i for i, b in enumerate(boxes) if b is not None]
+        s_face = s[face_idx]
     # temporal aggregation: smooth then attention-pool so bursts count and isolated spikes do not
     sm = np.convolve(s, np.ones(3) / 3, mode="same") if len(s) >= 3 else s
-    w = np.exp(4 * sm) / np.exp(4 * sm).sum()
-    pooled = float((w * sm).sum())
+    if gend and faces_found:
+        # median is robust to a few bad crops; the attention pool catches short manipulated bursts
+        fs = np.convolve(s_face, np.ones(3) / 3, mode="same") if len(s_face) >= 3 else s_face
+        att = float((np.exp(4 * fs) / np.exp(4 * fs).sum() * fs).sum())
+        pooled = 0.5 * float(np.median(fs)) + 0.5 * att
+    else:
+        w = np.exp(4 * sm) / np.exp(4 * sm).sum()
+        pooled = float((w * sm).sum())
     centers = np.array([[b[0] + b[2] / 2, b[1] + b[3] / 2, b[2]] for b in boxes if b is not None])
     jitter = float(np.mean(np.abs(np.diff(centers[:, :2], axis=0))) / (centers[:, 2].mean() + 1e-9)) if len(centers) > 3 else 0.0
 
@@ -130,7 +157,8 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         res.evidence.append(Evidence(
             witness="face", kind="face_manipulation", label="face-region artefacts", t0=round(t0, 2), t1=round(t1, 2),
             score=round(max(v for _, v in burst), 3), severity=3 if pooled >= 0.8 else 2, artifact_id=artifact_id,
-            detail=f"{len(burst)} of {len(sm)} sampled frames show blending and texture artefacts on the face region.",
+            detail=(f"Deepfake-face models flag {len(burst)} of {len(sm)} sampled frames as face-swapped or reenacted." if gend else
+                    f"{len(burst)} of {len(sm)} sampled frames show blending and texture artefacts on the face region."),
         ))
     if jitter > 0.08 and faces_found > 3:
         score = 1 - (1 - score) * 0.85
@@ -149,10 +177,27 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
             res.evidence.append(Evidence(witness="face", kind="lip_sync_ok", label="lip-sync consistent", severity=0,
                                          exculpatory=True, detail=f"Mouth motion tracks speech (offset {sync['offset_ms']:+d} ms).",
                                          artifact_id=artifact_id))
+    if synth:
+        sp = float(np.mean([v["p"] for v in synth]))
+        sag = float(np.mean([v["agree"] for v in synth]))
+        res.details["synthetic_frames"] = {"score": round(sp, 4), "agreement": round(sag, 3),
+                                           "models": sorted({pretrained.name(k) for v in synth for k in v["models"]})}
+        if sp >= 0.75 and sag >= 0.67:
+            score = 1 - (1 - score) * (1 - 0.8 * sp)
+            res.evidence.append(Evidence(
+                witness="face", kind="synthetic_video", label="AI-generated frames", score=round(sp, 3), severity=2,
+                artifact_id=artifact_id, detail=f"AI-image detectors score the whole frames as generated ({sp:.2f}), as in "
+                                                f"text-to-video or avatar footage."))
     res.score = round(float(score), 4)
-    if pretrained.available("face"):
-        res.model_version += f" + {pretrained.name('face')}"
-    res.confidence = round(0.4 + 0.4 * (faces_found / len(s)) + (0.1 if sync else 0), 3)
+    if gend:
+        names = [pretrained.name(k) for k in per_model]
+        means = {pretrained.name(k): round(float(np.median(v)), 4) for k, v in per_model.items()}
+        votes = [m >= 0.5 for m in means.values()]
+        agreement = max(votes.count(True), votes.count(False)) / len(votes)
+        res.model_version = " + ".join(names) + " (primary) + YuNet + " + res.model_version + " (supporting)"
+        res.details["pretrained"] = {"models": means, "score": round(pooled, 4), "own_score": round(float(np.mean(own_scores)), 4),
+                                     "agreement": agreement, "agree": agreement == 1.0}
+    res.confidence = round(0.4 + 0.4 * (faces_found / len(s)) + (0.1 if sync else 0) + (0.05 if gend else -0.15), 3)
     res.latency_ms = t.ms
     res.summary = (f"Face artefact score {pooled:.2f} over {len(s)} frames ({faces_found} with a tracked face)"
                    + (f"; lip-sync offset {sync['offset_ms']:+d} ms." if sync else "."))

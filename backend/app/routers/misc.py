@@ -20,7 +20,7 @@ from ..rag.index import casebook
 from ..samples import SAMPLES_DIR, SCENARIOS, ensure_samples
 from ..security import Principal, current_principal, require_role
 from ..serializers import case_summary, person
-from ..witnesses import dsp, words
+from ..witnesses import dsp, voice, words
 from .cases import create_case
 
 router = APIRouter(prefix="/v1", tags=["mirage"])
@@ -82,10 +82,10 @@ async def transcribe_upload(file: UploadFile = File(...), user: Principal = Depe
     from ..witnesses import transcribe as tr
 
     suffix = _P(file.filename or "a.webm").suffix or ".webm"
-    with tempfile.NamedTemporaryFile(suffix=suffix) as tmp:
-        tmp.write(await file.read())
-        tmp.flush()
-        x = dsp.load_audio(_P(tmp.name))
+    with tempfile.TemporaryDirectory() as d:  # not NamedTemporaryFile: Windows can't reopen it while it is open
+        tmp = _P(d) / f"a{suffix}"
+        tmp.write_bytes(await file.read())
+        x = dsp.load_audio(tmp)
     if len(x) < dsp.SR // 2:
         raise HTTPException(422, "That recording was too short. Hold the button and speak for a few seconds.")
     text, lang = tr.transcribe_array(x)
@@ -116,8 +116,7 @@ async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang
     level = float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
     spoof = None
     if level > 0.0015 and len(x) >= dsp.SR:
-        p = load_model("voice_clf.joblib")["model"].predict_proba(dsp.features(x)[None, :])[0, 1]
-        spoof = round(float(p), 3)
+        spoof = round(voice.chunk_score(x)[0], 3)
     text, detected = "", lang or None
     if level > 0.0015:
         try:
@@ -125,7 +124,7 @@ async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang
         except Exception:
             text = ""
     rolling = f"{context} {text}".strip()
-    w = words.analyse(rolling) if len(rolling) > 8 else None
+    w = words.analyse(rolling, live=True) if len(rolling) > 8 else None
     action = w.details["requested_action"] if w and w.status == "ok" else "none"
     return {"spoof": spoof, "level": round(level, 4), "text": text, "lang": detected,
             "tactics": w.details["tactics"] if w and w.status == "ok" else [], "action": action,
@@ -164,13 +163,16 @@ async def enroll_voice(pid: int, file: UploadFile = File(...), user: Principal =
     import tempfile
     from pathlib import Path
 
-    with tempfile.NamedTemporaryFile(suffix=Path(file.filename or "v.wav").suffix) as tmp:
-        tmp.write(await file.read())
-        tmp.flush()
-        x = dsp.load_audio(Path(tmp.name))
+    with tempfile.TemporaryDirectory() as d:  # not NamedTemporaryFile: Windows can't reopen it while it is open
+        tmp = Path(d) / f"v{Path(file.filename or 'v.wav').suffix}"
+        tmp.write_bytes(await file.read())
+        x = dsp.load_audio(tmp)
     if len(x) < dsp.SR * 3:
         raise HTTPException(422, "Enrolment needs at least 3 seconds of clear speech.")
-    p.voiceprint = [round(float(v), 5) for v in dsp.speaker_embedding(x)]
+    from ..witnesses import pretrained
+
+    # WavLM x-vectors when installed (EER 0.84%), else the lightweight pitch + spectrum embedding
+    p.voiceprint = pretrained.speaker_embedding(x) or [round(float(v), 5) for v in dsp.speaker_embedding(x)]
     audit.record(db, user.persona_id, "voiceprint.enrolled", {"person_id": pid, "seconds": len(x) / dsp.SR})
     db.commit()
     return person(p)
@@ -285,8 +287,9 @@ def models(user: Principal = Depends(current_principal)) -> dict:
     except FileNotFoundError:
         metrics = {}
     from ..agents import llm
+    from ..witnesses import pretrained
 
-    return {"metrics": metrics, "llm": llm.available() or "templates (no LLM configured)",
+    return {"metrics": metrics, "pretrained": pretrained.registry(), "llm": llm.available() or "templates (no LLM configured)",
             "model_version": settings.model_version, "policy_version": settings.policy_version}
 
 

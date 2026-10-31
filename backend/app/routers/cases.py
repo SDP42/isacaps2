@@ -214,9 +214,8 @@ CALLBACK_LINES = {
 def simulate_callback(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
     """Demo stand-in for the out-of-band call: the real person answers on their Trustbook number. HIGH and MEDIUM
     cases are denied (and closed as fraud, which flags the identifiers); LOW cases are confirmed."""
-    import shutil
-    import subprocess
     import tempfile
+    from pathlib import Path as _P
 
     from ..config import settings as cfg
     from ..models import Beneficiary
@@ -233,18 +232,18 @@ def simulate_callback(case_id: str, user: Principal = Depends(current_principal)
     line = CALLBACK_LINES[outcome].format(first=first, channel=c.channel if c.channel != "unknown" else "this channel")
 
     audio_key = None
-    if shutil.which("say"):
-        out = cfg.storage_dir / "callbacks" / f"{case_id}.wav"
-        out.parent.mkdir(parents=True, exist_ok=True)
-        voice = "Lekha" if person and person.circle == "family" and "Mother" in person.role else "Rishi"
-        with tempfile.TemporaryDirectory() as d:
-            aiff = f"{d}/c.aiff"
-            if subprocess.run(["say", "-v", voice, "-r", "180", "-o", aiff, line], capture_output=True).returncode == 0:
-                from ..witnesses import dsp
-                from pathlib import Path as _P
+    from ..samples import tts_file
 
-                out.write_bytes(dsp.write_wav(dsp.load_audio(_P(aiff))))
-                audio_key = f"callbacks/{case_id}.wav"
+    out = cfg.storage_dir / "callbacks" / f"{case_id}.wav"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    voice = "Lekha" if person and person.circle == "family" and "Mother" in person.role else "Rishi"
+    with tempfile.TemporaryDirectory() as d:
+        tmp = _P(d) / "c.aiff"
+        if tts_file(line, voice, tmp):
+            from ..witnesses import dsp
+
+            out.write_bytes(dsp.write_wav(dsp.load_audio(tmp)))
+            audio_key = f"callbacks/{case_id}.wav"
 
     db.add(Verification(case=c, step="call_directory", outcome="done", actor=user.persona_id,
                         note=f"Called {name} on {phone}: {'denied sending it' if outcome == 'deny' else 'confirmed it'}"))

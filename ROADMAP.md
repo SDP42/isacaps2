@@ -10,9 +10,9 @@ covered by `backend/tests/test_mirage.py` or were verified by clicking through t
 |---|---|
 | Intake | Multipart upload of any mix of audio, video, image, `.eml`/text and pasted message; magic-byte sniffing (executables and archives rejected; Safari `.m4a` and browser `.weba` recordings recognised); SHA-256 content-addressed storage; size limit |
 | Dissection | faster-whisper `base` speech-to-text with word timestamps, Hinglish forced into Roman script, hallucination filter, skipped under 2.5 s; RapidOCR with line boxes; `.eml` parsing |
-| Voice witness | 14 spectral and prosodic features → calibrated gradient boosting over 2–4 s windows, attention pooling, merged suspicious segments; codec-cliff channel profile; voiceprint cosine against the Trustbook; blended 50/50 with `MelodyMachine/Deepfake-audio-detection-V2` |
-| Face witness | Haar face tracking on 8–48 sampled frames, per-frame scores (own model 40% + `prithivMLmods/Deep-Fake-Detector-v2-Model` 60%), temporal smoothing and attention pooling, track jitter, audio-visual lip-sync cross-correlation, keyframe thumbnails |
-| Provenance witness | Pixel forensics (ELA, noise residual, spectral slope, upsampling peaks, CFA correlation) 30% + `umm-maybe/AI-image-detector` 70%; generator metadata; EXIF; C2PA presence; ELA grid; face-deepfake check on images |
+| Voice witness | Primary: DF_Arena 500M ⊕ NII Wav2Vec2-Large-AntiDeepfake per 4 s window (logit ensemble, recentred, agreement-aware confidence); supporting: 14 spectral/prosodic features → calibrated gradient boosting; codec-cliff channel profile; WavLM x-vector voiceprints (legacy embedding for old prints) |
+| Face witness | YuNet face tracking (Haar fallback) on 8–32 frames; GenD CLIP ⊕ GenD PE per face crop, batched on GPU, median + attention pooling; image ensemble on keyframes for fully generated video; audio-visual lip-sync; keyframe thumbnails |
+| Provenance witness | Community Forensics ViT ⊕ SwinV2 AI-image detector (recentred logit ensemble) 85% + pixel forensics 15%; GenD face-swap check on any detected face; generator metadata; EXIF; C2PA presence; ELA grid |
 | Words witness | Calibrated TF-IDF classifier (EN/HI/Hinglish), tactic lexicon with spans, requested action and sensitivity, entities (amount in Indian units, UPI, IFSC, IBAN, account, URL, phone, email), deadlines, look-alike domains, style drift, ellipsis-tolerant parsing, email header evidence |
 | Identity witness | Trustbook resolution (name, alias, role, contact), contact and channel mismatch, out of hours, above authority, credential policy, family code word, new / known / flagged beneficiaries, cross-case pattern memory, "linked to confirmed fraud", Isolation-Forest request anomaly |
 | Fusion | Six policy rules, calibrated noisy-OR (T = 1.65 fitted by temperature scaling), uncertainty interval, Inconclusive band, harmless-synthetic tag, exact Shapley contributions per lens and per witness |
@@ -32,25 +32,26 @@ Tribunal / Verify / Report tabs with the What-if lab, media studio, callback she
 Identity Graph; Attack-chain explorer; Casebook; Live Attack Replay; Spot the Fake; Scenario Lab; Personal Safety;
 Models & audit; command palette (⌘K); toasts; skeletons; reduced-motion fallbacks; responsive layouts.
 
-## 2. Selected but not yet integrated
+## 2. Pretrained detection layer (integrated 31 October 2026)
 
-`backend/scripts/download_models.py` fetches these, but no witness calls them yet.
+See [docs/DETECTION.md](docs/DETECTION.md). Voice, image, face and text witnesses now run published pretrained detectors
+as their primary layer (DF_Arena, NII AntiDeepfake, WavLM, Community Forensics, SwinV2, GenD CLIP/PE, YuNet, DistilBERT
+phishing, mDeBERTa zero-shot, optional Claude judge), calibrated on public samples by `scripts/benchmark_models.py`.
+The Models & audit page lists which are loaded with published and measured numbers. Still open from this list:
+semantic (dense) retrieval in the casebook with `paraphrase-multilingual-MiniLM-L12-v2`.
 
-| Model | Planned integration | Why |
-|---|---|---|
-| `microsoft/wavlm-base-plus-sv` | Replace the voiceprint embedding with WavLM x-vectors (cosine threshold ≈ 0.86); re-enrol stored voiceprints on startup when the vector size changes | Current voiceprint EER is 0.24 |
-| OpenCV YuNet (`face_detection_yunet_2023mar.onnx`) | `cv2.FaceDetectorYN` in the Face witness, Haar as fallback | Haar misses profile and low-light faces |
-| `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` | Zero-shot intent labels (pressure, secrecy, money, OTP, impersonation, harmless) as a Words second opinion in full investigations (not in live chunks) | Template-trained classifier generalises weakly (ECE 0.18) |
-| `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | Dense vector leg added to the casebook's RRF | Semantic, cross-lingual retrieval |
+## 2b. Attack lab, voice check, response, extension (31 October 2026)
 
-The Models & audit page lists metrics for MIRAGE's own models but does not yet show which pretrained models are loaded.
+Red-team lab with attacker playbook and robustness campaigns ([RED_TEAM](docs/RED_TEAM.md)); two-stage voice check and
+"what now" response plans ([AFTER_DETECTION](docs/AFTER_DETECTION.md)); MIRAGE Shield Chrome extension prototype
+([EXTENSION](docs/EXTENSION.md)). Prioritised next steps live in [docs/PLAN.md](docs/PLAN.md).
 
 ## 3. Not built yet
 
 | Feature | Notes |
 |---|---|
 | Webcam liveness challenge | Randomised "turn left / touch your ear" prompts with in-browser face landmarks |
-| Browser extension for live calls | Tab-audio capture for Meet / Zoom; the Live Call Shield already accepts 3 s chunks |
+| Browser extension: in-Chrome verification | The prototype exists (`extension/`); tab shield, context menus and the Gmail banner still need an end-to-end run inside Chrome |
 | Deepfake Drill mode | Consented simulated attacks against employees with complies-vs-verifies metrics |
 | Trustbook admin UI | Add people, edit limits and channels, guided voiceprint enrolment (the enrolment API exists) |
 | Rotating executive verification phrase | Mentioned in plans; not generated or rotated |
@@ -62,9 +63,11 @@ The Models & audit page lists metrics for MIRAGE's own models but does not yet s
 
 ## 4. Known limitations and issues
 
-- MIRAGE's own media models are trained on simulators; on real deepfakes the pretrained models carry most of the signal.
-- Scenario samples use macOS `say` voices, so sample generation falls back to the simulator on Linux and Windows.
-  Scenario outcomes still hold there, but the clips are not intelligible speech.
+- Face-swap detection in the wild is the weakest media witness (OpenForensics AUC ~0.71; FaceForensics++ 0.92).
+- Fully generated video is only covered by running the image detectors on keyframes.
+- Text models without an LLM are weaker than the media models; set `ANTHROPIC_API_KEY` for the Claude judge.
+- Scenario samples use macOS `say` or Windows SAPI voices; on Linux they fall back to the simulator. Scenario D's
+  "genuine" voice is simulator audio, which the pretrained detectors now (correctly) call synthetic.
 - Risk saturates near 100 for cases with several strong flags; the interval then collapses.
 - The full Identity Graph is dense because every high-risk sender becomes an impostor node; "Suspicious only" is the readable view.
 - The Tribunal uses templates unless an LLM key is configured.
@@ -74,9 +77,9 @@ The Models & audit page lists metrics for MIRAGE's own models but does not yet s
 
 ## 5. Prioritised next steps
 
-1. Integrate WavLM voiceprints and YuNet (biggest accuracy gains for the least work).
-2. Add the zero-shot intent second opinion and semantic casebook retrieval.
-3. Show loaded pretrained models and their agreement rates on the Models page.
+1. Re-enrol Trustbook voiceprints with WavLM from consented real recordings (the seeded prints are simulator-based).
+2. Measure the Claude judge on the text benchmark; add semantic casebook retrieval.
+3. Add a temporal video deepfake model and a real-speech sample for Scenario D.
 4. Build the webcam liveness challenge (strongest live demo moment after the Attack Replay).
 5. Move the pipeline onto a Redis queue; add evidence encryption and 7-day purge.
 6. Evaluate on public benchmarks (ASVspoof 5 subsets, FaceForensics++ samples) and publish honest numbers.

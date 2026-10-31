@@ -68,3 +68,19 @@ TOKEN=$(curl -s -X POST localhost:8000/v1/auth/login -H 'content-type: applicati
 curl -s -X POST localhost:8000/v1/cases -H "authorization: Bearer $TOKEN" \
   -F "files=@voice-note.ogg" -F "message=Papa main hoon, paise abhi bhejo" -F "claimed_sender=Papa" -F "channel=whatsapp"
 ```
+
+## Triage and response (voice check, quick checks, Chrome extension)
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| POST | `/v1/voice/triage` | multipart `file` (audio or video), `claimed_sender`, `org` | `{stage1: AI/human/uncertain + per-window and per-model scores, stage2: transcript + tactics, request, category, stage3: severity + 2x2 cell, response}` |
+| POST | `/v1/quick/text` | `{text, org}` | `{semantics, severity, response}` |
+| POST | `/v1/quick/media` | multipart `file` (image or video) | `{label, score, models, evidence, response}` |
+
+`response` is the "what now" plan: `{severity, category, headline, do_now[], dont[], say_this, report_to[], if_paid[], preserve[]}`
+(see [AFTER_DETECTION.md](AFTER_DETECTION.md)).
+
+## Red-team lab (analyst and admin)
+See [RED_TEAM.md](RED_TEAM.md): `GET /v1/redteam/catalog`, `POST /v1/redteam/generate`, `GET /v1/redteam/samples/{id}/{file}`,
+`POST /v1/redteam/samples/{id}/investigate`, `POST /v1/redteam/campaign`, `GET /v1/redteam/campaign/{id}`.
+
+CORS also accepts `chrome-extension://<id>` origins for the MIRAGE Shield extension.

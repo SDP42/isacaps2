@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, SessionLocal, engine
-from .routers import auth, cases, misc
+from .routers import auth, cases, misc, redteam, triage
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("mirage")
@@ -30,12 +30,7 @@ def _warm() -> None:
     # warm the pretrained detectors and Whisper so the first live demo case is fast
     from .witnesses import pretrained, transcribe
 
-    for kind in ("audio", "image", "face"):
-        if pretrained.available(kind):
-            try:
-                pretrained._pipe(kind)
-            except Exception as exc:
-                log.warning("pretrained %s unavailable: %s", kind, exc)
+    pretrained.warm()
     try:
         transcribe._whisper()
     except Exception as exc:
@@ -60,11 +55,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="MIRAGE API", version=settings.version, lifespan=lifespan,
               description="Deepfake-enabled social engineering detection: five witnesses, a Tribunal, and a "
                           "request-aware verdict with a verification plan.")
-app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_credentials=True,
+# the Chrome extension calls the API from chrome-extension://<id>
+app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_origin_regex=r"chrome-extension://[a-p]{32}",
+                   allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 app.include_router(auth.router)
 app.include_router(cases.router)
 app.include_router(misc.router)
+app.include_router(triage.router)
+app.include_router(redteam.router)
 
 
 @app.get("/v1/health")

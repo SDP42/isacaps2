@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "MIRAGE Shield",
+  "version": "0.1.0",
+  "description": "Checks voices, images and messages for deepfake-enabled scams and tells you what to do next.",
+  "permissions": ["contextMenus", "storage", "tabCapture", "offscreen", "notifications", "activeTab"],
+  "host_permissions": ["http://localhost:8000/*", "http://127.0.0.1:8000/*"],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "MIRAGE Shield" },
+  "content_scripts": [
+    { "matches": ["https://mail.google.com/*"], "js": ["gmail.js"], "run_at": "document_idle" }
+  ],
+  "icons": { "128": "icon.png" }
+}
