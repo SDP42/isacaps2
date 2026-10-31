@@ -84,6 +84,34 @@ def _ocr():
     return RapidOCR()
 
 
+_IFSC = re.compile(r"([A-Z]{4}0[A-Z0-9]{6})")
+
+
+def _split_glued(m: re.Match) -> str:
+    try:
+        import wordninja
+    except ImportError:  # optional: without it, glued words are left as OCR returned them
+        return m.group(0)
+    parts = wordninja.split(m.group(0))
+    return " ".join(parts) if len(parts) > 1 and all(len(x) > 1 or x.lower() in ("a", "i") for x in parts) else m.group(0)
+
+
+def normalise_ocr(text: str) -> str:
+    """Screenshot OCR often drops spaces ("keep thisbetweenus", "account600112233445"), which hides tactics and
+    identifiers from the Words witness. Re-insert them, protecting IFSC codes, UPI IDs, emails and URLs."""
+    text = _IFSC.sub(lambda m: f" {m.group(1)} ", text)
+    out = []
+    for tok in re.split(r"(\s+)", text):
+        if not tok.strip() or "@" in tok or "://" in tok or "www." in tok or _IFSC.fullmatch(tok):
+            out.append(tok)
+            continue
+        tok = re.sub(r"(?<=[A-Za-z])(?=\d)|(?<=\d)(?=[A-Za-z])", " ", tok)
+        tok = re.sub(r"(?<=[a-z])(?=[A-Z][a-z])", " ", tok)  # "toOrbit" -> "to Orbit"
+        tok = re.sub(r"[A-Za-z]{9,}", _split_glued, tok)
+        out.append(tok)
+    return re.sub(r"[ \t]{2,}", " ", "".join(out)).strip()
+
+
 def ocr(path: Path) -> dict | None:
     if os.getenv("MIRAGE_OCR", "on") == "off":
         return None
@@ -97,7 +125,7 @@ def ocr(path: Path) -> dict | None:
         lines = []
         for box, text, conf in result:
             xs, ys = [p[0] for p in box], [p[1] for p in box]
-            lines.append({"text": text, "conf": round(float(conf), 2),
+            lines.append({"text": normalise_ocr(text), "conf": round(float(conf), 2),
                           "box": [round(min(xs) / w, 4), round(min(ys) / h, 4),
                                   round((max(xs) - min(xs)) / w, 4), round((max(ys) - min(ys)) / h, 4)]})
         return {"text": "\n".join(l["text"] for l in lines), "lines": lines, "engine": "rapidocr"}

@@ -106,6 +106,9 @@ def assess(results: dict[str, WitnessResult], evidence: list[Evidence]) -> Asses
     a, media_parts, media_ok = authenticity(results)
     m = words.score if words and words.status == "ok" and words.score is not None else 0.0
     c = ident.score if ident and ident.status == "ok" and ident.score is not None else 0.0
+    # context matters in proportion to what is asked: an unknown sender who asks for nothing is not MEDIUM on its own
+    # (a newsletter from an address missing in the Trustbook); a payment or OTP request keeps the full context weight
+    c *= 0.25 + 0.75 * s
     T = _temperature()
     raw = _combine(a, m, c, s)
     risk = _calibrate(raw, T)
@@ -142,7 +145,7 @@ def assess(results: dict[str, WitnessResult], evidence: list[Evidence]) -> Asses
     elif a >= 0.8 and s >= 0.6:
         band, rule = "HIGH", "synthetic_media_with_sensitive_ask"
         risk = max(risk, 80)
-    elif a >= 0.75 and action == "none" and not tactics and c < 0.3:
+    elif a >= 0.6 and action == "none" and not tactics and c < 0.3:  # only ever lowers risk, so a modest bar is safe
         band, rule = "LOW", "synthetic_no_fraud_indicators"
         risk = min(risk, 30)
         tags.append("SYNTHETIC_MEDIA")
