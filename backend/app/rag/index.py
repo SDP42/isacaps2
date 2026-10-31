@@ -83,10 +83,11 @@ class Casebook:
         qtok = set(_tok(question)) - {"the", "a", "is", "what", "how", "why", "do", "i", "should", "this", "it", "to", "of"}
         scored = []
         for h in hits:
-            for sent in re.split(r"(?<=[.!?])\s+", h["text"]):
+            head_bonus = 1.5 * len(qtok & set(_tok(h["heading"])))
+            for pos, sent in enumerate(re.split(r"(?<=[.!?])\s+", h["text"])):
                 overlap = len(qtok & set(_tok(sent)))
-                if overlap:
-                    scored.append((overlap + h["score"], sent.strip(), h["id"]))
+                if overlap or head_bonus:
+                    scored.append((overlap + head_bonus + h["score"] - 0.05 * pos, sent.strip(), h["id"]))
         scored.sort(key=lambda x: -x[0])
         picked, used = [], set()
         for _, sent, cid in scored:
