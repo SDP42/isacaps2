@@ -26,3 +26,8 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# Local agent tooling (installed per developer)
+.agents/
+.claude/skills/
+.taste-skill/
