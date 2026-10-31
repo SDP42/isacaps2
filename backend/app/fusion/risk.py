@@ -135,7 +135,7 @@ def assess(results: dict[str, WitnessResult], evidence: list[Evidence]) -> Asses
     elif action in ("credential", "remote_access"):
         band, rule = "HIGH", "credential_request"
         risk = max(risk, 85)
-    elif s >= 1.0 and (sev3 & {"contact_mismatch", "new_beneficiary", "above_authority", "flagged_beneficiary"}
+    elif s >= 1.0 and (sev3 & {"contact_mismatch", "new_beneficiary", "above_authority", "flagged_beneficiary", "linked_confirmed_fraud"}
                        or tactics & {"secrecy", "bypass"}):
         band, rule = "HIGH", "sensitive_action_unverified"
         risk = max(risk, 78)

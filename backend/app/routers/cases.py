@@ -204,6 +204,99 @@ def what_if(case_id: str, body: WhatIfIn, user: Principal = Depends(current_prin
     return recompute(c, set(body.disabled))
 
 
+CALLBACK_LINES = {
+    "deny": "Hello, {first} here. No, I never sent that. I would never ask for a payment on {channel}. Please do not pay, and report it to security.",
+    "confirm": "Hi, yes, this is {first}. That was me, it's fine. Thanks for checking with me first.",
+}
+
+
+@router.post("/{case_id}/callback")
+def simulate_callback(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """Demo stand-in for the out-of-band call: the real person answers on their Trustbook number. HIGH and MEDIUM
+    cases are denied (and closed as fraud, which flags the identifiers); LOW cases are confirmed."""
+    import shutil
+    import subprocess
+    import tempfile
+
+    from ..config import settings as cfg
+    from ..models import Beneficiary
+    from ..witnesses.identity import resolve_person
+
+    c = get_case(db, case_id)
+    if not c.verdict:
+        raise HTTPException(409, "The investigation is still running.")
+    person, _ = resolve_person(db, c.claimed_sender, "")
+    name = person.name if person else (c.claimed_sender or "the sender")
+    phone = person.phone if person else "the saved number"
+    outcome = "deny" if c.verdict.band in ("HIGH", "MEDIUM", "INCONCLUSIVE") else "confirm"
+    first = (person.aliases[0] if person.aliases else name) if person and person.circle == "family" else name.split()[0]
+    line = CALLBACK_LINES[outcome].format(first=first, channel=c.channel if c.channel != "unknown" else "this channel")
+
+    audio_key = None
+    if shutil.which("say"):
+        out = cfg.storage_dir / "callbacks" / f"{case_id}.wav"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        voice = "Lekha" if person and person.circle == "family" and "Mother" in person.role else "Rishi"
+        with tempfile.TemporaryDirectory() as d:
+            aiff = f"{d}/c.aiff"
+            if subprocess.run(["say", "-v", voice, "-r", "180", "-o", aiff, line], capture_output=True).returncode == 0:
+                from ..witnesses import dsp
+                from pathlib import Path as _P
+
+                out.write_bytes(dsp.write_wav(dsp.load_audio(_P(aiff))))
+                audio_key = f"callbacks/{case_id}.wav"
+
+    db.add(Verification(case=c, step="call_directory", outcome="done", actor=user.persona_id,
+                        note=f"Called {name} on {phone}: {'denied sending it' if outcome == 'deny' else 'confirmed it'}"))
+    flagged = []
+    if c.verdict:
+        c.verdict.verification_plan = [dict(s, done=s["done"] or s["id"] == "call_directory") for s in c.verdict.verification_plan]
+    if outcome == "deny":
+        c.closed, c.outcome = True, "confirmed_fraud"
+        for f in c.findings:
+            if f.witness == "identity":
+                for b in f.details_json.get("beneficiaries", []):
+                    existing = db.scalar(select(Beneficiary).where(Beneficiary.identifier == b["id"]))
+                    if existing:
+                        existing.trust_level = "flagged"
+                    else:
+                        db.add(Beneficiary(label=f"Flagged from {c.id}", identifier=b["id"],
+                                           kind="upi" if "@" in b["id"] else "account", trust_level="flagged"))
+                    flagged.append(b["id"])
+        if c.sender_contact:
+            flagged.append(c.sender_contact)
+    else:
+        c.closed, c.outcome = True, "verified_genuine"
+    audit.record(db, user.persona_id, "verification.callback", {"outcome": outcome, "flagged": flagged}, case_id)
+    db.commit()
+    return {"outcome": outcome, "person": name, "phone": phone, "line": line, "flagged": flagged,
+            "audio": f"/v1/cases/{case_id}/callback-audio" if audio_key else None, "case": case_detail(c)}
+
+
+@router.get("/{case_id}/callback-audio")
+def callback_audio(case_id: str, user: Principal = Depends(current_principal)):
+    from ..config import settings as cfg
+
+    p = cfg.storage_dir / "callbacks" / f"{case_id}.wav"
+    if not p.exists():
+        raise HTTPException(404, "No callback recording.")
+    return FileResponse(p, media_type="audio/wav")
+
+
+@router.post("/{case_id}/replay")
+def replay_attack(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """Re-send the same attack from a fresh number, to show the learning loop catching it."""
+    import random
+
+    c = get_case(db, case_id)
+    files = [(a.filename, path_for(a.storage_key).read_bytes()) for a in c.artifacts]
+    new_contact = f"+91 {random.randint(70000, 89999)} {random.randint(10000, 99999)}" if c.channel != "email" else c.sender_contact
+    new = create_case(db, user, files, c.message_text, c.claimed_sender, c.channel, new_contact, None,
+                      title=f"Replay of {c.id} from a new number", scenario=c.scenario)
+    pipeline.submit(new.id)
+    return case_summary(new)
+
+
 class AskIn(BaseModel):
     question: str
 

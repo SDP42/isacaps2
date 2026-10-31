@@ -134,7 +134,13 @@ def analyse(db: Session, case: Case, request: dict, voice_details: dict | None =
                 hit = [n for n in needles if n and n in blob]
                 if hit:
                     repeats.append({"case_id": o.id, "matches": hit, "outcome": o.outcome})
-        if repeats:
+        fraud = [r for r in repeats if r["outcome"] == "confirmed_fraud"]
+        if fraud:
+            ev.append(Evidence(witness="identity", kind="linked_confirmed_fraud", label="linked to confirmed fraud", severity=3,
+                               observed=", ".join(sorted({m for r in fraud for m in r["matches"]}))[:120],
+                               detail=f"These identifiers were used in {len(fraud)} case(s) already confirmed as fraud: "
+                                      + ", ".join(r["case_id"] for r in fraud[:4]) + "."))
+        elif repeats:
             ev.append(Evidence(witness="identity", kind="pattern_repeat", label="seen in other cases", severity=2,
                                detail=f"The same identifiers appear in {len(repeats)} other case(s): "
                                       + ", ".join(r["case_id"] for r in repeats[:4]) + "."))
