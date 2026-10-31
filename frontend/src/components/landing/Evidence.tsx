@@ -111,7 +111,7 @@ const EXHIBITS = [
 function Exhibit({ e }: { e: (typeof EXHIBITS)[number] }) {
   return (
     <article
-      className="exhibit relative flex w-[78vw] shrink-0 flex-col p-6 sm:w-[360px]"
+      className="exhibit relative flex min-h-[380px] w-[78vw] shrink-0 flex-col p-6 sm:w-[360px] lg:h-[54vh] lg:min-h-[420px]"
       style={{
         clipPath: "polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%)",
         background: "linear-gradient(180deg, rgb(17 26 46 / 0.85), rgb(9 14 26 / 0.9))",
