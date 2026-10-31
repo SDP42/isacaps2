@@ -23,6 +23,7 @@ export function Waveform({
   onRegion,
   windows,
   height = 96,
+  seekTo,
 }: {
   peaks: number[];
   duration: number;
@@ -32,6 +33,8 @@ export function Waveform({
   onRegion?: (id: string) => void;
   windows?: { t0: number; t1: number; score: number }[];
   height?: number;
+  /** External seek request; change `n` to re-trigger the same time. */
+  seekTo?: { t: number; n: number } | null;
 }) {
   const audio = useRef<HTMLAudioElement>(null);
   const [t, setT] = useState(0);
@@ -57,6 +60,13 @@ export function Waveform({
       setT(r.t0);
     }
   }, [activeRegion, regions]);
+
+  useEffect(() => {
+    if (!seekTo || !audio.current) return;
+    audio.current.currentTime = seekTo.t;
+    setT(seekTo.t);
+    audio.current.play().then(() => setPlaying(true)).catch(() => {});
+  }, [seekTo]);
 
   const toggle = () => {
     const a = audio.current;
@@ -95,10 +105,11 @@ export function Waveform({
         <div className="relative flex-1 cursor-pointer select-none" style={{ height }} onClick={seek} role="slider" aria-valuemin={0} aria-valuemax={duration} aria-valuenow={t} aria-label="Audio position">
           {regions.map((r) => (
             <button key={r.id} onClick={(e) => { e.stopPropagation(); onRegion?.(r.id); }}
-              className={cx("absolute inset-y-0 rounded-sm transition-colors", activeRegion === r.id ? "bg-crimson/25 ring-1 ring-crimson/60" : "bg-crimson/10 hover:bg-crimson/20")}
-              style={{ left: `${(r.t0 / duration) * 100}%`, width: `${Math.max(0.6, ((r.t1 - r.t0) / duration) * 100)}%` }}
+              className={cx("absolute rounded-sm transition-colors", r.color ? "bottom-0 h-3" : "inset-y-0", !r.color && (activeRegion === r.id ? "bg-crimson/25 ring-1 ring-crimson/60" : "bg-crimson/10 hover:bg-crimson/20"))}
+              style={{ left: `${(r.t0 / duration) * 100}%`, width: `${Math.max(0.6, ((r.t1 - r.t0) / duration) * 100)}%`,
+                ...(r.color ? { background: `color-mix(in oklab, ${r.color} ${activeRegion === r.id ? 70 : 40}%, transparent)` } : {}) }}
               aria-label={`Evidence ${r.id} from ${secs(r.t0)} to ${secs(r.t1)}`}>
-              <span className="absolute -top-0.5 left-1 font-mono text-[9.5px] text-crimson">{r.id}</span>
+              {!r.color && <span className="absolute -top-0.5 left-1 font-mono text-[9.5px] text-crimson">{r.id}</span>}
             </button>
           ))}
           <svg viewBox={`0 0 ${n} 100`} preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full">

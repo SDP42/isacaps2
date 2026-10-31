@@ -47,6 +47,76 @@ function SyncCurve({ curve, offset }: { curve: { lag_ms: number; corr: number }[
   );
 }
 
+const TACTIC_COLOR: Record<string, string> = {
+  urgency: "#fbbf24", authority: "#93c5fd", secrecy: "#a78bfa", fear: "#fb7185", reward: "#6ee7b7",
+  channel_switch: "#67e8f9", bypass: "#f0abfc", requested_action: "#fb7185",
+};
+
+/** Timestamped transcript: flagged words carry their tactic colour; clicking any word seeks the audio. */
+function TranscriptStrip({ asr, flagged, selected, onSeek, onSelect }: {
+  asr: { text: string; language: string; engine: string; words: { w: string; t0: number; t1: number; p: number }[] };
+  flagged: EvidenceItem[]; selected: string | null; onSeek: (t: number) => void; onSelect: (id: string) => void;
+}) {
+  return (
+    <div className="mt-4 rounded-xl border border-line bg-ink-1/70 p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="label">Transcript · speech-to-text</p>
+        <span className="font-mono text-[10.5px] text-dim">{asr.language} · {asr.engine}</span>
+      </div>
+      <p className="text-[14.5px] leading-[2] text-silver">
+        {asr.words.map((w, i) => {
+          const hit = flagged.find((e) => e.t0 != null && e.t1 != null && w.t0 >= e.t0! - 0.05 && w.t1 <= e.t1! + 0.05);
+          const c = hit ? TACTIC_COLOR[hit.kind] ?? "#fb7185" : undefined;
+          return (
+            <button key={i} onClick={() => { onSeek(w.t0); if (hit) onSelect(hit.id); }} title={`${secs(w.t0)} · p ${w.p}`}
+              className={cx("rounded px-[2px] transition-colors hover:bg-white/10", hit && selected === hit.id && "ring-1 ring-current")}
+              style={c ? { color: c, background: `color-mix(in oklab, ${c} 14%, transparent)` } : { opacity: 0.55 + w.p * 0.45 }}>
+              {w.w}
+            </button>
+          );
+        })}
+      </p>
+    </div>
+  );
+}
+
+function OcrBoxes({ lines, flagged }: { lines: { text: string; box: number[] }[]; flagged: { box: number[]; kind: string; text: string }[] }) {
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {lines.map((l, i) => (
+        <span key={i} className="absolute rounded-sm border border-cyan/40" style={{ left: `${l.box[0] * 100}%`, top: `${l.box[1] * 100}%`, width: `${l.box[2] * 100}%`, height: `${l.box[3] * 100}%` }} />
+      ))}
+      {flagged.map((f, i) => (
+        <span key={`f${i}`} className="absolute rounded-sm border-2 border-crimson bg-crimson/15 live-dot" style={{ left: `${f.box[0] * 100}%`, top: `${f.box[1] * 100}%`, width: `${f.box[2] * 100}%`, height: `${f.box[3] * 100}%` }}>
+          <span className="absolute -top-4 left-0 whitespace-nowrap rounded bg-crimson px-1 font-mono text-[9px] text-white">{f.kind.replace("_", " ")}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function EmailCard({ email }: { email: any }) {
+  const ok = (v: string) => v === "pass";
+  return (
+    <div className="rounded-xl border border-line bg-ink-1/70 p-4">
+      <p className="label mb-3">Email headers</p>
+      <dl className="space-y-1.5 font-mono text-[12px]">
+        <div className="flex justify-between gap-4"><dt className="text-muted">From</dt><dd className="truncate text-fg">{email.from_name} &lt;{email.from}&gt;</dd></div>
+        {email.reply_to && <div className="flex justify-between gap-4"><dt className="text-muted">Reply-To</dt><dd className="truncate text-crimson">{email.reply_to}</dd></div>}
+        {email.return_path && <div className="flex justify-between gap-4"><dt className="text-muted">Return-Path</dt><dd className="truncate text-amber">{email.return_path}</dd></div>}
+        <div className="flex justify-between gap-4"><dt className="text-muted">Subject</dt><dd className="truncate text-silver">{email.subject}</dd></div>
+      </dl>
+      <div className="mt-3 flex gap-2">
+        {Object.entries(email.auth as Record<string, string>).map(([k, v]) => (
+          <span key={k} className={cx("rounded-md border px-2 py-1 font-mono text-[11px]", ok(v) ? "border-mint/40 text-mint" : "border-crimson/40 bg-crimson/10 text-crimson")}>
+            {ok(v) ? "✓" : "✕"} {k.toUpperCase()} {v}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ElaGrid({ grid }: { grid: number[][] }) {
   return (
     <div className="pointer-events-none absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${grid[0]?.length ?? 1}, 1fr)` }}>
@@ -56,22 +126,30 @@ function ElaGrid({ grid }: { grid: number[][] }) {
 }
 
 export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail; selected: string | null; onSelect: (id: string) => void }) {
-  const [ela, setEla] = useState<"off" | "on">("off");
+  const [ela, setEla] = useState<"off" | "on" | "ocr">("off");
   const [videoT, setVideoT] = useState<number | null>(null);
+  const [seek, setSeek] = useState<{ t: number; n: number } | null>(null);
+  const words = detail.findings.find((f) => f.witness === "words");
+  const emails: any[] = words?.details?.email ?? [];
   const media = detail.artifacts.filter((a) => a.kind !== "text");
-  if (!media.length) return null;
+  if (!media.length && !emails.length) return null;
   const ev = detail.evidence;
 
   return (
     <section className="panel overflow-hidden">
-      <PanelHead title="Forensic media studio" meta={`${media.length} file${media.length > 1 ? "s" : ""} · synchronised with the ledger`} />
+      <PanelHead title="Forensic media studio" meta={`${media.length + emails.length} file${media.length + emails.length > 1 ? "s" : ""} · synchronised with the ledger`} />
       <div className="divide-y divide-line">
+        {emails.map((em) => <div key={em.artifact_id} className="p-5"><EmailCard email={em} /></div>)}
         {media.map((a) => {
           const voice = detail.findings.find((f) => f.witness === "voice" && f.artifact_id === a.id);
           const face = detail.findings.find((f) => f.witness === "face" && f.artifact_id === a.id);
           const prov = detail.findings.find((f) => f.witness === "provenance" && f.artifact_id === a.id);
-          const regions = ev.filter((e: EvidenceItem) => e.artifact_id === a.id && e.t0 != null && e.t1 != null && e.witness === "voice")
-            .map((e) => ({ id: e.id, t0: e.t0!, t1: e.t1! }));
+          const regions = [
+            ...ev.filter((e: EvidenceItem) => e.artifact_id === a.id && e.t0 != null && e.t1 != null && e.witness === "voice").map((e) => ({ id: e.id, t0: e.t0!, t1: e.t1! })),
+            ...ev.filter((e: EvidenceItem) => e.artifact_id === a.id && e.t0 != null && e.t1 != null && e.witness === "words").map((e) => ({ id: e.id, t0: e.t0!, t1: e.t1!, color: TACTIC_COLOR[e.kind] ?? "#fbbf24" })),
+          ];
+          const flaggedWords = ev.filter((e) => e.artifact_id === a.id && e.witness === "words" && e.t0 != null);
+          const ocrFlags = (words?.details?.ocr_boxes ?? []).filter((b: any) => b.artifact_id === a.id);
           const url = artifactUrl(detail.id, a.id);
           return (
             <div key={a.id} className="p-5">
@@ -108,7 +186,9 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                     </p>
                   </div>
                   <Waveform peaks={voice.details.waveform} duration={voice.details.duration_s} src={a.kind === "audio" ? url : undefined}
-                    regions={regions} activeRegion={selected} onRegion={onSelect} windows={voice.details.windows} />
+                    regions={regions} activeRegion={selected} onRegion={onSelect} windows={voice.details.windows} seekTo={seek} />
+                  {a.meta?.asr && <TranscriptStrip asr={a.meta.asr} flagged={flaggedWords} selected={selected} onSelect={onSelect}
+                    onSeek={(t) => (a.kind === "video" ? setVideoT(t) : setSeek({ t, n: Date.now() }))} />}
                 </div>
               )}
 
@@ -117,9 +197,10 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                   <div className="relative overflow-hidden rounded-xl border border-line bg-ink-2">
                     <img src={url} alt={a.filename} className="max-h-[420px] w-full object-contain" />
                     {ela === "on" && prov.details.ela_grid && <ElaGrid grid={prov.details.ela_grid} />}
+                    {ela === "ocr" && a.meta?.ocr && <OcrBoxes lines={a.meta.ocr.lines} flagged={ocrFlags} />}
                   </div>
                   <div className="space-y-3">
-                    <Segmented value={ela} onChange={setEla} options={[{ value: "off", label: "Original" }, { value: "on", label: "ELA heat" }]} />
+                    <Segmented value={ela} onChange={setEla} options={[{ value: "off", label: "Original" }, { value: "on", label: "ELA heat" }, ...(a.meta?.ocr ? [{ value: "ocr" as const, label: "OCR text" }] : [])]} />
                     <dl className="space-y-2 font-mono text-[11.5px]">
                       <div className="flex justify-between"><dt className="text-muted">AI probability</dt><dd className={prov.details.ai_probability > 0.6 ? "text-crimson" : "text-mint"}>{prov.details.ai_probability?.toFixed(2)}</dd></div>
                       <div className="flex justify-between"><dt className="text-muted">C2PA</dt><dd>{prov.details.markers?.c2pa_manifest ? "present" : "none"}</dd></div>

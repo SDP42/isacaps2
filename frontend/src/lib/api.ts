@@ -73,7 +73,7 @@ export type StreamEvent = { event: string; data: any };
 export function streamCase(caseId: string, onEvent: (e: StreamEvent) => void): () => void {
   const url = `${BASE}/v1/cases/${caseId}/events?token=${encodeURIComponent(getToken() ?? "")}`;
   const es = new EventSource(url);
-  const kinds = ["stage", "witness", "evidence", "risk", "tribunal", "done", "error"];
+  const kinds = ["stage", "witness", "evidence", "risk", "tribunal", "transcript", "ocr", "done", "error"];
   for (const k of kinds) {
     es.addEventListener(k, (ev) => {
       try {

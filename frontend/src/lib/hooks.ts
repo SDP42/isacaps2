@@ -93,6 +93,10 @@ export function useLiveCase(caseId: string | undefined) {
             log.push({ t, text: `${data.witness} ${data.state}${data.score != null ? ` · ${Number(data.score).toFixed(2)}` : ""}`, kind: "witness" });
             return { ...s, witnesses: { ...s.witnesses, [data.witness]: data }, log };
           }
+          if (event === "transcript" || event === "ocr") {
+            log.push({ t, text: `${event === "ocr" ? "ocr" : "speech-to-text"} · “${String(data.text).slice(0, 70)}…”`, kind: event });
+            return { ...s, log };
+          }
           if (event === "tribunal") {
             return { ...s, messages: [...s.messages, data] };
           }
