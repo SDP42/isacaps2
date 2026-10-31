@@ -13,14 +13,15 @@
 │  pipeline.run_case (worker thread)                                                                │
 │   1 intake ── SHA-256, magic-byte sniff, audit entry                                              │
 │   2 plan ──── Planner agent picks witnesses from the artefact kinds                               │
-│   3 witnesses (parallel pool) ── voice · face · provenance · words                                │
+│   3 dissection ── speech-to-text (Whisper) · OCR · .eml headers, alongside the media witnesses    │
+│     witnesses (parallel pool) ── voice · face · provenance (+ pretrained HF models) · words       │
 │   4 identity ── Trustbook rules, beneficiary + pattern memory, Isolation Forest                   │
 │   5 fusion ── policy rules → calibrated noisy-OR → interval → Shapley                             │
 │   6 tribunal ─ LangGraph: specialists → casebook (RAG) → skeptic → judge → verifier → reporter   │
 │   7 verdict ── persisted; audit entry; events.bus publishes every step                            │
 └──────────────┬───────────────────────────┬──────────────────────────────┬─────────────────────────┘
                │                           │                              │
-        SQLAlchemy 2 (SQLite/Postgres)   var/evidence (content-addressed)   models_store/*.joblib
+        SQLAlchemy 2 (SQLite/Postgres)   var/evidence (content-addressed)   models_store/*.joblib + models_hf/ (pretrained)
 ```
 
 ## Data contracts
@@ -31,6 +32,9 @@ interval, lenses, Shapley contributions, reasons with evidence IDs, rule fired, 
 messages (agent, stance, content, supporting / contradicting exhibits, `responds_to`).
 
 ## API
+
+The complete reference, including the newer `whatif`, `callback`, `replay`, `transcribe`, `live/chunk` and
+`samples` endpoints, is in [API.md](API.md). Summary:
 
 | Method · path | Purpose |
 |---|---|
