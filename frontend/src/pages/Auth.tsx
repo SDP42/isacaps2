@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Logo } from "@/components/ui/Logo";
-import Aurora from "@/components/reactbits/Aurora";
 import GlareHover from "@/components/reactbits/GlareHover";
 import ShinyText from "@/components/reactbits/ShinyText";
 import { useAuth } from "@/lib/auth";
@@ -84,7 +83,7 @@ export default function Auth() {
     <div className="grain relative min-h-dvh overflow-hidden bg-ink-0">
       <div className="pointer-events-none absolute inset-0 grid-field opacity-40 [mask-image:radial-gradient(ellipse_at_50%_0%,black,transparent_70%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[60vh] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]">
-        <Aurora colorStops={["#0891b2", "#6d28d9", "#0e7490"]} amplitude={1.0} blend={0.55} speed={0.5} />
+        <div className="aurora"><i /></div>
       </div>
       <header className="relative mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-8">
         <Link to="/"><Logo /></Link>

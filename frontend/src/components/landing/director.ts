@@ -21,7 +21,7 @@ export function useWorldDirector() {
     const m = mobile;
     const poses: [string, Pose][] = [
       ["evidence", { morph: 1, split: 0, dim: 0.45, x: m ? 0 : 0.78, y: m ? 0.55 : 0.32, scale: m ? 0.5 : 0.62, spin: 0.6 }],
-      ["witnesses", { morph: 1, dim: 0.05, x: m ? 0 : 0.6, y: m ? -0.35 : -0.05, scale: m ? 0.55 : 0.8, spin: 1.4 }],
+      ["witnesses", { morph: 1, dim: 0.05, x: m ? 0 : 0.85, y: m ? -0.35 : -0.05, scale: m ? 0.55 : 0.8, spin: 1.4 }],
       ["tribunal", { morph: 2, dim: 0.45, x: m ? 0 : -0.62, y: m ? 0.4 : -0.1, scale: m ? 0.6 : 0.95, spin: 0 }],
       ["risk", { morph: 2, dim: 0.88, x: 0, y: 0, scale: 0.9 }],
       ["protection", { morph: 3, dim: 0.25, x: m ? 0 : 0.62, y: m ? -0.2 : -0.05, scale: m ? 0.55 : 0.78, spin: 0.4 }],

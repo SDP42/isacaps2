@@ -203,3 +203,18 @@ button:not(:disabled):active { transform: translateY(1px); }
 }
 .react-flow__controls-button:hover { background: var(--color-ink-3) !important; }
 .react-flow__minimap { background: var(--color-ink-1) !important; border: 1px solid var(--color-line); border-radius: 10px; }
+
+/* CSS aurora: three blurred ribbons drifting slowly (no WebGL context needed) */
+.aurora { position: absolute; inset: 0; overflow: hidden; }
+.aurora::before, .aurora::after, .aurora > i {
+  content: ""; position: absolute; width: 70%; height: 60%; border-radius: 50%; filter: blur(70px); opacity: 0.55;
+  animation: aurora-drift 16s ease-in-out infinite alternate;
+}
+.aurora::before { left: -10%; top: -20%; background: radial-gradient(closest-side, #0891b2, transparent); }
+.aurora::after { right: -10%; top: -25%; background: radial-gradient(closest-side, #6d28d9, transparent); animation-duration: 21s; animation-direction: alternate-reverse; }
+.aurora > i { left: 25%; top: -10%; width: 50%; background: radial-gradient(closest-side, #67e8f9, transparent); opacity: 0.3; animation-duration: 12s; }
+@keyframes aurora-drift {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(6%, 8%) scale(1.15) rotate(8deg); }
+  100% { transform: translate(-5%, 4%) scale(0.95) rotate(-6deg); }
+}
