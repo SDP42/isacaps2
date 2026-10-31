@@ -131,7 +131,7 @@ def assess(results: dict[str, WitnessResult], evidence: list[Evidence]) -> Asses
 
     if insufficient_media and no_text and no_context:
         band, rule = "INCONCLUSIVE", "insufficient_evidence"
-        risk = min(risk, 50)
+        risk, lo, hi = 50.0, 10.0, 90.0  # no usable evidence: the honest answer is "we cannot tell"
     elif action in ("credential", "remote_access"):
         band, rule = "HIGH", "credential_request"
         risk = max(risk, 85)
