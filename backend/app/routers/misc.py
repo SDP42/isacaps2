@@ -73,6 +73,25 @@ def analyze_sample(name: str, user: Principal = Depends(current_principal)) -> d
             "evidence": [e.as_dict() for e in r.evidence if not e.exculpatory][:3]}
 
 
+@router.post("/transcribe")
+async def transcribe_upload(file: UploadFile = File(...), user: Principal = Depends(current_principal)) -> dict:
+    """Dictation: speech in, text out (any format the browser records)."""
+    import tempfile
+    from pathlib import Path as _P
+
+    from ..witnesses import transcribe as tr
+
+    suffix = _P(file.filename or "a.webm").suffix or ".webm"
+    with tempfile.NamedTemporaryFile(suffix=suffix) as tmp:
+        tmp.write(await file.read())
+        tmp.flush()
+        x = dsp.load_audio(_P(tmp.name))
+    if len(x) < dsp.SR // 2:
+        raise HTTPException(422, "That recording was too short. Hold the button and speak for a few seconds.")
+    text, lang = tr.transcribe_array(x)
+    return {"text": text, "language": lang, "seconds": round(len(x) / dsp.SR, 1)}
+
+
 @router.post("/live/chunk")
 async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang: str = Form(""),
                      user: Principal = Depends(current_principal)) -> dict:
@@ -96,22 +115,19 @@ async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang
         x = resample_poly(x, dsp.SR, sr).astype(np.float32)
     level = float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
     spoof = None
-    if level > 0.004 and len(x) >= dsp.SR:
+    if level > 0.0015 and len(x) >= dsp.SR:
         p = load_model("voice_clf.joblib")["model"].predict_proba(dsp.features(x)[None, :])[0, 1]
         spoof = round(float(p), 3)
-    text = ""
-    if level > 0.004:
+    text, detected = "", lang or None
+    if level > 0.0015:
         try:
-            segs, _ = tr._whisper().transcribe(x, language=lang or None, vad_filter=True, beam_size=1,
-                                               condition_on_previous_text=False,
-                                               initial_prompt=(context[-200:] or None))
-            text = " ".join(s.text.strip() for s in segs).strip()
+            text, detected = tr.transcribe_array(x, context, lang or None)
         except Exception:
             text = ""
     rolling = f"{context} {text}".strip()
     w = words.analyse(rolling) if len(rolling) > 8 else None
     action = w.details["requested_action"] if w and w.status == "ok" else "none"
-    return {"spoof": spoof, "level": round(level, 4), "text": text,
+    return {"spoof": spoof, "level": round(level, 4), "text": text, "lang": detected,
             "tactics": w.details["tactics"] if w and w.status == "ok" else [], "action": action,
             "manipulation": w.score if w and w.status == "ok" else 0.0,
             "amount": w.details.get("amount_inr") if w and w.status == "ok" else None,

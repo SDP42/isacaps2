@@ -62,6 +62,21 @@ def transcribe(path: Path) -> dict | None:
         return None
 
 
+def transcribe_array(x: np.ndarray, context: str = "", lang_hint: str | None = None) -> tuple[str, str]:
+    """Transcribe a short in-memory clip (live chunks, dictation). Hinglish is detected and kept in Roman script."""
+    model = _whisper()
+    lang = lang_hint
+    if not lang:
+        lang, _, _ = model.detect_language(x)
+    hinglish = lang in ("hi", "ur", "pa", "ne", "mr", "bn", "gu", "sd", "hi-Latn")
+    prompt = context[-200:] or None
+    if hinglish:
+        prompt = ("Hinglish, Roman script: Bhai, paise abhi bhejo, kisi ko mat batana. " + (context[-150:] if context else "")).strip()
+    segs, _ = model.transcribe(x, language="en", initial_prompt=prompt, vad_filter=True, beam_size=1,
+                               condition_on_previous_text=False)
+    return " ".join(s.text.strip() for s in segs).strip(), ("hi-Latn" if hinglish else (lang or "en"))
+
+
 @functools.cache
 def _ocr():
     from rapidocr_onnxruntime import RapidOCR

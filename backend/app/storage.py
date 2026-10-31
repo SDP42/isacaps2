@@ -43,7 +43,8 @@ def sniff(head: bytes, filename: str) -> tuple[str, str]:
         raise RejectedUpload(f"{filename}: executables and archives are not accepted as evidence.")
     if head[4:8] == b"ftyp":
         brand = head[8:12]
-        if brand in (b"M4A ", b"M4B "):
+        # Safari's MediaRecorder writes audio-only MP4; trust an audio extension for that container
+        if brand in (b"M4A ", b"M4B ") or Path(filename).suffix.lower() in (".m4a", ".aac", ".weba"):
             return "audio", "audio/mp4"
         return "video", "video/mp4"
     if head.startswith(b"RIFF"):
