@@ -131,7 +131,11 @@ def case_chain(db: Session, c: Case) -> dict:
 
 def campaigns(db: Session) -> list[dict]:
     """Cluster cases that share identifiers (sender contact, UPI, account) into cross-channel campaigns."""
-    cases = [c for c in db.scalars(select(Case).where(Case.status == "complete")) if c.verdict]
+    cases = [c for c in db.scalars(select(Case).where(Case.status == "complete"))
+             if c.verdict and c.verdict.band in ("HIGH", "MEDIUM")]
+    # a Trustbook contact links genuine messages, not a campaign
+    trusted = {p.phone.lower() for p in db.scalars(select(Person)) if p.phone} | \
+              {p.email.lower() for p in db.scalars(select(Person)) if p.email}
     parent = {c.id: c.id for c in cases}
 
     def find(x):
@@ -149,7 +153,7 @@ def campaigns(db: Session) -> list[dict]:
             if f.witness == "words":
                 for k in ("upi", "account", "iban", "url"):
                     keys.update(v.lower() for v in f.details_json.get("entities", {}).get(k, []))
-        for k in keys:
+        for k in keys - trusted:
             if k in owners:
                 parent[find(c.id)] = find(owners[k])
             else:
@@ -172,5 +176,5 @@ def campaigns(db: Session) -> list[dict]:
         shared = sorted(k for k, v in owners.items() if find(v) == root)
         out.append({"id": f"CMP-{root[-4:]}", "stages": stages, "shared_identifiers": shared[:8],
                     "max_risk": max(s["risk"] for s in stages), "channels": [s["channel"] for s in stages]})
-    out.sort(key=lambda x: -len(x["stages"]))
+    out.sort(key=lambda x: (-len(set(x["channels"])), -len(x["stages"])))
     return out
