@@ -54,6 +54,7 @@ image, email or chat: **is it safe to act on this request, and what should I do 
 | Voice check | Voice check | "Is this voice note real, and what does it want?" | Stage 1 AI vs human (ensemble, per-window), stage 2 transcript + tactics + category, stage 3 the 2×2 matrix, stage 4 what now |
 | Live call shield | Live call shield, extension | A suspicious call in progress | 3-second chunks: voice spoof score, rolling transcript and tactics; risk river; plan appears at the first HIGH |
 | What now | Every result | The person needs to act correctly in the next minute | `fusion/response.py` builds the plan from category and severity |
+| Cure Console | Case → Respond | Contain, verify, recover, report and immunise after an attack | `cure.py`: scenario plan, exposure meter, golden-hour clock, pre-filled drafts, evidence pack, blocklist, drill ([CURE.md](CURE.md)) |
 | Red-team lab | Red-team lab | "Would MIRAGE catch the attack scammers actually send?" | Forge (neural voice, SD-Turbo, avatar video) → launder (phone, WhatsApp, MP3, reverb, noise, replay, JPEG, screenshot) → test; campaigns with heatmap or 3D terrain |
 | Model jury | Voice check, case media, red-team | Show why a detector decided, and whether models agree | Each model's score against its own threshold, ensemble weight, unanimous / split badge |
 | Score waterfall | Case evidence | Explain how the risk was built | Baseline → Shapley contribution per lens → policy floor → final risk |

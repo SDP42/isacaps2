@@ -201,3 +201,14 @@ class AuditEntry(Base):
     prev_hash: Mapped[str] = mapped_column(String(64))
     this_hash: Mapped[str] = mapped_column(String(64))
     ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ResponseRun(Base):
+    """The Cure Console's state for one case: which response actions are done, connector references, and the
+    "already paid" details that start the golden-hour clock. One row per case, created on first open."""
+
+    __tablename__ = "response_runs"
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id"), primary_key=True)
+    state_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)

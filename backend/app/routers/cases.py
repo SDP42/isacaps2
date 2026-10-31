@@ -326,6 +326,74 @@ def case_response(case_id: str, user: Principal = Depends(current_principal), db
     return resp.build(category, severity, synthetic, claimed=c.claimed_sender or None, org=user.role != "family")
 
 
+def _finished(db: Session, case_id: str) -> Case:
+    c = get_case(db, case_id)
+    if not c.verdict:
+        raise HTTPException(409, "The investigation is still running.")
+    return c
+
+
+@router.get("/{case_id}/cure")
+def cure_view(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """The Cure Console: scenario-specific response run with exposure, golden hour and who else was targeted."""
+    from .. import cure
+
+    return cure.view(db, _finished(db, case_id), user.role)
+
+
+class CureActIn(BaseModel):
+    outcome: str | None = None  # callback: confirmed | denied
+    undo: bool = False
+
+
+@router.post("/{case_id}/cure/actions/{action_id}")
+def cure_action(case_id: str, action_id: str, body: CureActIn, user: Principal = Depends(current_principal),
+                db: Session = Depends(get_db)) -> dict:
+    from .. import cure
+
+    try:
+        return cure.act(db, _finished(db, case_id), user.persona_id, user.role, action_id, body.model_dump())
+    except KeyError as exc:
+        raise HTTPException(404, "Unknown response action.") from exc
+
+
+class PaidIn(BaseModel):
+    amount_inr: int | None = None
+    at: str | None = None
+    method: str = "UPI"
+    txn: str = ""
+    to: str = ""
+    clear: bool = False
+
+
+@router.post("/{case_id}/cure/paid")
+def cure_paid(case_id: str, body: PaidIn, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """'I already paid': starts the golden-hour clock and switches on the recovery actions."""
+    from .. import cure
+
+    return cure.mark_paid(db, _finished(db, case_id), user.persona_id, user.role, body.model_dump())
+
+
+@router.get("/{case_id}/cure/drafts")
+def cure_drafts(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """Pre-filled complaint, 1930 script, bank recall, Chakshu report, CERT-In summary, warning, challenge questions."""
+    from .. import cure
+
+    return cure.drafts(db, _finished(db, case_id), user.role)
+
+
+@router.get("/{case_id}/cure/evidence-pack")
+def cure_evidence_pack(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)):
+    from .. import cure
+
+    c = _finished(db, case_id)
+    data = cure.evidence_pack(db, c, user.role)
+    audit.record(db, user.persona_id, "cure.evidence_pack", {"bytes": len(data)}, case_id)
+    db.commit()
+    return Response(data, media_type="application/zip",
+                    headers={"Content-Disposition": f'attachment; filename="{case_id}-evidence-pack.zip"'})
+
+
 @router.get("/{case_id}/graph")
 def case_graph(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
     return case_chain(db, get_case(db, case_id))

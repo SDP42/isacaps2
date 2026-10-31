@@ -46,6 +46,11 @@ Red-team lab with attacker playbook and robustness campaigns ([RED_TEAM](docs/RE
 "what now" response plans ([AFTER_DETECTION](docs/AFTER_DETECTION.md)); MIRAGE Shield Chrome extension prototype
 ([EXTENSION](docs/EXTENSION.md)). Prioritised next steps live in [docs/PLAN.md](docs/PLAN.md).
 
+## 2c. The cure (1 November 2026)
+
+Cure Console with scenario-specific response runs, pre-filled paperwork, evidence pack and immunisation
+([docs/CURE.md](docs/CURE.md)). CI, SECURITY.md and CONTRIBUTING.md added.
+
 ## 3. Not built yet
 
 | Feature | Notes |
