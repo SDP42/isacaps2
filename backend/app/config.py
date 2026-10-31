@@ -16,7 +16,7 @@ class Settings:
     storage_dir: Path = Path(os.getenv("MIRAGE_STORAGE", BASE_DIR / "var" / "evidence"))
     models_dir: Path = BASE_DIR / "models_store"
     corpus_dir: Path = BASE_DIR / "app" / "rag" / "corpus"
-    jwt_secret: str = os.getenv("MIRAGE_JWT_SECRET", "mirage-dev-secret-change-me")
+    jwt_secret: str = os.getenv("MIRAGE_JWT_SECRET", "mirage-dev-secret-change-me-in-production-please")
     jwt_ttl_hours: int = 12
     max_upload_mb: int = int(os.getenv("MIRAGE_MAX_UPLOAD_MB", "200"))
     cors_origins: list[str] = field(
