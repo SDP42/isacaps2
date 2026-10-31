@@ -117,6 +117,17 @@ function EmailCard({ email }: { email: any }) {
   );
 }
 
+/** Second-opinion chip: the pretrained Hugging Face model's score and whether it agrees with MIRAGE's own model. */
+function Pretrained({ info }: { info?: { model: string; score: number; own_score: number; agree: boolean } }) {
+  if (!info) return null;
+  return (
+    <span className={cx("inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[10.5px]", info.agree ? "border-mint/30 text-mint" : "border-amber/40 text-amber")}
+      title={`MIRAGE model ${info.own_score.toFixed(2)} · ${info.model} ${info.score.toFixed(2)}`}>
+      {info.model.split("/")[1]} {info.score.toFixed(2)} · {info.agree ? "agrees" : "disagrees"}
+    </span>
+  );
+}
+
 function ElaGrid({ grid }: { grid: number[][] }) {
   return (
     <div className="pointer-events-none absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${grid[0]?.length ?? 1}, 1fr)` }}>
@@ -179,7 +190,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
               {(a.kind === "audio" || a.kind === "video") && voice?.details?.waveform && (
                 <div>
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <p className="label">Audio waveform · synthetic-speech windows</p>
+                    <p className="label flex items-center gap-2">Audio waveform · synthetic-speech windows <Pretrained info={voice.details.pretrained} /></p>
                     <p className="font-mono text-[10.5px] text-dim">
                       {voice.details.channel?.codec_guess} · SNR {voice.details.channel?.snr_db} dB
                       {voice.details.voiceprint_similarity != null && <> · voiceprint <span className={voice.details.voiceprint_similarity < 0.43 ? "text-crimson" : "text-mint"}>{voice.details.voiceprint_similarity.toFixed(2)}</span></>}
@@ -200,6 +211,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                     {ela === "ocr" && a.meta?.ocr && <OcrBoxes lines={a.meta.ocr.lines} flagged={ocrFlags} />}
                   </div>
                   <div className="space-y-3">
+                    <Pretrained info={prov.details.pretrained} />
                     <Segmented value={ela} onChange={setEla} options={[{ value: "off", label: "Original" }, { value: "on", label: "ELA heat" }, ...(a.meta?.ocr ? [{ value: "ocr" as const, label: "OCR text" }] : [])]} />
                     <dl className="space-y-2 font-mono text-[11.5px]">
                       <div className="flex justify-between"><dt className="text-muted">AI probability</dt><dd className={prov.details.ai_probability > 0.6 ? "text-crimson" : "text-mint"}>{prov.details.ai_probability?.toFixed(2)}</dd></div>
