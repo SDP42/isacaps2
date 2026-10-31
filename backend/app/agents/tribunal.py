@@ -268,7 +268,7 @@ def run(state: State, emit: Emit, pace: float = 0.0) -> State:
         return node
 
     if HAS_LANGGRAPH:
-        g = StateGraph(dict)
+        g = StateGraph(State)
         for name, fn in ORDER:
             g.add_node(name, wrap(fn))
         g.set_entry_point(ORDER[0][0])
