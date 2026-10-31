@@ -76,10 +76,11 @@ export function useLiveCase(caseId: string | undefined) {
   useEffect(() => {
     if (!caseId) return;
     let stop: (() => void) | undefined;
+    let cancelled = false; // StrictMode runs effects twice; never leave an orphan stream behind
     t0.current = Date.now();
     setLive({ stage: "intake", progress: 0, witnesses: {}, messages: [], log: [] });
     refresh()?.then((d) => {
-      if (!d || d.status === "complete" || d.status === "failed") return;
+      if (cancelled || !d || d.status === "complete" || d.status === "failed") return;
       stop = streamCase(caseId, ({ event, data }) => {
         const t = (Date.now() - t0.current) / 1000;
         setLive((s) => {
@@ -104,7 +105,10 @@ export function useLiveCase(caseId: string | undefined) {
         if (event === "done" || event === "error") refresh();
       });
     });
-    return () => stop?.();
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
   }, [caseId, refresh]);
 
   return { detail, live, error, refresh, setDetail };

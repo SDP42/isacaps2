@@ -24,6 +24,7 @@ export function ProcessingView({ live, detail }: { live: LiveState; detail: Case
     if (a.kind === "image") expected.add("provenance");
   }
   if (detail?.message_text) expected.add("words");
+  const messages = detail?.status === "complete" && detail.tribunal.length ? detail.tribunal : live.messages;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
@@ -82,8 +83,8 @@ export function ProcessingView({ live, detail }: { live: LiveState; detail: Case
           <p className="label">Tribunal · live</p>
           <div className="mt-3 flex-1 space-y-2 overflow-y-auto">
             <AnimatePresence initial={false}>
-              {live.messages.length === 0 && <p className="text-[13px] text-dim">Agents will testify once the witnesses report.</p>}
-              {live.messages.slice(-5).map((m) => (
+              {messages.length === 0 && <p className="text-[13px] text-dim">Agents will testify once the witnesses report.</p>}
+              {messages.slice(-5).map((m) => (
                 <motion.div key={m.seq} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] leading-relaxed">
                   <span className="font-mono text-[10.5px] tracking-[0.12em]" style={{ color: AGENT_META[m.agent]?.color }}>{AGENT_META[m.agent]?.name.toUpperCase()} </span>
                   <span className="text-silver">{m.content}</span>
