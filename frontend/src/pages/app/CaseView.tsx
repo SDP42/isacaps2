@@ -8,6 +8,7 @@ import { MediaStudio } from "@/components/case/MediaStudio";
 import { IdentityPanel, MessageIntel } from "@/components/case/MessagePanels";
 import { TribunalFlow } from "@/components/case/TribunalFlow";
 import { EvidenceLedger, LensPanel, VerdictPanel, WitnessPanel } from "@/components/case/VerdictPanels";
+import { WhatIf } from "@/components/case/WhatIf";
 import { Button } from "@/components/ui/Button";
 import { BandPill, Empty, Segmented, Skeleton } from "@/components/ui/primitives";
 import { downloadReport } from "@/lib/api";
@@ -75,6 +76,7 @@ export default function CaseView() {
                   <VerdictPanel v={detail.verdict!} onCite={cite} />
                   <LensPanel v={detail.verdict!} />
                 </div>
+                <WhatIf detail={detail} />
                 <MediaStudio detail={detail} selected={selected} onSelect={setSelected} />
                 <MessageIntel detail={detail} selected={selected} onSelect={setSelected} />
                 <div className="grid gap-4 xl:grid-cols-2">
