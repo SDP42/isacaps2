@@ -1,5 +1,27 @@
 # Detection methodology and model cards
 
+MIRAGE runs two kinds of models side by side: **its own explainable models** (trained here on synthetic data, small,
+fast, feature-level explanations) and **public pretrained detectors** (trained on real deepfake data). Witnesses blend
+them and keep both scores, so agreement or disagreement is visible in the case view.
+
+## Pretrained models
+
+| Witness | Model | Blend | Notes |
+|---|---|---|---|
+| Voice | `MelodyMachine/Deepfake-audio-detection-V2` (wav2vec2, labels fake/real, Apache-2.0) | 50% own + 50% pretrained, clip level (first 20 s) | On our samples: TTS clones 0.9999 fake, simulated genuine voice 0.00002 |
+| Provenance | `umm-maybe/AI-image-detector` (labels artificial/human, CC-BY-4.0) | 30% own + 70% pretrained; evidence above 0.55 | AI headshot 0.72; the same image re-saved as JPEG 0.66 (our model alone: 0.41) |
+| Face / provenance | `prithivMLmods/Deep-Fake-Detector-v2-Model` (ViT, labels Realism/Deepfake, Apache-2.0) | per face crop: 40% own + 60% pretrained; on images an extra exhibit above 0.70 | Loaded from the repo's checkpoint folder when the top-level weights are missing |
+| Speech-to-text | faster-whisper `base` (int8, CPU) | n/a | Language detected; Hindi-family languages transcribed in Roman script with a Hinglish prompt; skipped under 2.5 s; low-confidence or repetitive output dropped |
+| OCR | RapidOCR (ONNX) | n/a | Line text and boxes; flagged lines are drawn on the screenshot |
+
+**Selected, downloaded by `scripts/download_models.py`, not yet integrated:** `microsoft/wavlm-base-plus-sv`
+(voiceprints), OpenCV YuNet (face detection), `MoritzLaurer/mDeBERTa-v3-base-mnli-xnli` (zero-shot intent),
+`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (casebook retrieval). See [ROADMAP](../ROADMAP.md).
+
+Pretrained models are optional (`MIRAGE_PRETRAINED=off`); every witness falls back to MIRAGE's own model.
+
+# MIRAGE's own models
+
 No dataset was provided with PS-02, and the strongest public deepfake corpora (ASVspoof 5, FaceForensics++,
 Celeb-DF, IndicSynth) need licences and GPUs we did not have at build time. We therefore built **simulators** that
 reproduce the documented fingerprints of each attack class, trained lightweight, explainable models on them, and
