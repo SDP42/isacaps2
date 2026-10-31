@@ -70,13 +70,8 @@ export function RiskRing({
 export function Meter({ value, color = "var(--color-cyan)", className, height = 4 }: { value: number; color?: string; className?: string; height?: number }) {
   return (
     <div className={cx("w-full overflow-hidden rounded-full bg-ink-4", className)} style={{ height }}>
-      <motion.div
-        className="h-full rounded-full"
-        style={{ background: color }}
-        initial={{ width: 0 }}
-        animate={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      />
+      <div className="mark-grow h-full rounded-full transition-[width] duration-700"
+        style={{ background: color, width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
     </div>
   );
 }

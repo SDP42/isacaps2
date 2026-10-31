@@ -307,6 +307,25 @@ def ask_case(case_id: str, body: AskIn, user: Principal = Depends(current_princi
     return tribunal.ask(body.question, d, d["evidence"], d["verdict"], d["tribunal"])
 
 
+@router.get("/{case_id}/response")
+def case_response(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    """The "what now" emergency plan for a finished case (same builder as the voice check and the extension)."""
+    from ..fusion import response as resp
+
+    c = get_case(db, case_id)
+    if not c.verdict:
+        raise HTTPException(409, "The investigation is still running.")
+    v = c.verdict
+    tactics = set(next((f.details_json.get("tactics", []) for f in c.findings if f.witness == "words"), []))
+    synthetic = "LIKELY_SYNTHETIC" in (v.tags or [])
+    category = resp.categorise(v.requested_action, tactics, c.message_text or "")
+    if synthetic and category == "benign":
+        category = "synthetic_benign"
+    sensitive = v.requested_action in ("payment", "credential", "remote_access")
+    severity = "CRITICAL" if v.band == "HIGH" and synthetic and sensitive else v.band
+    return resp.build(category, severity, synthetic, claimed=c.claimed_sender or None, org=user.role != "family")
+
+
 @router.get("/{case_id}/graph")
 def case_graph(case_id: str, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
     return case_chain(db, get_case(db, case_id))

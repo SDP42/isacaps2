@@ -1,7 +1,6 @@
 import { RotateCcw, Sparkles } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
-import { BandPill, PanelHead, RiskRing } from "@/components/ui/primitives";
+import { BandPill, PanelHead } from "@/components/ui/primitives";
 import { post } from "@/lib/api";
 import { BAND_COLOR, cx, WITNESS_META } from "@/lib/format";
 import type { Band, CaseDetail } from "@/lib/types";
@@ -108,17 +107,25 @@ export function WhatIf({ detail }: { detail: CaseDetail }) {
         </div>
 
         <div className="flex flex-col items-center gap-4 border-t border-line pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-          <div className="relative">
-            <RiskRing key={`${cur.band}-${Math.round(cur.risk)}`} risk={cur.risk} band={cur.band} size={170} stroke={9} />
-            <AnimatePresence>
-              {off.size > 0 && Math.abs(delta) >= 0.5 && (
-                <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="absolute -right-6 top-2 rounded-full border px-2 py-0.5 font-mono text-[11px]"
-                  style={{ color: delta < 0 ? "#6ee7b7" : "#fb7185", borderColor: delta < 0 ? "#6ee7b755" : "#fb718555" }}>
-                  {delta > 0 ? "+" : ""}{delta.toFixed(0)}
-                </motion.span>
-              )}
-            </AnimatePresence>
+          {/* before → after, not a second copy of the risk ring */}
+          <div className="flex w-full items-end justify-center gap-4">
+            <div className="text-center">
+              <p className="label !text-[10px]">Now</p>
+              <p className="tnum text-[40px] font-semibold leading-none" style={{ color: BAND_COLOR[v.band] }}>{Math.round(v.risk)}</p>
+            </div>
+            <span className="pb-2 text-dim">→</span>
+            <div className="text-center">
+              <p className="label !text-[10px]">{off.size ? "If withdrawn" : "Withdraw an exhibit"}</p>
+              <p className="tnum text-[40px] font-semibold leading-none transition-colors" style={{ color: off.size ? BAND_COLOR[cur.band] : "var(--color-dim)" }}>
+                {off.size ? Math.round(cur.risk) : "–"}
+              </p>
+            </div>
+            {off.size > 0 && Math.abs(delta) >= 0.5 && (
+              <span className="mb-2 rounded-full border px-2 py-0.5 font-mono text-[11px]"
+                style={{ color: delta < 0 ? "#6ee7b7" : "#fb7185", borderColor: delta < 0 ? "#6ee7b755" : "#fb718555" }}>
+                {delta > 0 ? "+" : ""}{delta.toFixed(0)}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2 text-[12.5px]">
             <BandPill band={v.band} /><span className="text-dim">→</span><BandPill band={cur.band} />
@@ -128,7 +135,7 @@ export function WhatIf({ detail }: { detail: CaseDetail }) {
               <div key={l.k} className="grid grid-cols-[92px_1fr_38px] items-center gap-2 text-[12px]">
                 <span className="text-muted">{l.label}</span>
                 <span className="relative h-1.5 rounded-full bg-ink-4">
-                  <motion.span className="absolute inset-y-0 left-0 rounded-full" style={{ background: l.c }} animate={{ width: `${(cur.dims[l.k] ?? 0) * 100}%` }} transition={{ duration: 0.5 }} />
+                  <span className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500" style={{ background: l.c, width: `${(cur.dims[l.k] ?? 0) * 100}%` }} />
                   <span className="absolute -top-1 h-3.5 w-px bg-fg/70" style={{ left: `${(v.dims[l.k] ?? 0) * 100}%` }} title="original" />
                 </span>
                 <span className="tnum text-right font-mono text-[11px] text-silver">{(cur.dims[l.k] ?? 0).toFixed(2)}</span>

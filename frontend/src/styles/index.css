@@ -177,6 +177,18 @@ button:not(:disabled):active { transform: translateY(1px); }
 }
 .live-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
 
+/* Data marks are drawn at their final geometry. Entrances only run under .motion-ok, which main.tsx sets after the
+   browser has painted two frames: where frames never run (throttled tab, capture, print) content shows in its final
+   state instead of stuck invisible at frame 0. */
+@keyframes rise { from { transform: scaleY(0); } }
+@keyframes grow { from { transform: scaleX(0); } }
+.mark-rise { transform-box: fill-box; transform-origin: 50% 100%; }
+.motion-ok .mark-rise { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+.motion-ok .page-enter { animation: page-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.mark-grow { transform-origin: 0 50%; }
+.motion-ok .mark-grow { animation: grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;

@@ -23,15 +23,20 @@ const EDGE_STATE: Record<string, { color: string; dash?: string; label: string }
 };
 
 function CampaignFlow({ c, onPick, picked }: { c: Campaign; onPick: (id: string) => void; picked: string | null }) {
-  const nodes: Node[] = c.stages.map((s, i) => ({ id: s.case_id, type: "stage", position: { x: i * 290, y: i % 2 ? 70 : 0 }, data: { ...s, index: i + 1 }, selected: picked === s.case_id }));
+  // wrap long campaigns into rows of four (reading order) so fit-to-view keeps the cards legible
+  const PER_ROW = 4;
+  const nodes: Node[] = c.stages.map((s, i) => ({
+    id: s.case_id, type: "stage", data: { ...s, index: i + 1 }, selected: picked === s.case_id,
+    position: { x: (i % PER_ROW) * 290, y: Math.floor(i / PER_ROW) * 190 + (i % 2 ? 36 : 0) },
+  }));
   const edges: Edge[] = c.stages.slice(1).map((s, i) => ({
-    id: `e${i}`, source: c.stages[i].case_id, target: s.case_id, animated: true,
+    id: `e${i}`, source: c.stages[i].case_id, target: s.case_id, animated: true, type: "smoothstep",
     label: `+${Math.max(0, Math.round((new Date(s.at).getTime() - new Date(c.stages[i].at).getTime()) / 3.6e6))}h`,
     labelStyle: { fill: "#8e99ad", fontFamily: "Geist Mono", fontSize: 10 }, labelBgStyle: { fill: "#070b14" },
     style: { stroke: "#fb7185", strokeWidth: 1.5 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#fb7185" },
   }));
   return (
-    <ReactFlow nodes={nodes} edges={edges} nodeTypes={chainNodeTypes} fitView fitViewOptions={{ padding: 0.2 }} onNodeClick={(_, n) => onPick(n.id)}
+    <ReactFlow key={c.id} nodes={nodes} edges={edges} nodeTypes={chainNodeTypes} fitView fitViewOptions={{ padding: 0.15, maxZoom: 1.1 }} onNodeClick={(_, n) => onPick(n.id)}
       proOptions={{ hideAttribution: true }} colorMode="dark" nodesDraggable minZoom={0.3}>
       <Background variant={BackgroundVariant.Lines} gap={48} color="rgb(148 163 184 / 0.05)" />
       <Controls showInteractive={false} />
@@ -60,7 +65,7 @@ function CaseChain({ caseId }: { caseId: string }) {
   }, [data]);
   if (!data) return <Skeleton className="h-full" />;
   return (
-    <ReactFlow nodes={nodes} edges={edges} nodeTypes={chainNodeTypes} fitView fitViewOptions={{ padding: 0.2 }} proOptions={{ hideAttribution: true }} colorMode="dark" minZoom={0.3}>
+    <ReactFlow key={caseId} nodes={nodes} edges={edges} nodeTypes={chainNodeTypes} fitView fitViewOptions={{ padding: 0.15, maxZoom: 1.1 }} proOptions={{ hideAttribution: true }} colorMode="dark" minZoom={0.3}>
       <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="rgb(148 163 184 / 0.12)" />
       <Controls showInteractive={false} />
     </ReactFlow>

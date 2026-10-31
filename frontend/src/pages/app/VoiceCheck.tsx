@@ -1,6 +1,7 @@
 import { AudioLines, Bot, FileAudio, Loader2, MessageSquareWarning, ScanLine, Upload, User } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ModelJury, type JuryMeta } from "@/components/app/ModelJury";
 import { Waveform } from "@/components/app/Waveform";
 import { RecordButton } from "@/components/app/VoiceControls";
 import { SEVERITY_COLOR, WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
@@ -12,7 +13,7 @@ import { cx, inr } from "@/lib/format";
 interface Triage {
   sha256: string;
   stage1: { label: string; verdict: "ai" | "human" | "uncertain"; score: number | null; confidence: number; summary: string;
-    models: Record<string, number> | null; agree: boolean | null; windows: { t0: number; t1: number; score: number }[];
+    models: Record<string, number> | null; meta?: Record<string, JuryMeta> | null; agree: boolean | null; windows: { t0: number; t1: number; score: number }[];
     waveform: number[] | null; duration_s: number; channel: { codec_guess: string; snr_db: number } | null; status: string; noisy?: boolean };
   stage2: { transcript: string; language: string | null; semantics: null | {
     score: number; summary: string; tactics: string[]; action: string; amount_inr: number | null; category: string; category_label: string;
@@ -193,18 +194,7 @@ export default function VoiceCheck() {
                     <Meter value={s1.score ?? 0} color={vColor} className="mt-2" height={6} />
                   </div>
                 </div>
-                {s1.models && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {Object.entries(s1.models).map(([m, v]) => (
-                      <span key={m} title={m} className={cx("rounded-md border px-2 py-0.5 font-mono text-[10.5px]", v >= 0.5 ? "border-crimson/40 text-crimson" : "border-mint/30 text-mint")}>
-                        {m.split("/").pop()} {v.toFixed(2)}
-                      </span>
-                    ))}
-                    <span className={cx("rounded-md border px-2 py-0.5 font-mono text-[10.5px]", s1.agree ? "border-mint/30 text-mint" : "border-amber/40 text-amber")}>
-                      {s1.agree ? "models agree" : "models disagree"}
-                    </span>
-                  </div>
-                )}
+                {s1.models && <ModelJury models={s1.models} meta={s1.meta} consensus={s1.score} fakeWord="synthetic" />}
                 {s1.waveform && <Waveform peaks={s1.waveform} duration={s1.duration_s} src={url ?? undefined} windows={s1.windows} height={72} />}
                 <p className="text-[12.5px] text-muted">{s1.summary}</p>
                 {s1.noisy && (

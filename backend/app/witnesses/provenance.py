@@ -111,6 +111,7 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         names = {k: pretrained.name(k) for k in pre["models"]}
         res.model_version = " + ".join(names.values()) + " (primary) + " + res.model_version
         res.details["pretrained"] = {"models": {names[k]: round(v, 4) for k, v in pre["models"].items()},
+                                     "meta": pretrained.meta(pre["models"]),
                                      "score": round(pre["p"], 4), "own_score": round(own, 4),
                                      "agreement": round(pre["agree"], 3), "agree": pre["agree"] >= 0.67}
         # disagreement between independent detectors lowers confidence instead of hiding it
