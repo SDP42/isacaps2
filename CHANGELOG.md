@@ -1,5 +1,10 @@
 # Changelog
 
+## 1 November 2026 (handover)
+
+- `docs/HANDOVER.md`: one document for whoever picks the project up: constraints, workflow, run commands,
+  architecture, file map, measured results, known limits and next steps.
+
 ## 1 November 2026 (later): demo inputs and accuracy fixes
 
 - `demo_inputs/`: 32 test inputs for every feature (voice notes, calls, images, videos, messages, emails, multi-file

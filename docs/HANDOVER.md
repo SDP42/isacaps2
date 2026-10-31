@@ -1,0 +1,257 @@
+# Handover
+
+Everything a new contributor (human or AI agent) needs to pick MIRAGE up without the history of the conversations that
+built it. Read this first, then [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) and [DETECTION.md](DETECTION.md).
+
+State as of 1 November 2026: `main` at the commit that added this file. CI is green, 21/21 backend tests pass, and
+32/32 demo inputs return their expected verdicts.
+
+## 1. What MIRAGE is
+
+- **Event:** D3COY 1.0 (DJS ISACA), problem statement **PS-02**, which covers detecting deepfake-driven social
+  engineering (voice clones, face swaps, AI images, scam scripts) and responding to it.
+- **Team:** Outliers, DJSCE. Repository: <https://github.com/SDP42/isacaps2>.
+- **Audience:** hackathon judges, so the product is demo-first. The detection still has to be real.
+- **Core idea:** five *witnesses* each examine one kind of evidence:
+
+  | Witness | What it examines |
+  |---|---|
+  | voice | AI voice |
+  | face | face swap |
+  | provenance | AI image or edit |
+  | words | scam script and request |
+  | identity | voiceprint and Trustbook of known contacts |
+
+  A request-aware risk engine fuses the witnesses' findings. An AI Tribunal (LangGraph) explains the verdict. The
+  **Cure Console** then walks the victim through what to do next.
+- **Red-team lab:** generates synthetic scam content (voices, images, avatar videos), launders it (phone line,
+  WhatsApp, MP3, noise and so on) and measures whether MIRAGE still catches it. Everything it makes is stamped as
+  synthetic.
+- **Chrome extension:** *MIRAGE Shield* (MV3) runs right-click checks, live tab-audio capture and a Gmail banner.
+
+## 2. Hard constraints and guardrails (do not break)
+
+1. **No training.** Detection uses only pretrained models plus calibration (thresholds and logit-space ensembles). MIRAGE's
+   own small models (TF-IDF and similar) are already trained and ship in `backend/models_store/`.
+2. **No `trust_remote_code`.** DF_Arena and GenD are vendored after review in `backend/app/witnesses/df_arena.py` and
+   `gend.py`. If a new model needs remote code, vendor and review it the same way.
+3. **Red-team content stays synthetic and fictional.**
+   - Every image is stamped "MIRAGE RED TEAM · SYNTHETIC".
+   - No real people's likenesses or voices.
+   - Neural TTS voices only (edge-tts).
+4. **Cure connectors are simulated.** `hold_payment`, `revoke_sessions`, `bank_recall` and `soc_ticket` change
+   local state only. They never contact a bank or a SOC, and the UI says so.
+5. **Honesty.** Docs and UI report measured numbers and state the weak spots (section 9). Don't claim more than that.
+
+## 3. Workflow (important)
+
+- **Two directories:**
+
+  | Path | What it is |
+  |---|---|
+  | `C:\isacaps2-main` | Working copy where the app runs (not a git repo) |
+  | `C:\isacaps2-git` | The git clone |
+
+- **Sync:** edit in `-main`, then copy into the clone (Git Bash):
+
+  ```bash
+  cd /c/isacaps2-main && tar --exclude=node_modules --exclude=.venv --exclude=models_hf --exclude=var --exclude=__pycache__ --exclude=dist --exclude=.pytest_cache --exclude='*.tsbuildinfo' --exclude=.git -cf - . | (cd /c/isacaps2-git && tar -xf -)
+  ```
+
+- **Commits:** the owner is the only contributor. Commit and push **straight to `main`**: no branches, PRs, pulls
+  or merges.
+  - Push with `git -c http.postBuffer=157286400 push origin main`. Large pushes time out with HTTP 408, so push big
+    binaries in batches.
+  - End commit messages with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+- **Before the full test suite, stop the API.** Both loading models together exhausts GPU memory.
+- **Network quirks on this machine:**
+  - The npm registry is blocked, so `frontend/.npmrc` points to `registry.yarnpkg.com`.
+  - The PyTorch CDN is slow. Resume downloads with curl, then run `pip install --no-deps`.
+  - Pin `huggingface_hub<1.0`; 2.x breaks transformers.
+  - Pin OpenCV below 5; 5.x has no `CascadeClassifier`.
+
+## 4. Run it
+
+```bash
+# backend (Python 3.11+, CUDA optional)
+cd backend && python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
+.venv/Scripts/python scripts/download_models.py          # ~6 GB into backend/models_hf (groups: audio image face text redteam)
+.venv/Scripts/uvicorn app.main:app --port 8000
+
+# frontend
+cd frontend && npm install && npm run dev                 # http://localhost:5173
+```
+
+- `.claude/launch.json` has `web` and `api` configurations for the desktop app's preview.
+- **Demo sign-in:** pick a persona on the login page:
+
+  | Persona id | Name | Role |
+  |---|---|---|
+  | `analyst` | Shreyas Kale | SOC analyst |
+  | `employee` | Kavita Shah | Accounts payable |
+  | `admin` | Vikram Desai | Head of IT |
+  | `family` | Lata Panchal | Personal safety |
+
+- **Environment switches:**
+  - `MIRAGE_PRETRAINED=off`, `MIRAGE_ASR=off`, `MIRAGE_OCR=off` give the light mode used by CI.
+  - `ANTHROPIC_API_KEY` enables the optional Claude judge in the words witness.
+  - `MIRAGE_ASR_MODEL` sets the Whisper size (default `base`).
+- **Tests:** `cd backend && .venv/Scripts/python -m pytest -q` runs 21 tests.
+- **Demo inputs:** with the API running, `python backend/scripts/verify_demo_inputs.py` rewrites
+  `demo_inputs/RESULTS.md`.
+- **Benchmarks:** `scripts/fetch_benchmark.py`, then `scripts/benchmark_models.py`, which writes
+  `models_store/benchmark.json`.
+- **Screenshots for the README:** `scripts/capture_screens.py` (Playwright with Edge) writes `docs/images/*.jpg`.
+
+## 5. Architecture in one page
+
+```
+frontend (React + Vite + TS, R3F for 3D) ──REST/SSE──▶ FastAPI (backend/app/main.py)
+extension (MV3) ─────────────────────────────────────▶   routers: auth, cases, misc, triage, redteam
+                                                          │
+             case upload ─▶ storage (sniff + sha256) ─▶ witnesses (threads) ─▶ fusion/risk.py ─▶ Tribunal (LangGraph, SSE)
+                                                          │                               └▶ fusion/response.py ─▶ cure.py
+                                                          └ pretrained.py: model registry, one RLock for load + GPU inference
+SQLite via SQLAlchemy 2 (backend/var/), models in backend/models_hf/
+```
+
+### Detection stack (`backend/app/witnesses/pretrained.py`)
+
+Each model's score is recentred on its measured threshold (`THRESHOLDS`) and averaged in logit space with `WEIGHTS`.
+How far the models agree sets the confidence. Every load and every GPU inference goes through a single global RLock,
+`_LOCK`; concurrent loads used to crash natively.
+
+| Modality | Models (threshold) | Notes |
+|---|---|---|
+| Voice | DF_Arena 500M (0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, index 0 = fake) | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
+| Voiceprint | WavLM-base-plus-sv | Cosine match at 0.86 |
+| Image | Community Forensics ViT-S/384 (0.01) + haywoodsloan SwinV2 (0.1) | Organika SDXL detector removed: it flagged real photos |
+| Face | YuNet detector (Haar fallback) + GenD CLIP L/14 and GenD PE-L (0.75, index 1 = fake) | Median plus attention pooling over frames. The YuNet instance is locked |
+| Text | TF-IDF (own, 0.5) + cybersectony phishing DistilBERT (LABEL_0 and LABEL_2 = safe) + mDeBERTa zero-shot intents (0.9, need corroboration) + optional Claude judge (0.6) | Blended in logit space in `words.py` |
+| ASR / OCR | faster-whisper (Hinglish kept in Roman script), RapidOCR + `normalise_ocr()` (re-splits glued words, protects IFSC codes, UPI IDs and URLs) | `transcribe.py` |
+
+### Risk engine (`fusion/risk.py`)
+
+1. **Policy rules first.** For example, the "harmless synthetic" rule fires when
+   `a >= 0.6 and action == "none" and not tactics and c < 0.3`.
+2. **Calibrated noisy-OR** over the artefact (A), manipulation (M) and context (C) scores, with S the request's
+   sensitivity: `risk = 100·σ(logit(1−(1−A·S)(1−M·S)(1−C))/T)`, T = 1.65.
+3. **Context weight:** `c *= 0.25 + 0.75·s`.
+4. **Shapley contributions** feed the score waterfall in the UI.
+
+### Two-stage voice check (`routers/triage.py`)
+
+| Stage | What happens |
+|---|---|
+| 1 | AI or human. AI at 0.7 and above, human at 0.3 and below |
+| 2 | Semantics: tactics, request, category |
+| 3 | The `_decide` 2×2 matrix sets severity (CRITICAL voice-clone scam … LOW benign) |
+| 4 | `response.build()` writes the "what now" plan |
+
+`/v1/quick/text` and `/v1/quick/media` serve the extension. Videos are also judged on their voice track.
+
+### Cure Console (`backend/app/cure.py`, Respond tab)
+
+- **Stages:** Contain → Verify → Recover → Report → Immunise, with plans per scam category (`response.CATEGORIES`).
+- **Live indicators:** an exposure meter and a golden-hour clock that starts when the victim marks the money as paid.
+- **Simulated actions:** hold the payment, revoke sessions, bank recall, SOC ticket.
+- **Drafts:** complaint, 1930 call script, bank recall, Chakshu, CERT-In, network warning, challenge questions.
+- **Follow-up:** evidence-pack ZIP, identifier blocklist, "who else was targeted", and a red-team drill of the same
+  attack.
+- **Storage:** state lives in `ResponseRun.state_json`. `_state()` deep-copies the JSON so that changes persist.
+
+### Frontend (`frontend/src`)
+
+- **Navigation groups:** Overview, Detect, Explain, Prove, Intelligence, Demo (`components/app/nav.ts`).
+- **Presenter mode:** `localStorage` key `mirage.demo`; Alt+← and Alt+→ step through it.
+- **Animation gating:** entrances run only under `.motion-ok`, which `main.tsx` sets after two rAF frames. Charts
+  use static geometry. A paused animation loop in a hidden pane used to leave them empty.
+- **Key components:** ModelJury, RiskWaterfall, RiskRiver, WhatNow, CureConsole, and RobustnessTerrain (R3F,
+  `frameloop="demand"`; the only 3D, used where it explains something).
+
+### Extension (`extension/`)
+
+- **Manifest V3:** popup, context menus, a Gmail content script, and `tabCapture` plus an offscreen document that
+  sends 3-second WAV chunks to `/v1/live/chunk`.
+- **CORS:** the backend allows `chrome-extension://[a-p]{32}`.
+
+## 6. File map (where to change what)
+
+| Want to change | File |
+|---|---|
+| Add or swap a pretrained model, thresholds, weights | `backend/app/witnesses/pretrained.py`, `scripts/download_models.py` |
+| Voice / face / image / text logic | `backend/app/witnesses/{voice,face,provenance,words,identity}.py` |
+| Risk fusion, policy rules | `backend/app/fusion/risk.py` |
+| Scam categories, helplines, "what now" plans | `backend/app/fusion/response.py` |
+| Cure stages, actions, drafts, evidence pack | `backend/app/cure.py`, `routers/cases.py` (`/cure*`) |
+| Voice check, quick checks | `backend/app/routers/triage.py` |
+| Red-team generators and laundering | `backend/app/redteam.py`, `routers/redteam.py` |
+| Live call chunks, enrolment, `/models` | `backend/app/routers/misc.py` |
+| Seed personas, Trustbook, samples | `backend/app/seed.py`, `samples.py` |
+| DB schema | `backend/app/models.py` |
+| Screens | `frontend/src/pages/app/*.tsx` (VoiceCheck, RedTeam, CaseView, LiveShield, AttackChain, System, …) |
+| Case components | `frontend/src/components/case/*` (CureConsole, RiskWaterfall, WhatIf, MediaStudio) |
+| Tests | `backend/tests/test_mirage.py` |
+| CI | `.github/workflows/ci.yml` (CPU torch, light mode; frontend `tsc` and `vite build`; extension `node --check`) |
+| Demo inputs | `demo_inputs/`, `backend/scripts/make_demo_inputs.py`, `verify_demo_inputs.py` |
+
+## 7. Conventions
+
+- **Python:** short modules, a docstring at the top explaining *why*, and few comments. Optional dependencies are
+  lazy and degrade gracefully (`status != "ok"` rather than raising).
+- **Every verdict:**
+  - carries `evidence` (spans, boxes or seconds), `model_version` and a confidence;
+  - is explainable in the Tribunal;
+  - ends in a response plan.
+- **Frontend:** Tailwind with the existing design tokens. No decorative 3D. Charts must be truthful (real data, real
+  axes).
+- **Docs:** British spelling, measured numbers only. Update `CHANGELOG.md` and the relevant `docs/*.md` with each
+  change.
+
+## 8. Results (measured)
+
+| Area | Result |
+|---|---|
+| Voice | AUC 1.00 on the benchmark set. Red-team 40/42 caught; both misses are heavy-noise laundering |
+| Images | AUC 0.98, 94 % accuracy. Red-team 15/15 |
+| Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
+| Text | Indian scam SMS set: 0.92 |
+| Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
+| Tests / CI | 21/21 pass, both full and light mode; CI green on `main` |
+
+## 9. Known limits and next steps
+
+**Known limits:**
+
+- In-the-wild face swaps and fully generated video (OpenForensics 0.71).
+- Heavy background noise on voice. This is handled as "uncertain", not as a decision.
+- The Chrome extension has not yet been run inside real Chrome. It has only been syntax-checked and API-tested.
+- Demo authentication only. There is no licence file yet; the owner has to choose one.
+- Cure connectors are simulated.
+
+**Next steps, in priority order:**
+
+1. Load the extension in Chrome and test it with `demo_inputs/08_extension/test-page.html`.
+2. UI phase 4: accessibility (focus order, aria, contrast) and performance (route splitting, smaller 3D bundle). See
+   [UI_PLAN.md](UI_PLAN.md).
+3. Video: add a temporal or lip-sync model for fully generated video; test on more in-the-wild data.
+4. Voice under noise: try more robust ensembles rather than denoising. Denoising was tested and made detection worse.
+5. Real authentication (OIDC) and a licence. Real connectors only behind explicit configuration.
+
+Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [UI_PLAN.md](UI_PLAN.md).
+
+## 10. Lessons already paid for
+
+- **Model loading and GPU memory:**
+  - Concurrent model loads or GPU transfers crash the process natively. Keep everything under `pretrained._LOCK`.
+  - The tests and the API together run out of GPU memory. Stop the API before running the full suite.
+- **Windows:**
+  - `NamedTemporaryFile` keeps the file locked on Windows; use `TemporaryDirectory`.
+  - `samples.tts_file` uses SAPI through PowerShell on Windows and `say` on macOS.
+- **Detection accuracy:**
+  - Without corroboration, zero-shot intents invent requests in benign text. That is why the 0.9 threshold and the
+    corroboration rule exist.
+  - Shifting thresholds for noisy audio caused 11/120 false positives. Use the uncertainty rule instead.
+- **Frontend:** a hidden browser pane pauses requestAnimationFrame, so animated charts render empty. Hence
+  `.motion-ok` and static geometry.
+- **Cure engine:** the SQLAlchemy JSON column does not persist changes made in place. Deep-copy, then assign.

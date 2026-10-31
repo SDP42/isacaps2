@@ -463,6 +463,7 @@ History: [CHANGELOG.md](CHANGELOG.md).
 
 | Document | Contents |
 |---|---|
+| [docs/HANDOVER.md](docs/HANDOVER.md) | Start here to take over: constraints, workflow, architecture, file map, results, next steps |
 | [demo_inputs/README.md](demo_inputs/README.md) | 32 test inputs across every feature, with expected and measured results |
 | [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md) | What is built, architecture, flow, features, use cases, results |
 | [docs/CURE.md](docs/CURE.md) | The cure: ideas, scenario plans, architecture, what is simulated |
