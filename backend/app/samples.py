@@ -131,7 +131,7 @@ def _notice_image(path: Path) -> None:
                               "You are placed under DIGITAL ARREST.", "Do not disclose this notice to anyone.",
                               "Deposit verification amount within 2 hours.", "", "MIRAGE SAMPLE - synthetic demo image"]):
         d.text((80, 200 + i * 40), line, fill=(30, 30, 30))
-    small = bg.resize((360, 450), Image.Resampling.BILINEAR).resize((720, 900), Image.Resampling.NEAREST)
+    small = bg.resize((560, 700), Image.Resampling.BILINEAR).resize((720, 900), Image.Resampling.BILINEAR)
     info = PngImagePlugin.PngInfo()
     info.add_text("Comment", "MIRAGE SAMPLE")
     small.save(path, pnginfo=info)
@@ -190,19 +190,54 @@ def _video(path: Path, audio: np.ndarray, drift_s: float = 0.32) -> None:
     wav.unlink(missing_ok=True)
 
 
+def _say(text: str, voice: str, telephony: bool = False) -> np.ndarray | None:
+    """Real, intelligible synthetic speech from the OS text-to-speech engine (macOS `say`), so the clones in the
+    Scenario Lab are genuinely machine-generated and speech-to-text can transcribe them. Returns None elsewhere."""
+    import shutil
+    import tempfile
+
+    if not shutil.which("say"):
+        return None
+    with tempfile.TemporaryDirectory() as d:
+        out = Path(d) / "v.aiff"
+        if subprocess.run(["say", "-v", voice, "-r", "175", "-o", str(out), text], capture_output=True).returncode:
+            return None
+        x = dsp.load_audio(out)
+    if telephony:
+        from scipy.signal import butter, sosfilt
+
+        x = sosfilt(butter(4, [300, 3400], "bandpass", fs=dsp.SR, output="sos"), x)
+    return (x / (np.abs(x).max() + 1e-9) * 0.8).astype(np.float32)
+
+
+SPOKEN = {
+    "cfo": ("Hi, it's Rajesh. I'm in a board meeting and can't take calls. Please process forty eight lakh fifty "
+            "thousand rupees to the new vendor account before 4 PM. Very urgent. Keep this between us, audit wale ko "
+            "abhi mat batana.", "Rishi"),
+    "it": ("IT team se bol raha hoon. Aapka account reset ho raha hai. Jo OTP aaya hai woh bata do jaldi, ten "
+           "minute mein lock ho jayega.", "Rishi"),
+    "townhall": ("Join us for the quarterly townhall on Friday at 4 PM in the main auditorium. Snacks will be served!", "Tara"),
+    "papa": ("Beta main hoon, accident ho gaya hai, phone toot gaya. Paise abhi bhejo, seventy five thousand. Kisi ko "
+             "mat batana please.", "Aman"),
+    "ceo": ("As discussed on the call, transfer three point two crore to the escrow account today. This is "
+            "confidential until the acquisition is announced. Do not discuss with anyone in finance.", "Aman"),
+}
+
+
 def ensure_samples() -> Path:
     SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
-    if (SAMPLES_DIR / ".v3").exists():
+    if (SAMPLES_DIR / ".v4").exists():
         return SAMPLES_DIR
-    # speaker seeds match the Trustbook voiceprints (ml/synth_org.py voice_seed)
-    _write("cfo_voice_note.wav", dsp.write_wav(_voice(1, True, 9.0, 102, f0_scale=1.12, quality=0.25)))
-    _write("it_helpdesk.wav", dsp.write_wav(_voice(2, True, 4.0, 106, f0_scale=0.9, channel="telephony")))
+    spoken = {k: _say(t, v, telephony=(k == "it")) for k, (t, v) in SPOKEN.items()}
+    # speaker seeds match the Trustbook voiceprints (ml/synth_org.py voice_seed); simulator is the fallback
+    _write("cfo_voice_note.wav", dsp.write_wav(spoken["cfo"] if spoken["cfo"] is not None else _voice(1, True, 9.0, 102, f0_scale=1.12, quality=0.25)))
+    _write("it_helpdesk.wav", dsp.write_wav(spoken["it"] if spoken["it"] is not None else _voice(2, True, 4.0, 106, f0_scale=0.9, channel="telephony")))
     _write("controller_voice.wav", dsp.write_wav(_voice(3, False, 7.0, 103)))
-    _write("townhall_avatar.wav", dsp.write_wav(_voice(4, True, 8.0, 555, quality=0.1)))
-    _write("papa_voice_note.wav", dsp.write_wav(_voice(5, True, 8.0, 201, f0_scale=1.1, quality=0.3)))
+    _write("townhall_avatar.wav", dsp.write_wav(spoken["townhall"] if spoken["townhall"] is not None else _voice(4, True, 8.0, 555, quality=0.1)))
+    _write("papa_voice_note.wav", dsp.write_wav(spoken["papa"] if spoken["papa"] is not None else _voice(5, True, 8.0, 201, f0_scale=1.1, quality=0.3)))
     _write("short_clip.wav", dsp.write_wav(_voice(6, False, 1.5, 700)))
     _notice_image(SAMPLES_DIR / "cbi_notice.png")
     _headshot(SAMPLES_DIR / "vendor_headshot.png")
-    _video(SAMPLES_DIR / "ceo_meeting.mp4", _voice(7, True, 10.0, 101, f0_scale=1.08, quality=0.2, channel="none"))
-    (SAMPLES_DIR / ".v3").write_text("ok")
+    _video(SAMPLES_DIR / "ceo_meeting.mp4", spoken["ceo"] if spoken["ceo"] is not None else _voice(7, True, 10.0, 101, f0_scale=1.08, quality=0.2, channel="none"))
+    (SAMPLES_DIR / ".v4").write_text("ok")
     return SAMPLES_DIR
