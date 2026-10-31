@@ -49,7 +49,7 @@ export function Tribunal() {
   return (
     <section id="tribunal" ref={root} className="relative overflow-hidden bg-ink-0 py-24 lg:h-dvh lg:py-0">
       <div className="pointer-events-none absolute left-1/2 top-1/2 size-[70vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet/[0.05] blur-[140px]" />
-      <div className="relative mx-auto grid h-full max-w-[1400px] items-center gap-10 px-4 sm:px-8 lg:grid-cols-[1.05fr_1fr]">
+      <div className="relative mx-auto grid h-full max-w-[1400px] items-center gap-10 px-4 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
         <div>
           <h2 className="max-w-[14ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             The Tribunal argues <span className="font-serif italic text-violet">before</span> you decide.
@@ -58,7 +58,7 @@ export function Tribunal() {
             Specialist agents testify from the evidence. A Skeptic argues the innocent explanation. The Judge explains a
             score it is not allowed to change. Every sentence cites an exhibit.
           </p>
-          <svg viewBox="0 0 600 540" className="mt-6 w-full max-w-[600px]" role="img" aria-label="Tribunal diagram">
+          <svg viewBox="0 0 600 540" className="mt-4 w-full max-w-[560px] lg:max-h-[52vh]" role="img" aria-label="Tribunal diagram">
             <defs>
               <radialGradient id="core" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#fb7185" stopOpacity="0.5" />
@@ -91,7 +91,7 @@ export function Tribunal() {
           </svg>
         </div>
 
-        <ol className="relative space-y-2.5 lg:max-h-[78vh] lg:overflow-hidden">
+        <ol className="relative space-y-2">
           {SEATS.map((s, i) => (
             <motion.li
               key={s.key}
@@ -99,7 +99,7 @@ export function Tribunal() {
               animate={{ opacity: step >= i ? 1 : 0.16, x: step >= i ? 0 : 12 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className={cx(
-                "relative rounded-xl border px-4 py-3",
+                "relative rounded-xl border px-4 py-2.5",
                 s.stance === "ruling" ? "border-crimson/40 bg-crimson/[0.06]" : s.stance === "exc" ? "border-[#f0abfc]/30 bg-[#f0abfc]/[0.04]" : "border-line bg-ink-1/70",
               )}
             >
@@ -107,7 +107,7 @@ export function Tribunal() {
                 <span className="font-mono text-[10.5px] tracking-[0.14em]" style={{ color: s.color }}>{s.name.toUpperCase()}</span>
                 <span className="flex gap-1">{s.refs.map((r) => <span key={r} className="etag">{r}</span>)}</span>
               </div>
-              <p className="mt-1.5 text-[14px] leading-relaxed text-silver">{s.text}</p>
+              <p className="mt-1 text-[13.5px] leading-snug text-silver">{s.text}</p>
               {s.key === "skeptic" && <span className="absolute -left-2 top-4 hidden h-px w-2 bg-[#f0abfc] lg:block" />}
             </motion.li>
           ))}
