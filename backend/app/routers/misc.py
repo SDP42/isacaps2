@@ -60,6 +60,19 @@ def sample_file(name: str):
     return FileResponse(path)
 
 
+@router.post("/analyze/sample/{name}")
+def analyze_sample(name: str, user: Principal = Depends(current_principal)) -> dict:
+    """Score one Scenario Lab file with its media witness (fast path for the Spot-the-Fake challenge)."""
+    from ..witnesses import provenance, voice
+
+    path = (SAMPLES_DIR / name).resolve()
+    if path.parent != SAMPLES_DIR.resolve() or not path.exists():
+        raise HTTPException(404, "Sample not found.")
+    r = voice.analyse(path) if path.suffix in (".wav", ".mp3", ".m4a") else provenance.analyse(path)
+    return {"witness": r.witness, "score": r.score, "confidence": r.confidence, "summary": r.summary,
+            "evidence": [e.as_dict() for e in r.evidence if not e.exculpatory][:3]}
+
+
 # ---- identity ---------------------------------------------------------------------------------------------------------
 
 @router.get("/identity/graph")
