@@ -44,6 +44,7 @@
 
 html {
   background: var(--color-ink-0);
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -55,7 +56,7 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11";
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 ::selection {

@@ -99,7 +99,7 @@ export function Witnesses() {
         </div>
 
         {/* the arc */}
-        <div className="relative h-[360px] lg:h-full">
+        <div className="relative h-[360px] overflow-hidden lg:h-full lg:overflow-visible">
           <div
             className="absolute left-1/2 rounded-full border border-line"
             style={{ width: radius * 2, height: radius * 2, top: desktop ? "30%" : "28%", marginLeft: -radius }}

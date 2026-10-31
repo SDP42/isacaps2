@@ -46,7 +46,7 @@ export function Nav() {
             ))}
           </ul>
           <div className="flex items-center gap-2">
-            <Button to="/auth" variant="ghost" size="sm" className="hidden sm:inline-flex">Sign in</Button>
+            <span className="hidden sm:block"><Button to="/auth" variant="ghost" size="sm">Sign in</Button></span>
             <Button to="/auth" size="sm" magnetic className="!rounded-full !px-4">Launch MIRAGE</Button>
             <button className="grid size-9 place-items-center rounded-lg text-silver lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
               <Menu size={18} />
