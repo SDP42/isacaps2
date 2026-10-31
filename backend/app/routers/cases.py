@@ -190,6 +190,20 @@ def close_case(case_id: str, body: CloseIn, user: Principal = Depends(current_pr
     return case_detail(c)
 
 
+class WhatIfIn(BaseModel):
+    disabled: list[str] = []
+
+
+@router.post("/{case_id}/whatif")
+def what_if(case_id: str, body: WhatIfIn, user: Principal = Depends(current_principal), db: Session = Depends(get_db)) -> dict:
+    from ..fusion.whatif import recompute
+
+    c = get_case(db, case_id)
+    if not c.verdict:
+        raise HTTPException(409, "The investigation is still running.")
+    return recompute(c, set(body.disabled))
+
+
 class AskIn(BaseModel):
     question: str
 
