@@ -32,3 +32,6 @@ dist/
 .claude/skills/
 .taste-skill/
 skills-lock.json
+
+# Pretrained model weights (download with backend/scripts/download_models.py)
+backend/models_hf/
