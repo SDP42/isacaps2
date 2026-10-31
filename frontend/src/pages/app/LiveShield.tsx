@@ -60,10 +60,11 @@ export default function LiveShield() {
   const idx = useRef(0);
   const langRef = useRef<string | null>(null);
   const applied = useRef(-1);
+  const parts = useRef<string[]>([]);
   const caller = SAMPLES.find((s) => s.file === running)?.caller ?? "Unknown caller";
 
   const reset = () => {
-    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; applied.current = -1; setAlert(null); setSecs(0);
+    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; applied.current = -1; parts.current = []; setAlert(null); setSecs(0);
     setRolling({ tactics: [], action: "none", manipulation: 0, spans: [], amount: null });
   };
 
@@ -77,7 +78,8 @@ export default function LiveShield() {
       const r = await fetch("/v1/live/chunk", { method: "POST", body: fd, headers: { authorization: `Bearer ${getToken() ?? ""}` } }).then((x) => x.json());
       if (r.text && r.lang && !langRef.current) langRef.current = r.lang;
       if (r.text) {
-        textRef.current = `${textRef.current} ${r.text}`.trim();
+        parts.current[i] = r.text;
+        textRef.current = parts.current.filter(Boolean).join(" ");
         setTranscript(textRef.current);
       }
       // responses can arrive out of order; only the newest chunk may update the rolling read
@@ -188,7 +190,7 @@ export default function LiveShield() {
   const spoofAvg = chunks.filter((c) => c.spoof != null).reduce((s, c, _, a) => s + (c.spoof ?? 0) / a.length, 0);
 
   // highlight tactic spans inside the live transcript
-  const parts: { s: string; k?: string }[] = [];
+  const pieces: { s: string; k?: string }[] = [];
   {
     let rest = transcript;
     const spans = [...rolling.spans].filter((x) => x.text && TACTIC_COLOR[x.kind]);
@@ -198,9 +200,9 @@ export default function LiveShield() {
         const at = rest.toLowerCase().indexOf(sp.text.toLowerCase());
         if (at >= 0 && (!best || at < best.at)) best = { at, len: sp.text.length, k: sp.kind };
       }
-      if (!best) { parts.push({ s: rest }); break; }
-      if (best.at > 0) parts.push({ s: rest.slice(0, best.at) });
-      parts.push({ s: rest.slice(best.at, best.at + best.len), k: best.k });
+      if (!best) { pieces.push({ s: rest }); break; }
+      if (best.at > 0) pieces.push({ s: rest.slice(0, best.at) });
+      pieces.push({ s: rest.slice(best.at, best.at + best.len), k: best.k });
       rest = rest.slice(best.at + best.len);
     }
   }
@@ -288,7 +290,7 @@ export default function LiveShield() {
               </div>
             </div>
             <p className="mt-3 min-h-[90px] text-[17px] leading-relaxed text-silver">
-              {parts.length ? parts.map((p, k) => p.k ? <span key={k} className="rounded px-0.5" style={{ color: TACTIC_COLOR[p.k], background: `${TACTIC_COLOR[p.k]}22` }}>{p.s}</span> : <span key={k}>{p.s}</span>)
+              {pieces.length ? pieces.map((p, k) => p.k ? <span key={k} className="rounded px-0.5" style={{ color: TACTIC_COLOR[p.k], background: `${TACTIC_COLOR[p.k]}22` }}>{p.s}</span> : <span key={k}>{p.s}</span>)
                 : <span className="text-dim">{running ? "Listening…" : "The transcript appears here as the caller speaks."}</span>}
               {running && <span className="ml-1 inline-block h-4 w-[2px] animate-pulse bg-cyan align-middle" />}
             </p>
