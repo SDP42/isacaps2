@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from . import dsp
+from . import dsp, pretrained
 from .base import Evidence, Timer, WitnessResult
 from .provenance import score_image
 
@@ -59,7 +59,7 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         dur = total / fps if total else 0.0
-        target = min(48, max(8, int(dur * 3)))
+        target = min(24 if pretrained.available("face") else 48, max(8, int(dur * 3)))
         step = max(1, total // target) if total else 1
         frames, boxes, scores, times, mouth = [], [], [], [], []
         prev_mouth = None
@@ -77,7 +77,9 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                 box = tuple(int(v) for v in max(faces, key=lambda f: f[2] * f[3])) if len(faces) else None
                 region = frame[box[1] : box[1] + box[3], box[0] : box[0] + box[2]] if box else frame
                 crop = Image.fromarray(cv2.cvtColor(region, cv2.COLOR_BGR2RGB))
-                scores.append(score_image(crop) if min(crop.size) >= 64 else 0.5)
+                own = score_image(crop) if min(crop.size) >= 64 else 0.5
+                hf = pretrained.image_fake(crop, "face") if box and min(crop.size) >= 48 else None
+                scores.append(own if hf is None else 0.4 * own + 0.6 * hf)
                 boxes.append(box)
                 times.append(idx / fps)
                 frames.append(frame)
@@ -148,6 +150,8 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                                          exculpatory=True, detail=f"Mouth motion tracks speech (offset {sync['offset_ms']:+d} ms).",
                                          artifact_id=artifact_id))
     res.score = round(float(score), 4)
+    if pretrained.available("face"):
+        res.model_version += f" + {pretrained.name('face')}"
     res.confidence = round(0.4 + 0.4 * (faces_found / len(s)) + (0.1 if sync else 0), 3)
     res.latency_ms = t.ms
     res.summary = (f"Face artefact score {pooled:.2f} over {len(s)} frames ({faces_found} with a tracked face)"

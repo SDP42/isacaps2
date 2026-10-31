@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from . import imgdsp
+from . import imgdsp, pretrained
 from .base import Evidence, Timer, WitnessResult, load_model
 
 
@@ -34,7 +34,10 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
             return res
         exif = imgdsp.exif_info(img)
         markers = imgdsp.provenance_markers(path)
-        p = score_image(img)
+        own = score_image(img)
+        hf = pretrained.image_fake(img, "image")
+        face_hf = pretrained.image_fake(img, "face")
+        p = own if hf is None else 0.4 * own + 0.6 * hf
         heat = imgdsp.ela_heatmap(img)
         feats = dict(zip(imgdsp.FEATURE_NAMES, map(float, imgdsp.features(img))))
 
@@ -82,8 +85,17 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
     res.score = round(float(min(score, 1.0)), 4)
     res.confidence = round(0.5 + 0.45 * abs(p - 0.5) * 2, 3)
     res.latency_ms = t.ms
-    res.details = {"ai_probability": round(p, 4), "exif": exif, "markers": markers, "ela_grid": heat,
-                   "features": {k: round(v, 4) for k, v in feats.items()}, "size": list(img.size)}
+    if hf is not None:
+        res.model_version += f" + {pretrained.name('image')}"
+        res.details["pretrained"] = {"model": pretrained.name("image"), "score": round(hf, 4), "own_score": round(own, 4),
+                                     "agree": (hf >= 0.5) == (own >= 0.5)}
+    if face_hf is not None and face_hf >= 0.7:
+        res.evidence.append(Evidence(witness="provenance", kind="face_deepfake", label="deepfake face (pretrained ViT)",
+                                     score=round(face_hf, 3), severity=2, artifact_id=artifact_id,
+                                     detail=f"{pretrained.name('face')} scores the face as manipulated ({face_hf:.2f})."))
+    res.details["face_model"] = round(face_hf, 4) if face_hf is not None else None
+    res.details.update({"ai_probability": round(p, 4), "exif": exif, "markers": markers, "ela_grid": heat,
+                   "features": {k: round(v, 4) for k, v in feats.items()}, "size": list(img.size)})
     res.summary = (f"AI-generation probability {p:.2f}; "
                    + ("content credentials present" if markers["c2pa_manifest"] else "no content credentials")
                    + ("; camera EXIF present." if exif.get("Make") else "; no camera EXIF."))

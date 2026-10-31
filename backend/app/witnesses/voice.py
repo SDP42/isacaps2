@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import dsp
+from . import dsp, pretrained
 from .base import Evidence, Timer, WitnessResult, load_model
 
 from ..config import settings
@@ -108,6 +108,13 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
     # attention-style pooling: confident windows dominate, single noisy windows do not
     w = np.exp(4 * p) / np.exp(4 * p).sum()
     pooled = float((w * p).sum())
+    own = pooled
+    hf = pretrained.audio_fake(x)
+    if hf is not None:
+        pooled = 0.5 * own + 0.5 * hf
+        res.model_version += f" + {pretrained.name('audio')}"
+        res.details["pretrained"] = {"model": pretrained.name("audio"), "score": round(hf, 4), "own_score": round(own, 4),
+                                     "agree": (hf >= 0.5) == (own >= 0.5)}
     res.score = round(pooled, 4)
     res.latency_ms = t.ms
     res.details.update({
