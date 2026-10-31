@@ -6522,5 +6522,85 @@
    "threshold": 3.0,
    "note": "4 genuine 12 s clips of one speaker (Wikimedia Commons, CC BY 3.0) with own audio vs 8 audio swaps (same speaker other segment, TTS voice) and 3 still-face avatar videos; a sanity check, not a benchmark"
   }
+ },
+ "noise_robustness": {
+  "n": 90,
+  "windows_per_clip": 2,
+  "models": {
+   "df_arena": "Speech-Arena-2025/DF_Arena_500M_V_1",
+   "nii": "NII Wav2Vec2-Large-AntiDeepfake",
+   "nii_mms": "NII MMS-300M AntiDeepfake",
+   "nii_small": "NII Wav2Vec2-Small AntiDeepfake"
+  },
+  "auc": {
+   "street@clean": {
+    "df_arena": 1.0,
+    "nii": 1.0,
+    "nii_mms": 0.963,
+    "nii_small": 1.0,
+    "df_arena+nii": 1.0,
+    "df_arena+nii_mms": 1.0,
+    "df_arena+nii_small": 1.0,
+    "nii+nii_mms": 0.998,
+    "nii+nii_small": 1.0,
+    "nii_mms+nii_small": 1.0,
+    "df_arena+nii+nii_mms": 1.0,
+    "df_arena+nii+nii_small": 1.0,
+    "df_arena+nii_mms+nii_small": 1.0,
+    "nii+nii_mms+nii_small": 1.0,
+    "df_arena+nii+nii_mms+nii_small": 1.0
+   },
+   "street@10": {
+    "df_arena": 0.992,
+    "nii": 0.914,
+    "nii_mms": 0.884,
+    "nii_small": 0.694,
+    "df_arena+nii": 0.991,
+    "df_arena+nii_mms": 0.985,
+    "df_arena+nii_small": 0.976,
+    "nii+nii_mms": 0.918,
+    "nii+nii_small": 0.858,
+    "nii_mms+nii_small": 0.842,
+    "df_arena+nii+nii_mms": 0.983,
+    "df_arena+nii+nii_small": 0.981,
+    "df_arena+nii_mms+nii_small": 0.97,
+    "nii+nii_mms+nii_small": 0.892,
+    "df_arena+nii+nii_mms+nii_small": 0.97
+   },
+   "street@5": {
+    "df_arena": 0.961,
+    "nii": 0.709,
+    "nii_mms": 0.772,
+    "nii_small": 0.379,
+    "df_arena+nii": 0.938,
+    "df_arena+nii_mms": 0.905,
+    "df_arena+nii_small": 0.879,
+    "nii+nii_mms": 0.772,
+    "nii+nii_small": 0.531,
+    "nii_mms+nii_small": 0.598,
+    "df_arena+nii+nii_mms": 0.894,
+    "df_arena+nii+nii_small": 0.864,
+    "df_arena+nii_mms+nii_small": 0.845,
+    "nii+nii_mms+nii_small": 0.66,
+    "df_arena+nii+nii_mms+nii_small": 0.842
+   },
+   "white@10": {
+    "df_arena": 0.856,
+    "nii": 0.516,
+    "nii_mms": 0.564,
+    "nii_small": 0.541,
+    "df_arena+nii": 0.774,
+    "df_arena+nii_mms": 0.802,
+    "df_arena+nii_small": 0.749,
+    "nii+nii_mms": 0.53,
+    "nii+nii_small": 0.515,
+    "nii_mms+nii_small": 0.53,
+    "df_arena+nii+nii_mms": 0.747,
+    "df_arena+nii+nii_small": 0.71,
+    "df_arena+nii_mms+nii_small": 0.715,
+    "nii+nii_mms+nii_small": 0.52,
+    "df_arena+nii+nii_mms+nii_small": 0.689
+   }
+  }
  }
 }

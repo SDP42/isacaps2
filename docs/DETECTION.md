@@ -99,6 +99,21 @@ flipped byte in the image data fails with `assertion.dataHash.mismatch`, and a m
 `trainedAlgorithmicMedia` is read as signed AI generation. An unknown signer still proves integrity but not identity,
 so it lowers the score less than a trusted one.
 
+**Noise study** (`scripts/noise_robustness.py`, n = 90 clips from the audio sets, two 4 s windows per clip, the
+red-team street noise and white noise; written to `benchmark.json` under `noise_robustness`):
+
+| Condition | DF_Arena 500M | NII W2V2-Large | NII MMS-300M (augmented) | NII W2V2-Small (augmented) | DF_Arena + NII (current) |
+|---|---|---|---|---|---|
+| Clean | 1.000 | 1.000 | 0.963 | 1.000 | 1.000 |
+| Street noise 10 dB | **0.992** | 0.914 | 0.884 | 0.694 | 0.991 |
+| Street noise 5 dB | **0.961** | 0.709 | 0.772 | 0.379 | 0.938 |
+| White noise 10 dB | **0.856** | 0.516 | 0.564 | 0.541 | 0.774 |
+
+DF_Arena degrades least; the NII models, including the two trained with data augmentation, fall faster, and every
+ensemble that adds them is worse than DF_Arena alone in noise. The measured next step is a noise-conditional
+ensemble (DF_Arena alone below the noisy-SNR line). The two augmented NII models are downloaded by the study only;
+they are not part of the shipped ensemble.
+
 **Claude judge.** `scripts/measure_claude_judge.py <data_dir>` runs the text sets with and without the judge and
 records both; it needs `ANTHROPIC_API_KEY`, which this machine does not have, so the judge is still unmeasured.
 
