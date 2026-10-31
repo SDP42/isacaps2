@@ -52,20 +52,28 @@ def channel_profile(x: np.ndarray) -> dict:
     fr = dsp.frames(x)
     ps = dsp.power_spec(fr).mean(axis=0)
     freqs = np.fft.rfftfreq(dsp.N_FFT, 1 / dsp.SR)
-    cum = np.cumsum(ps) / ps.sum()
-    bandwidth = float(freqs[np.searchsorted(cum, 0.995)])
+    lp = 10 * np.log10(ps + 1e-12)
+
+    def band(lo: float, hi: float) -> float:
+        return float(lp[(freqs >= lo) & (freqs < hi)].mean())
+
+    # codecs leave a cliff at their cutoff: compare the level just below and just above each candidate edge
+    edges = {3400: band(2600, 3300) - band(3700, 4400), 6000: band(5000, 5800) - band(6300, 7000),
+             7400: band(6400, 7200) - band(7600, 7950)}
+    edge, drop = max(edges.items(), key=lambda kv: kv[1])
+    bandwidth = float(edge) if drop > 8 else float(dsp.SR / 2)
     energy = (fr**2).mean(axis=1)
     noise = np.percentile(energy, 10) + 1e-10
     sig = np.percentile(energy, 90) + 1e-10
     snr = float(10 * np.log10(sig / noise))
     if bandwidth < 3800:
         codec = "narrowband telephony (G.711/AMR-NB)"
-    elif bandwidth < 6500:
+    elif bandwidth < 7800:
         codec = "compressed voice note (Opus/AAC, WhatsApp-like)"
     else:
         codec = "wideband / studio"
     return {"bandwidth_hz": round(bandwidth), "snr_db": round(snr, 1), "codec_guess": codec,
-            "compressed": bandwidth < 6500}
+            "compressed": bandwidth < 7800, "edge_drop_db": round(drop, 1)}
 
 
 def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_id: int | None = None,
