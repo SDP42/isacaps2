@@ -19,7 +19,7 @@ from .events import bus
 from .fusion.risk import assess
 from .models import Artifact, Case, Finding, Person, TribunalMessage, Verdict
 from .storage import path_for
-from .witnesses import face, identity, provenance, voice, words
+from .witnesses import face, identity, provenance, transcribe, voice, words
 from .witnesses.base import WitnessResult
 
 log = logging.getLogger("mirage.pipeline")
@@ -87,16 +87,58 @@ def _run(case_id: str, pace: float) -> None:
             jobs += [("face", aid, key), ("voice", aid, key)]
         elif kind == "image":
             jobs.append(("provenance", aid, key))
+    state: tribunal.State = {"case": case_ctx, "messages": [], "evidence": []}
+    emit_msg = _message_emitter(case_id)
+    planned = sorted({j[0] for j in jobs} | ({"words"} if message or any(k in ("audio", "video", "image", "text") for _, k, *_ in arts) else set()))
+    emit_msg(tribunal.planner_message(state, [a[1] for a in arts] + (["text"] if message else []), planned or ["identity"]))
+    _stage(case_id, "plan", 0.12, f"Witnesses: {', '.join(planned) or 'none'}")
+
+    # media witnesses start now; dissection (speech-to-text, OCR) runs alongside them
+    _stage(case_id, "witnesses", 0.18)
+    results: dict[str, WitnessResult] = {}
+
+    def run_job(job):
+        name, aid, key = job
+        bus.publish(case_id, "witness", {"witness": name, "state": "running", "artifact_id": aid})
+        p = path_for(key)
+        if name == "voice":
+            return voice.analyse(p, voiceprint, aid, person_name)
+        if name == "face":
+            return face.analyse(p, aid)
+        return provenance.analyse(p, aid)
+
+    futures = [(j, _POOL_W.submit(run_job, j)) for j in jobs]
+
+    transcripts: dict[int, dict] = {}
+    ocr_text: dict[int, dict] = {}
+    for aid, kind, key, _fn, meta in arts:
+        if kind in ("audio", "video"):
+            bus.publish(case_id, "witness", {"witness": "transcript", "state": "running", "artifact_id": aid})
+            t = transcribe.transcribe(path_for(key))
+            if t:
+                transcripts[aid] = t
+                bus.publish(case_id, "transcript", {"artifact_id": aid, **t})
+        elif kind == "image":
+            o = transcribe.ocr(path_for(key))
+            if o:
+                ocr_text[aid] = o
+                bus.publish(case_id, "ocr", {"artifact_id": aid, "text": o["text"]})
+    if transcripts or ocr_text:
+        with session_scope() as db:
+            for a in db.get(Case, case_id).artifacts:
+                if a.id in transcripts:
+                    a.meta_json = {**a.meta_json, "asr": transcripts[a.id]}
+                if a.id in ocr_text:
+                    a.meta_json = {**a.meta_json, "ocr": ocr_text[a.id]}
+
     texts = [message] + [m.get("text", "") for *_, m in arts if m.get("text")]
     texts += [m.get("transcript", "") for *_, m in arts if m.get("transcript")]
     texts += [path_for(k).read_text(errors="ignore")[:20000] for _, kd, k, _, _ in arts if kd == "text"]
-    # a transcript often repeats the pasted message; keep each distinct text once
+    for t in list(transcripts.values()) + list(ocr_text.values()):
+        # a transcript that repeats the pasted message adds nothing new to read
+        if not any(x and transcribe.near_duplicate(t["text"], x) for x in texts):
+            texts.append(t["text"])
     full_text = "\n".join(dict.fromkeys(t.strip() for t in texts if t and t.strip())).strip()
-    witnesses = sorted({j[0] for j in jobs} | ({"words"} if full_text else set()))
-    state: tribunal.State = {"case": case_ctx, "messages": [], "evidence": []}
-    emit_msg = _message_emitter(case_id)
-    emit_msg(tribunal.planner_message(state, [a[1] for a in arts] + (["text"] if message else []), witnesses or ["identity"]))
-    _stage(case_id, "plan", 0.12, f"Witnesses: {', '.join(witnesses) or 'none'}")
 
     # ---- witnesses in parallel ----------------------------------------------------------------------------------------
     _stage(case_id, "witnesses", 0.18)
@@ -116,6 +158,23 @@ def _run(case_id: str, pace: float) -> None:
     if full_text:
         bus.publish(case_id, "witness", {"witness": "words", "state": "running"})
         results["words"] = words.analyse(full_text, style, source="message")
+        # pin text exhibits to the seconds (transcript) or the region (OCR) where they occur
+        for e in results["words"].evidence:
+            if not e.text:
+                continue
+            for aid, t in transcripts.items():
+                hit = transcribe.locate(e.text, t["words"])
+                if hit:
+                    e.t0, e.t1, e.artifact_id = hit[0], hit[1], aid
+                    break
+            else:
+                for aid, o in ocr_text.items():
+                    box = transcribe.locate_box(e.text, o["lines"])
+                    if box:
+                        e.artifact_id = aid
+                        e.observed = "on screenshot"
+                        results["words"].details.setdefault("ocr_boxes", []).append({"artifact_id": aid, "box": box, "kind": e.kind, "text": e.text})
+                        break
         _witness_done(case_id, results["words"])
     for (name, aid, _), fut in futures:
         r = fut.result()
