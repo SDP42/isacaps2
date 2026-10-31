@@ -97,7 +97,7 @@ export function PanelHead({ title, meta, right }: { title: string; meta?: ReactN
   return (
     <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
       <div className="flex min-w-0 items-baseline gap-3">
-        <h3 className="label !text-silver">{title}</h3>
+        <h3 className="label whitespace-nowrap !text-silver">{title}</h3>
         {meta && <span className="truncate font-mono text-[10.5px] text-dim">{meta}</span>}
       </div>
       {right}

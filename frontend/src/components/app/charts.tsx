@@ -72,7 +72,7 @@ export function RiskHistogram({ bins, height = 110 }: { bins: number[]; height?:
           );
         })}
       </div>
-      <div className="mt-2 flex justify-between font-mono text-[10px] text-dim"><span>0</span><span>35</span><span>70</span><span>100</span></div>
+      <div className="mt-2 flex justify-between font-mono text-[10px] text-dim"><span>0</span><span>50</span><span>100</span></div>
     </div>
   );
 }
