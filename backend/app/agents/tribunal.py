@@ -238,7 +238,12 @@ def reporter_node(state: State) -> State:
         clauses.append(f"{e.label}{when} [{e.id}]")
         if len(clauses) == 3:
             break
-    if clauses:
+    if "SYNTHETIC_MEDIA" in a.tags:
+        media = next((e for e in state["evidence"] if e.witness in ("voice", "face", "provenance") and not e.exculpatory), None)
+        summary = (f"MIRAGE rates this {a.band} ({a.risk:.0f}/100): the media looks synthetic"
+                   + (f" [{media.id}]" if media else "") + " but nothing is requested and no pressure tactics were found, "
+                   "so it is tagged, not alarmed.")
+    elif clauses:
         summary = f"MIRAGE rates this {a.band} ({a.risk:.0f}/100): " + ", ".join(clauses) + "."
     else:
         summary = f"MIRAGE rates this {a.band} ({a.risk:.0f}/100) with no strong indicators."
