@@ -102,7 +102,7 @@ export function Witnesses() {
         <div className="relative h-[360px] lg:h-full">
           <div
             className="absolute left-1/2 rounded-full border border-line"
-            style={{ width: radius * 2, height: radius * 2, top: desktop ? "58%" : "40%", marginLeft: -radius }}
+            style={{ width: radius * 2, height: radius * 2, top: desktop ? "30%" : "28%", marginLeft: -radius }}
           >
             <div className="absolute inset-[60px] rounded-full border border-dashed border-line" />
             <motion.div className="absolute inset-0" animate={{ rotate: -active * 28 + 56 }} transition={{ type: "spring", stiffness: 60, damping: 18 }}>
@@ -131,7 +131,7 @@ export function Witnesses() {
               })}
             </motion.div>
           </div>
-          <div className="absolute left-1/2 top-[18%] -translate-x-1/2 text-center lg:top-[24%]">
+          <div className="absolute left-1/2 top-[8%] -translate-x-1/2 text-center lg:top-[16%]">
             <p className="tnum font-mono text-[11px] tracking-[0.2em] text-dim">WITNESS {active + 1} / 5</p>
           </div>
         </div>
