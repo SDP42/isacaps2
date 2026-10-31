@@ -49,6 +49,17 @@ def run_scenario(key: str, user: Principal = Depends(current_principal), db: Ses
     return case_summary(case)
 
 
+@router.get("/samples/{name}")
+def sample_file(name: str):
+    from fastapi.responses import FileResponse
+
+    ensure_samples()
+    path = (SAMPLES_DIR / name).resolve()
+    if path.parent != SAMPLES_DIR.resolve() or not path.exists():
+        raise HTTPException(404, "Sample not found.")
+    return FileResponse(path)
+
+
 # ---- identity ---------------------------------------------------------------------------------------------------------
 
 @router.get("/identity/graph")
