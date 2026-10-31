@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mirage
+      POSTGRES_PASSWORD: mirage
+      POSTGRES_DB: mirage
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://mirage:mirage@db:5432/mirage
+      MIRAGE_CORS: http://localhost:5173
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on: [db]
+    ports: ["8000:8000"]
+    volumes: [evidence:/app/var]
+  web:
+    build: ./frontend
+    depends_on: [api]
+    ports: ["5173:80"]
+volumes:
+  pgdata:
+  evidence:
