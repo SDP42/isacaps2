@@ -26,8 +26,17 @@ MODELS = {
 FAKE_WORDS = ("fake", "spoof", "synthetic", "artificial", "deepfake", "ai", "generated")
 
 
+def _model_dir(kind: str) -> Path | None:
+    """The folder that holds complete weights (some repos only ship them inside a checkpoint folder)."""
+    base = ROOT / MODELS[kind][0]
+    for d in [base, *sorted(base.glob("checkpoint-*"))]:
+        if (d / "config.json").exists() and any((d / w).exists() for w in ("model.safetensors", "pytorch_model.bin")):
+            return d
+    return None
+
+
 def available(kind: str) -> bool:
-    return os.getenv("MIRAGE_PRETRAINED", "on") != "off" and (ROOT / MODELS[kind][0] / "config.json").exists()
+    return os.getenv("MIRAGE_PRETRAINED", "on") != "off" and _model_dir(kind) is not None
 
 
 def name(kind: str) -> str:
@@ -39,7 +48,7 @@ def _pipe(kind: str):
     from transformers import pipeline
 
     task = "audio-classification" if kind == "audio" else "image-classification"
-    return pipeline(task, model=str(ROOT / MODELS[kind][0]), device=-1)
+    return pipeline(task, model=str(_model_dir(kind)), device=-1)
 
 
 def _fake_prob(preds: list[dict]) -> float:
