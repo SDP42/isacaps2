@@ -84,7 +84,7 @@ ENTITY_RX = {
 DEADLINE_RX = re.compile(
     r"before \d{1,2}(:\d\d)? ?(am|pm)|within \d+ (minutes?|hours?)|in the next \d+ minutes|by eod( today)?|"
     r"today|tonight|aaj hi|abhi|\d+ minute mein", re.I)
-LOOKALIKE = ["acmefintech", "hdfc", "sbi", "icici", "rbi", "paytm", "mirage"]
+LOOKALIKE = ["acmefintech", "hdfc", "sbi", "icici", "rbi", "paytm", "mirage", "orbit"]
 HINGLISH_MARKERS = {"hai", "hoon", "kar", "karo", "mat", "nahi", "abhi", "bhej", "bhai", "yaar", "kya", "ko", "ka",
                     "ki", "se", "pe", "mein", "aap", "jaldi", "batana", "paise"}
 

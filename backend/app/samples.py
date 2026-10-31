@@ -79,19 +79,41 @@ SCENARIOS: list[Scenario] = [
              "This is Inspector Sharma from CBI Cyber Cell. A parcel in your name contains illegal items. You are under "
              "digital arrest. Do not disconnect or inform anyone. Transfer ₹2,40,000 to safeacct.rbi@oksbi for verification.",
              ["cbi_notice.png"], "HIGH", 13, ["image", "digital arrest"], hint="digital_arrest"),
-    Scenario("vendor_headshot", "H", "Vendor BEC with AI headshot",
-             "A 'new account manager' at a known vendor emails changed bank details with an AI-generated headshot.",
-             "Orbit Supplies billing", "email", "billing@orbit-supp1ies.com",
-             "Dear Accounts, please note our bank details have changed. Kindly release the pending invoice of ₹9,80,000 "
-             "to the new account 600112233445 IFSC ICIC0007890 by EOD today. Regards, Neha, Orbit Supplies. "
-             "Verify at https://orbit-supp1ies.com/kyc",
-             ["vendor_headshot.png"], "HIGH", 16, ["image", "email", "BEC"]),
+    Scenario("vendor_headshot", "H", "Vendor BEC email with AI headshot",
+             "A 'new account manager' at a known vendor emails changed bank details with an AI-generated headshot. "
+             "The original .eml carries the headers.",
+             "Orbit Supplies billing", "email", "",
+             "",
+             ["vendor_invoice.eml", "vendor_headshot.png"], "HIGH", 16, ["image", "email", "BEC"]),
     Scenario("too_little", "I", "Too little evidence",
              "A 1.5-second clip with no message and no sender. MIRAGE should say it cannot tell.",
              "", "unknown", "", "", ["short_clip.wav"], "INCONCLUSIVE", 12, ["honest uncertainty"]),
 ]
 
 SCENARIO_BY_KEY = {s.key: s for s in SCENARIOS}
+
+VENDOR_EML = """Return-Path: <bounce@mailer-x91.ru>
+Received: from mailer-x91.ru (unknown [185.220.101.4]) by mx.acmefintech.in
+Authentication-Results: mx.acmefintech.in; spf=softfail smtp.mailfrom=orbit-supp1ies.com; dkim=none; dmarc=fail header.from=orbit-supp1ies.com
+From: "Orbit Supplies Accounts" <billing@orbit-supp1ies.com>
+Reply-To: neha.accounts@protonmail.com
+To: kavita.shah@acmefintech.in
+Subject: URGENT: updated bank details for pending invoice INV-20931
+Message-ID: <a81f2@orbit-supp1ies.com>
+Content-Type: text/plain; charset="utf-8"
+
+Dear Accounts,
+
+Please note our bank details have changed due to an internal audit. Kindly release the pending invoice of
+Rs 9,80,000 to the new account 600112233445 IFSC ICIC0007890 by EOD today to avoid a late penalty.
+
+Please keep this confidential until our audit closes. Verify at https://orbit-supp1ies.com/kyc
+
+Regards,
+Neha
+Account Manager, Orbit Supplies
+(MIRAGE SAMPLE - synthetic demo email)
+"""
 
 
 def _voice(seed: int, synthetic: bool, seconds: float, speaker_seed: int, f0_scale: float = 1.0,
@@ -226,7 +248,7 @@ SPOKEN = {
 
 def ensure_samples() -> Path:
     SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
-    if (SAMPLES_DIR / ".v4").exists():
+    if (SAMPLES_DIR / ".v5").exists():
         return SAMPLES_DIR
     spoken = {k: _say(t, v, telephony=(k == "it")) for k, (t, v) in SPOKEN.items()}
     # speaker seeds match the Trustbook voiceprints (ml/synth_org.py voice_seed); simulator is the fallback
@@ -238,6 +260,7 @@ def ensure_samples() -> Path:
     _write("short_clip.wav", dsp.write_wav(_voice(6, False, 1.5, 700)))
     _notice_image(SAMPLES_DIR / "cbi_notice.png")
     _headshot(SAMPLES_DIR / "vendor_headshot.png")
+    _write("vendor_invoice.eml", VENDOR_EML.encode())
     _video(SAMPLES_DIR / "ceo_meeting.mp4", spoken["ceo"] if spoken["ceo"] is not None else _voice(7, True, 10.0, 101, f0_scale=1.08, quality=0.2, channel="none"))
-    (SAMPLES_DIR / ".v4").write_text("ok")
+    (SAMPLES_DIR / ".v5").write_text("ok")
     return SAMPLES_DIR

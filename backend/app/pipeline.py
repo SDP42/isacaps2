@@ -19,7 +19,7 @@ from .events import bus
 from .fusion.risk import assess
 from .models import Artifact, Case, Finding, Person, TribunalMessage, Verdict
 from .storage import path_for
-from .witnesses import face, identity, provenance, transcribe, voice, words
+from .witnesses import email_check, face, identity, provenance, transcribe, voice, words
 from .witnesses.base import WitnessResult
 
 log = logging.getLogger("mirage.pipeline")
@@ -133,7 +133,25 @@ def _run(case_id: str, pace: float) -> None:
 
     texts = [message] + [m.get("text", "") for *_, m in arts if m.get("text")]
     texts += [m.get("transcript", "") for *_, m in arts if m.get("transcript")]
-    texts += [path_for(k).read_text(errors="ignore")[:20000] for _, kd, k, _, _ in arts if kd == "text"]
+    emails: list[tuple[int, dict]] = []
+    for aid, kd, k, _, _ in arts:
+        if kd != "text":
+            continue
+        info = email_check.parse(path_for(k))
+        if info:
+            emails.append((aid, info))
+            texts.append(f"{info['subject']}\n{info['body']}")
+        else:
+            texts.append(path_for(k).read_text(errors="ignore")[:20000])
+    if emails:
+        with session_scope() as db:
+            c = db.get(Case, case_id)
+            if not c.sender_contact:
+                c.sender_contact = emails[0][1]["from"]
+            if c.channel == "unknown":
+                c.channel = "email"
+            if not c.claimed_sender and emails[0][1]["from_name"]:
+                c.claimed_sender = emails[0][1]["from_name"]
     for t in list(transcripts.values()) + list(ocr_text.values()):
         # a transcript that repeats the pasted message adds nothing new to read
         if not any(x and transcribe.near_duplicate(t["text"], x) for x in texts):
@@ -175,6 +193,15 @@ def _run(case_id: str, pace: float) -> None:
                         e.observed = "on screenshot"
                         results["words"].details.setdefault("ocr_boxes", []).append({"artifact_id": aid, "box": box, "kind": e.kind, "text": e.text})
                         break
+        if emails:
+            wr = results["words"]
+            extra = [e for aid, info in emails for e in email_check.evidence(info, aid)]
+            wr.evidence += extra
+            wr.details["email"] = [{"artifact_id": aid, **{k: v for k, v in info.items() if k != "body"}} for aid, info in emails]
+            p = 1 - (wr.score or 0)
+            for e in extra:
+                p *= 1 - {1: 0.08, 2: 0.18, 3: 0.3}.get(e.severity, 0)
+            wr.score = round(1 - p, 4)
         _witness_done(case_id, results["words"])
     for (name, aid, _), fut in futures:
         r = fut.result()

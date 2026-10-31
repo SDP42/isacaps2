@@ -88,7 +88,7 @@ def populate() -> None:
         with session_scope() as db:
             c = create_case(db, analyst, files, sc.message, sc.claimed_sender, sc.channel, sc.sender_contact,
                             _when(random.uniform(1, 12), sc.received_hour), title=f"Scenario {sc.code} · {sc.title}",
-                            scenario=sc.key, transcripts={f: sc.message for f in sc.files})
+                            scenario=sc.key)
             ids.append(c.id)
     for cid in ids:
         pipeline.run_case(cid, pace=0.0)

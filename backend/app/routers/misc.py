@@ -44,8 +44,7 @@ def run_scenario(key: str, user: Principal = Depends(current_principal), db: Ses
     files = [(f, (SAMPLES_DIR / f).read_bytes()) for f in sc.files]
     now = datetime.now(timezone.utc).replace(hour=sc.received_hour, minute=12)
     case = create_case(db, user, files, sc.message, sc.claimed_sender, sc.channel, sc.sender_contact, now,
-                       title=f"Scenario {sc.code} · {sc.title}", scenario=sc.key,
-                       transcripts={f: sc.message for f in sc.files if f.endswith((".wav", ".mp4")) and sc.message})
+                       title=f"Scenario {sc.code} · {sc.title}", scenario=sc.key)
     pipeline.submit(case.id)
     return case_summary(case)
 
