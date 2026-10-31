@@ -89,8 +89,11 @@ class Casebook:
                 if overlap or head_bonus:
                     scored.append((overlap + head_bonus + h["score"] - 0.05 * pos, sent.strip(), h["id"]))
         scored.sort(key=lambda x: -x[0])
+        best = scored[0][0] if scored else 0
         picked, used = [], set()
-        for _, sent, cid in scored:
+        for sc, sent, cid in scored:
+            if sc < best * 0.5:  # drop weakly related sentences rather than pad the answer
+                break
             if sent in used:
                 continue
             used.add(sent)
