@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Logo } from "@/components/ui/Logo";
+import Aurora from "@/components/reactbits/Aurora";
+import GlareHover from "@/components/reactbits/GlareHover";
+import ShinyText from "@/components/reactbits/ShinyText";
 import { useAuth } from "@/lib/auth";
 import { cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
@@ -80,14 +83,16 @@ export default function Auth() {
   return (
     <div className="grain relative min-h-dvh overflow-hidden bg-ink-0">
       <div className="pointer-events-none absolute inset-0 grid-field opacity-40 [mask-image:radial-gradient(ellipse_at_50%_0%,black,transparent_70%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-[-20%] size-[70vw] -translate-x-1/2 rounded-full bg-cyan/[0.05] blur-[140px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[60vh] opacity-60 [mask-image:linear-gradient(to_bottom,black,transparent)]">
+        <Aurora colorStops={["#0891b2", "#6d28d9", "#0e7490"]} amplitude={1.0} blend={0.55} speed={0.5} />
+      </div>
       <header className="relative mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-8">
         <Link to="/"><Logo /></Link>
         <Link to="/" className="flex items-center gap-1.5 text-[13px] text-muted hover:text-fg"><ArrowLeft size={14} /> Back to site</Link>
       </header>
       <main className="relative mx-auto max-w-[1400px] px-4 pb-16 pt-10 sm:px-8 sm:pt-16">
         <h1 className="text-[clamp(2.4rem,5.6vw,4.8rem)] font-medium leading-[0.98] tracking-[-0.04em]">
-          Who is <span className="font-serif font-normal italic text-cyan">asking?</span>
+          Who is <span className="font-serif font-normal italic"><ShinyText text="asking?" color="#67e8f9" shineColor="#ffffff" speed={3} /></span>
         </h1>
         <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
           MIRAGE asks that of every message, so it asks you too. Pick a pass to enter the demo; each opens the workspace
@@ -98,7 +103,9 @@ export default function Auth() {
           {(personas ?? Array.from({ length: 4 }, () => null)).map((p, i) =>
             p ? (
               <motion.div key={p.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 * i, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}>
-                <Pass p={p} busy={busy !== null} onPick={() => pick(p)} />
+                <GlareHover width="100%" height="100%" background="transparent" borderRadius="16px" borderColor="transparent" glareColor="#ffffff" glareOpacity={0.18} glareAngle={-35} glareSize={260}>
+                  <Pass p={p} busy={busy !== null} onPick={() => pick(p)} />
+                </GlareHover>
               </motion.div>
             ) : (
               <div key={i} className={cx("skeleton h-[360px] rounded-2xl")} />

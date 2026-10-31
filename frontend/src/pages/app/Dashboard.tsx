@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { BandPill, Empty, PanelHead, Skeleton } from "@/components/ui/primitives";
 import { useAuth } from "@/lib/auth";
 import { ago, inr } from "@/lib/format";
-import { useApi, useCountUp } from "@/lib/hooks";
+import { useApi } from "@/lib/hooks";
+import CountUp from "@/components/reactbits/CountUp";
 import type { Band, CaseSummary } from "@/lib/types";
 
 interface Dash {
@@ -31,11 +32,12 @@ const KIND_ICON: Record<string, React.ReactNode> = {
 };
 
 function Stat({ label, value, tone, suffix }: { label: string; value: number; tone?: string; suffix?: string }) {
-  const v = useCountUp(value);
   return (
     <div className="min-w-0">
       <p className="label !text-[10px]">{label}</p>
-      <p className="tnum mt-1 text-[26px] font-medium tracking-tight" style={{ color: tone }}>{Math.round(v)}{suffix}</p>
+      <p className="tnum mt-1 text-[26px] font-medium tracking-tight" style={{ color: tone }}>
+        <CountUp to={value} duration={1.2} suffix={suffix} trigger="load" />
+      </p>
     </div>
   );
 }

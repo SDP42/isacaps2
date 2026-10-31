@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { BandPill, Skeleton } from "@/components/ui/primitives";
+import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import { post } from "@/lib/api";
 import { useApi } from "@/lib/hooks";
 import type { CaseSummary, Scenario } from "@/lib/types";
@@ -37,8 +38,8 @@ export default function ScenarioLab() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {(data ?? Array.from({ length: 6 }, () => null)).map((s, i) =>
           s ? (
-            <motion.article key={s.key} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-              className="panel group flex flex-col p-5 transition-colors hover:border-line-2">
+            <motion.div key={s.key} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="h-full">
+            <SpotlightCard spotlightColor="rgba(103, 232, 249, 0.16)" theme="dark" className="panel group flex h-full flex-col p-5 transition-colors hover:border-line-2">
               <div className="flex items-start justify-between">
                 <span className="font-serif text-[40px] italic leading-none text-cyan/80">{s.code}</span>
                 <span className="text-right"><span className="label block !text-[9.5px]">expected</span><BandPill band={s.expected} /></span>
@@ -56,7 +57,8 @@ export default function ScenarioLab() {
                 {busy === s.key ? <span className="size-3.5 animate-spin rounded-full border-2 border-cyan border-r-transparent" /> : <Play size={13} className="fill-current" />}
                 Run investigation
               </button>
-            </motion.article>
+            </SpotlightCard>
+            </motion.div>
           ) : <Skeleton key={i} className="h-72" />,
         )}
       </div>
