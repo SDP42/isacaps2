@@ -89,7 +89,7 @@ def authenticity(results: dict[str, WitnessResult]) -> tuple[float, dict[str, fl
         w = 0.35 + 0.65 * r.confidence  # low-confidence witnesses are shrunk toward 0
         eff = r.score * w
         if name == "voice" and any(e.kind == "voiceprint_mismatch" for e in r.evidence):
-            eff = 1 - (1 - eff) * 0.6
+            eff = 1 - (1 - eff) * 0.8  # voiceprint is a weak witness (EER in metrics.json)
         parts[name] = eff
         p *= 1 - eff
     return 1 - p, parts, usable

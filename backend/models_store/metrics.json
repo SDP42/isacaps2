@@ -14,7 +14,7 @@
       "hi": 1.0
     },
     "n_train": 2906,
-    "train_seconds": 3.7
+    "train_seconds": 3.8
   },
   "voice": {
     "auc": 1.0,
@@ -43,7 +43,7 @@
       "band_8k_floor": 0.0
     },
     "n_train": 900,
-    "train_seconds": 37.8
+    "train_seconds": 37.9
   },
   "provenance": {
     "auc": 0.9971,
@@ -55,7 +55,16 @@
     "n_test": 240,
     "split": "held-out seeds",
     "n_train": 700,
-    "train_seconds": 35.8
+    "train_seconds": 36.0
+  },
+  "voiceprint": {
+    "auc": 0.7798,
+    "eer": 0.244,
+    "threshold_at_eer": 0.429,
+    "n_trials": 58,
+    "split": "held-out speakers, random channels",
+    "note": "Lightweight pitch+LTAS embedding; replace with ECAPA-TDNN for production.",
+    "train_seconds": 6.9
   },
   "request_anomaly": {
     "auc": 0.9969,
@@ -65,8 +74,8 @@
     "train_seconds": 0.3
   },
   "_meta": {
-    "trained_at": "2026-10-31T15:06:58",
-    "total_seconds": 77.5,
+    "trained_at": "2026-10-31T15:18:28",
+    "total_seconds": 84.8,
     "data": "synthetic (see ml/synth_*.py and docs/MODEL_CARDS.md)"
   }
 }

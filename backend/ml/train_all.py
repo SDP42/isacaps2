@@ -144,6 +144,32 @@ def train_image() -> dict:
     return report(yte, p, {"split": "held-out seeds", "n_train": int(len(ytr))})
 
 
+def train_speaker() -> dict:
+    """Background statistics for speaker embeddings, then same/different-speaker EER on held-out speakers."""
+    bg = np.array([dsp.speaker_raw(synth_audio.make_clip(np.random.default_rng(5000 + k), k % 2 == 0, 3.0))
+                   for k in range(200)])
+    np.savez(OUT / "spk_background.npz", mu=bg.mean(0), sd=bg.std(0) + 1e-6)
+    dsp._SPK_BG = None
+    spk = [synth_audio.Speaker.random(np.random.default_rng(s)) for s in range(900, 916)]
+    scores, labels = [], []
+    for i, s in enumerate(spk):
+        rng = np.random.default_rng(7000 + i)
+        e1 = dsp.speaker_embedding(synth_audio.make_clip(rng, False, 3.5, s))
+        e2 = dsp.speaker_embedding(synth_audio.make_clip(rng, False, 3.5, s))
+        scores.append(float(e1 @ e2))
+        labels.append(1)
+        for t in spk[i + 1 : i + 4]:
+            scores.append(float(e1 @ dsp.speaker_embedding(synth_audio.make_clip(rng, False, 3.5, t))))
+            labels.append(0)
+    y, p = np.array(labels), np.array(scores)
+    fpr, tpr, thr = roc_curve(y, p)
+    k = int(np.nanargmin(np.abs((1 - tpr) - fpr)))
+    return {"auc": round(float(roc_auc_score(y, p)), 4), "eer": round(eer(y, p), 4),
+            "threshold_at_eer": round(float(thr[k]), 3), "n_trials": int(len(y)),
+            "split": "held-out speakers, random channels",
+            "note": "Lightweight pitch+LTAS embedding; replace with ECAPA-TDNN for production."}
+
+
 def train_anomaly() -> dict:
     people = {p.key: p for p in synth_org.build_people()}
     rows = synth_org.request_logs(list(people.values()))
@@ -173,7 +199,7 @@ def train_anomaly() -> dict:
 def main() -> None:
     t0 = time.time()
     metrics = {}
-    for name, fn in (("words", train_words), ("voice", train_voice), ("provenance", train_image),
+    for name, fn in (("words", train_words), ("voice", train_voice), ("provenance", train_image), ("voiceprint", train_speaker),
                      ("request_anomaly", train_anomaly)):
         t = time.time()
         metrics[name] = fn()

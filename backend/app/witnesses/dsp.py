@@ -190,19 +190,40 @@ def windows(x: np.ndarray, win_s: float, hop_s: float) -> list[tuple[float, floa
     return out
 
 
-def speaker_embedding(x: np.ndarray) -> np.ndarray:
-    """Utterance-level speaker vector: MFCC mean/std over voiced frames plus pitch statistics, L2-normalised."""
+def speaker_raw(x: np.ndarray) -> np.ndarray:
+    """Median pitch plus long-term average mel spectrum over voiced frames (vocal-tract length cue)."""
     fr = frames(x)
     ps = power_spec(fr)
-    mf = mfcc(ps, n=20)
     f0 = pitch_track(fr)
-    voiced = f0 > 0
-    sel = mf[voiced] if voiced.sum() > 5 else mf
-    v = f0[voiced]
-    pitch = np.array([np.log(v.mean()) if len(v) else 0.0, v.std() / (v.mean() + 1e-9) if len(v) else 0.0])
-    emb = np.concatenate([sel.mean(0), sel.std(0), pitch * 4]).astype(np.float32)
-    emb = emb - emb.mean()
-    return emb / (np.linalg.norm(emb) + 1e-9)
+    vm = f0 > 0
+    v = f0[vm]
+    ltas = np.log((ps[vm] if vm.sum() > 5 else ps) @ _FB.T + 1e-10).mean(0)[3:26]
+    ltas = ltas - ltas.mean()
+    return np.concatenate([[np.log(np.median(v)) if len(v) else 0.0], ltas]).astype(np.float32)
+
+
+_SPK_BG: tuple[np.ndarray, np.ndarray] | None = None
+PITCH_WEIGHT = 6.0
+
+
+def _background() -> tuple[np.ndarray, np.ndarray] | None:
+    global _SPK_BG
+    if _SPK_BG is None:
+        path = Path(__file__).resolve().parent.parent.parent / "models_store" / "spk_background.npz"
+        if path.exists():
+            d = np.load(path)
+            _SPK_BG = (d["mu"], d["sd"])
+    return _SPK_BG
+
+
+def speaker_embedding(x: np.ndarray) -> np.ndarray:
+    """Background-normalised speaker vector (a lightweight stand-in for an ECAPA-TDNN embedding), L2-normalised."""
+    e = speaker_raw(x)
+    bg = _background()
+    if bg is not None:
+        e = (e - bg[0]) / bg[1]
+    e[0] *= PITCH_WEIGHT
+    return e / (np.linalg.norm(e) + 1e-9)
 
 
 def waveform_peaks(x: np.ndarray, n: int = 480) -> list[float]:

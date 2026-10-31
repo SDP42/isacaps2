@@ -7,6 +7,7 @@ are averaged with ours.
 """
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -15,7 +16,18 @@ import numpy as np
 from . import dsp
 from .base import Evidence, Timer, WitnessResult, load_model
 
-VOICEPRINT_MATCH = 0.82  # cosine threshold, set at the EER point on the simulated speaker set
+from ..config import settings
+
+
+def _voiceprint_threshold() -> float:
+    """Cosine threshold at the equal-error point measured by ml/train_all.py."""
+    try:
+        return float(json.loads((settings.models_dir / "metrics.json").read_text())["voiceprint"]["threshold_at_eer"])
+    except Exception:
+        return 0.43
+
+
+VOICEPRINT_MATCH = _voiceprint_threshold()
 
 
 def _hf_scores(chunks: list[np.ndarray]) -> list[float] | None:
@@ -117,8 +129,8 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
         who = claimed_name or "the claimed sender"
         if sim < VOICEPRINT_MATCH:
             res.evidence.append(Evidence(
-                witness="voice", kind="voiceprint_mismatch", label="voiceprint mismatch", score=round(sim, 3), severity=3,
-                expected=f"enrolled voiceprint of {who}", observed=f"similarity {sim:.2f} (match ≥ {VOICEPRINT_MATCH})",
+                witness="voice", kind="voiceprint_mismatch", label="voiceprint mismatch", score=round(sim, 3), severity=2,
+                expected=f"enrolled voiceprint of {who}", observed=f"similarity {sim:.2f} (match ≥ {VOICEPRINT_MATCH:.2f})",
                 detail=f"The speaker does not match the consented voiceprint enrolled for {who}.", artifact_id=artifact_id,
             ))
         else:
