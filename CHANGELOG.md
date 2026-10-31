@@ -1,5 +1,13 @@
 # Changelog
 
+## 1 November 2026 (later): demo inputs and accuracy fixes
+
+- `demo_inputs/`: 32 test inputs for every feature (voice notes, calls, images, videos, messages, emails, multi-file
+  cases, extension test page) with expected and measured results; `scripts/make_demo_inputs.py`, `verify_demo_inputs.py`.
+- Fixes found by running them: zero-shot intent no longer invents a request or tactics without corroboration; context
+  weight scales with what is asked; gift-card requests count as payments; investment lures categorised correctly;
+  video quick checks also judge the audio track; OCR normaliser recovers glued words in screenshots.
+
 ## 1 November 2026: the cure and repository hardening
 
 - **Cure Console** (`Respond` tab): stateful five-stage incident response per scam type, exposure meter, golden-hour

@@ -365,7 +365,10 @@ npm install                     # if the npm registry is blocked: --registry=htt
 npm run dev                     # http://localhost:5173
 ```
 
-Open http://localhost:5173 → **Launch MIRAGE** → pick a persona. The first start seeds the Trustbook and runs ~50
+Open http://localhost:5173 → **Launch MIRAGE** → pick a persona. Ready-made test files for every feature (voice notes,
+calls, images, videos, messages, emails, multi-file cases, an extension test page) are in [demo_inputs/](demo_inputs/README.md).
+
+ The first start seeds the Trustbook and runs ~50
 historical cases. Docker: `docker compose up --build`. Environment variables and troubleshooting:
 [docs/SETUP.md](docs/SETUP.md).
 
@@ -460,6 +463,7 @@ History: [CHANGELOG.md](CHANGELOG.md).
 
 | Document | Contents |
 |---|---|
+| [demo_inputs/README.md](demo_inputs/README.md) | 32 test inputs across every feature, with expected and measured results |
 | [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md) | What is built, architecture, flow, features, use cases, results |
 | [docs/CURE.md](docs/CURE.md) | The cure: ideas, scenario plans, architecture, what is simulated |
 | [docs/DETECTION.md](docs/DETECTION.md) | Pretrained detection stack, calibration, benchmark |

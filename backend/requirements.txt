@@ -37,3 +37,4 @@ anthropic>=1.0
 # Red-team lab generators (optional): neural voices and SD-Turbo images
 edge-tts>=7.0
 diffusers>=0.33,<0.36
+wordninja>=2.0  # splits words that screenshot OCR glues together

@@ -65,7 +65,8 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
     ("payment", 1.0, [r"\b(wire|transfer|process|release|send|pay|move|deposit|bhej|daal)\b.{0,60}(₹|rs\.?|inr|rupees?|lakh|crore|\d{4,}|account|upi|payment)",
                       r"(₹|rs\.?|inr)\s?[\d,.]+.{0,40}\b(transfer|bhej|send|wire|pay)", r"\b(paise|pise|paisa|pais)\b.{0,20}\bbhej", r"\bbhej\w*\b.{0,25}\d{3,}", r"\d[\d,]{3,}.{0,25}\bbhej",
                       r"\bपैसे\b|\bभेज\b|\bट्रांसफर\b", r"\bbank details have changed\b", r"\bnew (beneficiary|account)\b",
-                      r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)"]),
+                      r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)",
+                      r"\bgift ?cards?\b", r"\b(voucher|redeem|redemption) codes?\b", r"\bscratch (off )?(the )?codes?\b"]),
     ("data", 0.6, [r"\bsend (me )?(the )?(employee|customer|payroll) (data|list|records)\b", r"\bpan card\b",
                    r"\baadhaar\b.{0,30}(send|share)", r"\bshare (the )?(file|database|records)\b"]),
     ("info", 0.3, [r"\bshare\b", r"\bupdate\b", r"\bconfirm\b"]),
@@ -299,17 +300,20 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
                                              detail=f"{tactic.replace('_', ' ').capitalize()} read by the LLM judge: {judge['reason'][:160]}"))
         if action == "none" and judge["requested_action"] not in ("none", "info"):
             action, sens = judge["requested_action"], 1.0 if judge["requested_action"] != "data" else 0.6
-    if it:
-        # zero-shot intents add tactics the lexicon missed (paraphrases, Devanagari, other Indian languages)
+    # Zero-shot intents add tactics the lexicon missed (paraphrases, Devanagari, other Indian languages), but only when
+    # something else already says "scam": on its own the NLI model reads urgency and payment into harmless reminders
+    # (demo_inputs/04_messages/05). Corroboration = a lexicon tactic, an extracted payment identifier, or p_text >= 0.5.
+    corroborated = bool(spans) or bool(ents.get("upi") or ents.get("account") or bad_domains) or p_text >= 0.5
+    if it and corroborated:
         for lever, tactic in (("urgency", "urgency"), ("secrecy", "secrecy"), ("impersonation", "authority"), ("threat", "fear"), ("reward", "reward")):
-            if it.get(lever, 0) >= 0.85 and tactic not in tactics:
+            if it.get(lever, 0) >= 0.9 and tactic not in tactics:
                 tactics.append(tactic)
                 res.evidence.append(Evidence(witness="words", kind=tactic, label=tactic.replace("_", " "), score=it[lever], severity=2,
                                              detail=f"{tactic.capitalize()} intent read by the multilingual model ({it[lever]:.2f}), "
                                                     f"without a fixed phrase."))
         if action == "none":
             ask = max(("payment", "credential", "remote_access"), key=lambda k: it.get(k, 0))
-            if it.get(ask, 0) >= 0.85:
+            if it.get(ask, 0) >= 0.9:
                 action, sens = ask, 1.0
                 res.evidence.append(Evidence(witness="words", kind="requested_action", label=f"requests {ask.replace('_', ' ')}",
                                              score=it[ask], severity=3,

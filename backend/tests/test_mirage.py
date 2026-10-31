@@ -189,3 +189,14 @@ def test_cure_console_family_emergency(client, token):
     assert "UTR123" in d["complaint"]["text"] and "code word" in d["challenge"]["text"]
     z = zipfile.ZipFile(io.BytesIO(client.get(f"/v1/cases/{cid}/cure/evidence-pack", headers=h).content))
     assert "MANIFEST.json" in z.namelist() and any(n.startswith("drafts/") for n in z.namelist())
+
+
+def test_ocr_normaliser_recovers_glued_words():
+    """Screenshot OCR drops spaces; the normaliser must restore tactics and identifiers without breaking IFSC / UPI."""
+    from app.witnesses.transcribe import normalise_ocr
+
+    t = normalise_ocr("PleaseprocessRs9,80,000 to account600112233445IFSC HDFC0001234today. No,keep thisbetweenus. family.help@ibl")
+    assert "keep this between us" in t and "account 600112233445" in t and "HDFC0001234 today" in t
+    assert "family.help@ibl" in t
+    r = words.analyse(t, live=True)
+    assert "secrecy" in r.details["tactics"] and r.details["requested_action"] == "payment"

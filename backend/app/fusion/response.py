@@ -42,6 +42,8 @@ def categorise(action: str, tactics: set[str], text: str = "", circle: str | Non
         return "credential_theft"
     if action == "remote_access":
         return "remote_access"
+    if action == "payment" and "reward" in tactics and "authority" not in tactics:
+        return "reward_scam"  # "pay a fee to win / invest" is a lure, not an executive impersonation
     if action == "payment":
         if circle == "family" or any(k in t for k in ("papa", "mummy", "beta", "accident", "hospital", "mom", "dad")):
             return "family_emergency"

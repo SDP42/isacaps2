@@ -130,6 +130,10 @@ async def quick_media(file: UploadFile = File(...), user: Principal = Depends(cu
             r = provenance.analyse(path)
         elif sf.kind == "video":
             r = face.analyse(path)
+            v = voice.analyse(path)  # many fake "video calls" are a still face over a cloned voice: judge the track too
+            if v.status == "ok" and (v.score or 0) > (r.score or 0):
+                r.summary = f"{r.summary} The audio track scores {v.score:.2f} for synthetic speech."
+                r.score = v.score
         else:
             raise HTTPException(415, "Use the voice check for audio; images and videos are supported here.")
     s = r.score or 0.0
