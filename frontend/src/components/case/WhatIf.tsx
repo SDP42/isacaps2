@@ -53,16 +53,19 @@ export function WhatIf({ detail }: { detail: CaseDetail }) {
 
   const togglePreset = (kinds: string[]) => {
     const ids = incriminating.filter((e) => kinds.includes(e.kind)).map((e) => e.id);
-    const allOff = ids.every((i) => off.has(i));
-    const next = new Set(off);
-    ids.forEach((i) => (allOff ? next.delete(i) : next.add(i)));
-    setOff(next);
+    setOff((prev) => {
+      const next = new Set(prev);
+      const allOff = ids.every((i) => prev.has(i));
+      ids.forEach((i) => (allOff ? next.delete(i) : next.add(i)));
+      return next;
+    });
   };
-  const toggle = (id: string) => {
-    const next = new Set(off);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setOff(next);
-  };
+  const toggle = (id: string) =>
+    setOff((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const cur = res ?? { risk: v.risk, band: v.band, rule_fired: v.rule_fired, dims: v.dims, reasons: v.reasons };
   const delta = cur.risk - v.risk;
