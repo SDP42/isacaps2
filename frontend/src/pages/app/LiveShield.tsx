@@ -59,10 +59,11 @@ export default function LiveShield() {
   const textRef = useRef("");
   const idx = useRef(0);
   const langRef = useRef<string | null>(null);
+  const applied = useRef(-1);
   const caller = SAMPLES.find((s) => s.file === running)?.caller ?? "Unknown caller";
 
   const reset = () => {
-    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; setAlert(null); setSecs(0);
+    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; applied.current = -1; setAlert(null); setSecs(0);
     setRolling({ tactics: [], action: "none", manipulation: 0, spans: [], amount: null });
   };
 
@@ -79,7 +80,11 @@ export default function LiveShield() {
         textRef.current = `${textRef.current} ${r.text}`.trim();
         setTranscript(textRef.current);
       }
-      setRolling({ tactics: r.tactics ?? [], action: r.action ?? "none", manipulation: r.manipulation ?? 0, spans: r.spans ?? [], amount: r.amount ?? null });
+      // responses can arrive out of order; only the newest chunk may update the rolling read
+      if (i >= applied.current) {
+        applied.current = i;
+        setRolling({ tactics: r.tactics ?? [], action: r.action ?? "none", manipulation: r.manipulation ?? 0, spans: r.spans ?? [], amount: r.amount ?? null });
+      }
       const action = (["payment", "credential", "data", "info"].includes(r.action) ? r.action : "none") as Action;
       const risk = simulate(r.spoof ?? 0, r.manipulation ?? 0, 0.35, action, (r.tactics ?? []).some((t: string) => t === "secrecy" || t === "bypass")).risk;
       setChunks((c) => [...c, { i, spoof: r.spoof, risk, text: r.text }]);
