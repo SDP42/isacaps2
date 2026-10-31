@@ -139,7 +139,7 @@ export function HeroStory() {
 
         {/* Section 1 — The Illusion (overlays inside the pinned scene) */}
         <div className="pointer-events-none absolute inset-0 z-10 mx-auto flex max-w-[1400px] items-center px-4 sm:px-8">
-          <div className="illusion-a max-w-md opacity-0">
+          <div className="illusion-a max-w-xl opacity-0">
             <h2 className="text-[clamp(2.2rem,4.6vw,4rem)] font-medium leading-[1] tracking-[-0.035em]">
               A face is a texture.
               <br />

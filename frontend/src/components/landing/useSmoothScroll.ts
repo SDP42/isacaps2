@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useReducedMotion } from "@/lib/hooks";
 
 gsap.registerPlugin(ScrollTrigger);
+if (import.meta.env.DEV) Object.assign(window, { __gsap: gsap, __st: ScrollTrigger });
 
 /** One RAF for everything: Lenis is driven by gsap.ticker and feeds ScrollTrigger. */
 export function useSmoothScroll() {
