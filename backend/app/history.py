@@ -21,8 +21,8 @@ from .security import Principal
 log = logging.getLogger("mirage.history")
 
 SENDERS = {
-    "ceo_fraud": [("Rajesh Mehta (CFO)", "whatsapp", "+91 70451 88213"), ("Ashok Raman", "sms", "+91 81234 77120")],
-    "vendor_bec": [("Orbit Supplies billing", "email", "billing@orbit-supp1ies.com")],
+    "ceo_fraud": [("Rajesh Mehta (CFO)", "whatsapp", "+91 93321 45008"), ("Ashok Raman", "sms", "+91 81234 77120")],
+    "vendor_bec": [("Zenith Logistics accounts", "email", "accounts@zenith-logistic.co")],
     "credential": [("IT helpdesk", "phone", "+91 88002 31109"), ("IT Service Desk", "email", "it-helpdesk@acme-reset.org")],
     "family_emergency": [("Papa", "whatsapp", "+91 73040 99812"), ("Bhaiya", "whatsapp", "+91 99001 22113")],
     "digital_arrest": [("Inspector Sharma", "video", "+91 90011 22334")],
