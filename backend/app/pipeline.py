@@ -90,7 +90,8 @@ def _run(case_id: str, pace: float) -> None:
     texts = [message] + [m.get("text", "") for *_, m in arts if m.get("text")]
     texts += [m.get("transcript", "") for *_, m in arts if m.get("transcript")]
     texts += [path_for(k).read_text(errors="ignore")[:20000] for _, kd, k, _, _ in arts if kd == "text"]
-    full_text = "\n".join(t for t in texts if t).strip()
+    # a transcript often repeats the pasted message; keep each distinct text once
+    full_text = "\n".join(dict.fromkeys(t.strip() for t in texts if t and t.strip())).strip()
     witnesses = sorted({j[0] for j in jobs} | ({"words"} if full_text else set()))
     state: tribunal.State = {"case": case_ctx, "messages": [], "evidence": []}
     emit_msg = _message_emitter(case_id)
