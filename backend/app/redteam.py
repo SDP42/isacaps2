@@ -448,7 +448,8 @@ def summary(c: Campaign) -> dict:
             insights.append("Every variant was caught by the media detector.")
     return {"id": c.id, "modality": c.modality, "attacks": c.attacks, "launders": c.launders, "total": c.total,
             "done": c.done, "status": c.status, "error": c.error, "cells": c.cells, "by_launder": by_l,
-            "insights": insights, "elapsed_s": round(time.time() - c.started, 1)}
+            "insights": insights, "elapsed_s": round(time.time() - c.started, 1), "started": c.started,
+            "detector": settings.model_version}
 
 
 def catalog() -> dict:

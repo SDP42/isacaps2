@@ -16,6 +16,7 @@ Each witness keeps working without its models; the models are the primary detect
   face    OpenCV Zoo YuNet                                        face localisation
   text    cybersectony/phishing-email-detection-distilbert_v2.4.1 phishing / scam message classifier
   text    MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7 multilingual zero-shot intent (100 languages)
+  text    sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 dense casebook retrieval
   redteam stabilityai/sd-turbo (fp16)                             image generator for the red-team lab (optional)
   speech-to-text  faster-whisper (downloaded on first use)
 """
@@ -42,10 +43,14 @@ GROUPS = {
         ("yermandy/GenD_CLIP_L_14", [*CFG, "model.safetensors"]),
         ("openai/clip-vit-large-patch14", ["config.json", "preprocessor_config.json"]),  # GenD holds the weights
         ("yermandy/GenD_PE_L", ["config.json", "model.safetensors"]),
+        # SyncNet v2 (VGG) lip-sync weights, a plain state dict; the architecture is vendored in witnesses/syncnet.py
+        ("lithiumice/syncnet", ["syncnet_v2.model"]),
     ],
     "text": [
         ("cybersectony/phishing-email-detection-distilbert_v2.4.1", [*CFG, "model.safetensors"]),
         ("MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7", [*CFG, "model.safetensors"]),
+        # dense casebook retrieval (50+ languages incl. Hindi); plain BERT encoder, mean-pooled, no repository code
+        ("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", [*CFG, "model.safetensors"]),
     ],
     "redteam": [
         ("stabilityai/sd-turbo", ["model_index.json", "scheduler/*", "tokenizer/*", "text_encoder/config.json",

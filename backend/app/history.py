@@ -58,7 +58,7 @@ def _when(days_ago: float, hour: int | None = None) -> datetime:
     return t.replace(hour=hour if hour is not None else random.randint(8, 22), minute=random.randint(0, 59))
 
 
-def populate() -> None:
+def populate(progress=None) -> None:
     from .routers.cases import create_case
 
     with session_scope() as db:
@@ -90,8 +90,10 @@ def populate() -> None:
                             _when(random.uniform(1, 12), sc.received_hour), title=f"Scenario {sc.code} · {sc.title}",
                             scenario=sc.key)
             ids.append(c.id)
-    for cid in ids:
+    for i, cid in enumerate(ids):
         pipeline.run_case(cid, pace=0.0)
+        if progress:
+            progress(i + 1, len(ids))
     # analysts closed a few of the older ones
     with session_scope() as db:
         for c in db.scalars(select(Case).where(Case.status == "complete")):

@@ -73,6 +73,24 @@ def latest_campaign(modality: str = "audio", user: Principal = Depends(require_r
     return None
 
 
+@router.get("/campaigns")
+def campaign_history(user: Principal = Depends(require_role("analyst"))) -> list[dict]:
+    """Every finished campaign, oldest first, as catch rate per laundering channel: robustness over time."""
+    out = []
+    for f in redteam.ROOT.glob("camp-*.json"):
+        try:
+            d = json.loads(f.read_text())
+        except Exception:
+            continue
+        if d.get("status") != "done" or not d.get("cells"):
+            continue
+        cells = d["cells"]
+        out.append({"id": d["id"], "modality": d["modality"], "at": d.get("started") or f.stat().st_mtime,
+                    "detector": d.get("detector"), "cells": len(cells), "caught": sum(c["caught"] for c in cells),
+                    "by_launder": d.get("by_launder", {}), "attacks": d.get("attacks", [])})
+    return sorted(out, key=lambda x: x["at"])
+
+
 @router.get("/campaign/{cid}")
 def campaign_status(cid: str, user: Principal = Depends(require_role("analyst"))) -> dict:
     c = redteam.CAMPAIGNS.get(cid)

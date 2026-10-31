@@ -57,9 +57,7 @@ Mount or bake `backend/models_hf/` into the API image to enable the pretrained d
 ```bash
 cd backend && python -m pytest -q
 ```
-16 tests: eight scenario verdicts (plus citation integrity and Tribunal order), upload rejection, auth, Words
-extraction, OTP-notice handling, the credential rule, the harmless-synthetic rule, Shapley additivity and audit-chain
-tamper detection.
+26 tests (see the README for the list). Stop the API first if it is running on the same GPU.
 
 ## Troubleshooting
 | Symptom | Fix |

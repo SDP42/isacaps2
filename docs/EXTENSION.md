@@ -19,6 +19,7 @@ Brings MIRAGE to where scams arrive: the browser tab with the call, the email or
 | Right-click → check this voice note | For `<audio>` / `<video>` elements (for example a voice note opened in a tab) | `POST /v1/voice/triage` |
 | Upload a file | Voice notes go through the two-stage voice check; images and videos through the detectors | triage / quick media |
 | **Shield this call** | `chrome.tabCapture` + an offscreen document capture the tab's audio (Meet, Zoom web, Teams, WhatsApp Web calls), keep it audible, and post 3-second 16 kHz WAV chunks. The badge shows live risk; a system notification fires the first time risk reaches 70 | `POST /v1/live/chunk` |
+| **WhatsApp Web voice notes** | A "Check with MIRAGE" chip under every voice note. WhatsApp decrypts a note only when it plays, so a small page-context hook (`whatsapp-hook.js`, `world: MAIN`) keeps the decrypted audio blob; the chip sends it through the service worker. Nothing leaves the page until the user clicks | `POST /v1/voice/triage` |
 | Auto-scan Gmail (opt-in) | A content script reads each opened email body and, unless it is low risk, inserts a banner with the verdict and a "What to do" button | `POST /v1/quick/text` via the service worker |
 
 Every result shows the same "what now" plan as the web app ([AFTER_DETECTION.md](AFTER_DETECTION.md)).
@@ -34,9 +35,19 @@ Every result shows the same "what now" plan as the web app ([AFTER_DETECTION.md]
 
 The popup logic was exercised against the live API in a test harness (message check, sign-in, plan rendering), the
 scripts pass `node --check`, and the CORS preflight for an extension origin returns 200. The tab-capture shield, the
-context menus and the Gmail banner have **not yet been run inside Chrome**; load the folder and try them before a demo.
+context menus, the Gmail banner and the WhatsApp Web chip have **not yet been run inside Chrome**; load the folder
+and try them before a demo. The WhatsApp chip finds voice notes by their play icon (`data-icon="audio-play"` /
+`"ptt-play"`); WhatsApp's DOM is not a public API, so that selector is the first thing to check if no chip appears.
+
+## Phone: share to MIRAGE
+
+The web app is also an installable PWA with a Web Share Target (`frontend/public/manifest.webmanifest`,
+`public/share-sw.js`). On Android, open MIRAGE in Chrome, choose *Add to Home screen*, and MIRAGE appears in the share
+sheet: long-press a WhatsApp voice note, tap Share, pick MIRAGE. The worker parks the shared file in the Cache API and
+opens `/app/share`, which runs the voice check, media check or message check and shows the "what now" plan. Sharing
+needs https (or localhost) and Chrome 89 or later; it has been built and type-checked, not yet tried on a phone.
 
 ## Roadmap
 
-WhatsApp Web voice-note button next to each received voice note · caption-based checks in Meet (lower bandwidth) ·
+Caption-based checks in Meet (lower bandwidth) ·
 per-organisation policy (auto-hold payments, SOC webhook) · Firefox and Edge packaging · Chrome Web Store listing.

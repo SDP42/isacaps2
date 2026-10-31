@@ -94,6 +94,18 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
       .then((r) => reply({ ok: true, result: r }), (e) => reply({ ok: false, error: String(e.message || e) }));
     return true;
   }
+  if (msg.type === "check-voice-data") {
+    // a WhatsApp Web voice note the user played and asked about (see whatsapp.js)
+    (async () => {
+      const blob = await (await fetch(msg.dataUrl)).blob();
+      const fd = new FormData();
+      fd.append("file", new File([blob], msg.mime.includes("ogg") ? "voice-note.ogg" : "voice-note.webm", { type: msg.mime }));
+      const r = await call("/v1/voice/triage", { method: "POST", body: fd });
+      await showResult({ kind: "voice", input: "WhatsApp Web voice note", ...r });
+      return { ok: true, severity: r.stage3.severity, label: r.stage1.label };
+    })().then(reply, (e) => reply({ ok: false, error: String(e.message || e) }));
+    return true;
+  }
   if (msg.type === "open-result") { showResult(msg.result); }
   return false;
 });

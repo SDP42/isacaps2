@@ -22,6 +22,10 @@ const Challenge = lazy(() => import("./pages/app/Challenge"));
 const LiveShield = lazy(() => import("./pages/app/LiveShield"));
 const VoiceCheck = lazy(() => import("./pages/app/VoiceCheck"));
 const RedTeam = lazy(() => import("./pages/app/RedTeam"));
+const Trustbook = lazy(() => import("./pages/app/Trustbook"));
+const Drills = lazy(() => import("./pages/app/Drills"));
+const Liveness = lazy(() => import("./pages/app/Liveness"));
+const Share = lazy(() => import("./pages/app/Share"));
 
 function Splash() {
   return (
@@ -74,6 +78,10 @@ export default function App() {
               <Route path="shield" element={<LiveShield />} />
               <Route path="voice" element={<VoiceCheck />} />
               <Route path="redteam" element={<RedTeam />} />
+              <Route path="trustbook" element={<Trustbook />} />
+              <Route path="drills" element={<Drills />} />
+              <Route path="liveness" element={<Liveness />} />
+              <Route path="share" element={<Share />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

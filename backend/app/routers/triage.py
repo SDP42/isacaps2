@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from ..fusion import response as resp
+from ..events import ops
 from ..security import Principal, current_principal
 from ..storage import RejectedUpload, store
 from ..witnesses import face, provenance, transcribe, voice, words
@@ -95,6 +96,7 @@ async def voice_triage(file: UploadFile = File(...), claimed_sender: str = Form(
     category = sem["category"] if sem else "benign"
     if kind == "synthetic_benign":
         category = "synthetic_benign"
+    ops("triage.voice", actor=user.persona_id, severity=severity, label=stage1["label"], category=category)
     return {"sha256": sf.sha256, "stage1": stage1,
             "stage2": {"transcript": text, "language": asr.get("language") if asr else None,
                        "words": asr.get("words", []) if asr else [], "semantics": sem},
@@ -117,6 +119,7 @@ def quick_text(body: TextIn, user: Principal = Depends(current_principal)) -> di
     severity = "HIGH" if s >= 0.7 and sem["action"] in SENSITIVE else "MEDIUM" if s >= 0.5 or sem["action"] in SENSITIVE else "LOW"
     if sem["category"] == "digital_arrest":
         severity = "CRITICAL"
+    ops("triage.text", actor=user.persona_id, severity=severity, category=sem["category"])
     return {"semantics": sem, "severity": severity, "response": resp.build(sem["category"], severity, None, org=body.org)}
 
 
@@ -139,6 +142,7 @@ async def quick_media(file: UploadFile = File(...), user: Principal = Depends(cu
     s = r.score or 0.0
     label = "Likely AI-generated or manipulated" if s >= 0.7 else "Likely authentic" if s <= 0.3 else "Uncertain"
     severity = "MEDIUM" if s >= 0.7 else "INCONCLUSIVE" if s > 0.3 else "LOW"
+    ops("triage.media", actor=user.persona_id, severity=severity, label=label, modality=sf.kind)
     return {"kind": sf.kind, "sha256": sf.sha256, "score": s, "label": label, "summary": r.summary,
             "models": (r.details.get("pretrained") or {}).get("models"), "meta": (r.details.get("pretrained") or {}).get("meta"),
             "evidence": [e.as_dict() for e in r.evidence if not e.exculpatory][:5],

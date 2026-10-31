@@ -2,7 +2,8 @@ import { AudioLines, Bot, FileAudio, Loader2, MessageSquareWarning, ScanLine, Up
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ModelJury, type JuryMeta } from "@/components/app/ModelJury";
-import { Waveform } from "@/components/app/Waveform";
+import { EvidenceTimeline } from "@/components/kit/EvidenceTimeline";
+import { VerdictMatrix, useMatrixHistory } from "@/components/kit/VerdictMatrix";
 import { RecordButton } from "@/components/app/VoiceControls";
 import { SEVERITY_COLOR, WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +16,7 @@ interface Triage {
   stage1: { label: string; verdict: "ai" | "human" | "uncertain"; score: number | null; confidence: number; summary: string;
     models: Record<string, number> | null; meta?: Record<string, JuryMeta> | null; agree: boolean | null; windows: { t0: number; t1: number; score: number }[];
     waveform: number[] | null; duration_s: number; channel: { codec_guess: string; snr_db: number } | null; status: string; noisy?: boolean };
-  stage2: { transcript: string; language: string | null; semantics: null | {
+  stage2: { transcript: string; language: string | null; words: { w: string; t0: number; t1: number }[]; semantics: null | {
     score: number; summary: string; tactics: string[]; action: string; amount_inr: number | null; category: string; category_label: string;
     entities: Record<string, string[]>; deadline: string | null; spans: { kind: string; text: string; span: [number, number] }[] } };
   stage3: { severity: string; kind: string; why: string; synthetic: string; sensitive: boolean };
@@ -55,40 +56,6 @@ function Highlighted({ text, spans }: { text: string; spans: { kind: string; spa
   );
 }
 
-/** The 2x2 that explains the verdict: who is speaking against what they ask for. */
-function Matrix({ synthetic, sensitive }: { synthetic: string; sensitive: boolean }) {
-  const cells = [
-    { ai: true, sens: true, title: "Voice-clone scam", sub: "Stop and verify", color: "var(--color-crimson)" },
-    { ai: true, sens: false, title: "Synthetic, harmless", sub: "Announcements, avatars", color: "var(--color-silver)" },
-    { ai: false, sens: true, title: "Human social engineering", sub: "Real voices carry scams too", color: "var(--color-amber)" },
-    { ai: false, sens: false, title: "Normal conversation", sub: "No action needed", color: "var(--color-mint)" },
-  ];
-  const isAi = synthetic === "ai";
-  return (
-    <div className="grid grid-cols-[auto_1fr_1fr] gap-1.5 text-[12px]">
-      <span />
-      <span className="label text-center !text-[10px]">Sensitive request</span>
-      <span className="label text-center !text-[10px]">Nothing sensitive</span>
-      {[true, false].map((ai) => (
-        <div key={String(ai)} className="contents">
-          <span className="label flex items-center !text-[10px]">{ai ? "AI voice" : "Human voice"}</span>
-          {cells.filter((c) => c.ai === ai).map((c) => {
-            const on = synthetic !== "uncertain" && c.ai === isAi && c.sens === sensitive;
-            const maybe = synthetic === "uncertain" && c.sens === sensitive;
-            return (
-              <div key={c.title} className={cx("rounded-lg border p-2.5 transition-all", on ? "scale-[1.02]" : "opacity-45")}
-                style={{ borderColor: on || maybe ? c.color : "var(--color-line)", background: on ? `color-mix(in oklab, ${c.color} 14%, transparent)` : undefined }}>
-                <p className="text-[12.5px] text-fg">{c.title}</p>
-                <p className="text-[11px] text-muted">{c.sub}</p>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function VoiceCheck() {
   const [file, setFile] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -124,6 +91,10 @@ export default function VoiceCheck() {
 
   const s1 = r?.stage1;
   const sem = r?.stage2.semantics;
+  const point = useMemo(() => (r && r.stage1.score != null
+    ? { synthetic: r.stage1.score, manipulation: r.stage2.semantics?.score ?? 0, sensitive: r.stage3.sensitive, at: Date.now() }
+    : null), [r]);
+  const history = useMatrixHistory(point);
   const vColor = s1?.verdict === "ai" ? "var(--color-crimson)" : s1?.verdict === "human" ? "var(--color-mint)" : "var(--color-silver)";
 
   return (
@@ -195,7 +166,6 @@ export default function VoiceCheck() {
                   </div>
                 </div>
                 {s1.models && <ModelJury models={s1.models} meta={s1.meta} consensus={s1.score} fakeWord="synthetic" />}
-                {s1.waveform && <Waveform peaks={s1.waveform} duration={s1.duration_s} src={url ?? undefined} windows={s1.windows} height={72} />}
                 <p className="text-[12.5px] text-muted">{s1.summary}</p>
                 {s1.noisy && (
                   <p className="rounded-lg border border-amber/40 bg-amber/[0.06] px-3 py-2 text-[12.5px] text-amber">
@@ -237,13 +207,21 @@ export default function VoiceCheck() {
           </div>
 
           <section className="panel">
+            <PanelHead title="Evidence on one clock" meta="audio, synthetic windows, words and tactics share one playhead · click or drag to seek" />
+            <div className="p-4">
+              <EvidenceTimeline duration={s1.duration_s} peaks={s1.waveform} windows={s1.windows} words={r.stage2.words}
+                spans={(sem?.spans ?? []).filter((x) => x.span)} src={url ?? undefined} />
+            </div>
+          </section>
+
+          <section className="panel">
             <PanelHead title="3 · Combined verdict" right={<span className="font-mono text-[11px]" style={{ color: SEVERITY_COLOR[r.stage3.severity] }}>{r.stage3.severity}</span>} />
             <div className="grid gap-5 p-5 lg:grid-cols-[1fr_1.2fr] lg:items-center">
               <div className="flex gap-3">
                 <MessageSquareWarning className="mt-1 shrink-0" style={{ color: SEVERITY_COLOR[r.stage3.severity] }} />
                 <p className="text-[15px] leading-relaxed text-fg">{r.stage3.why}</p>
               </div>
-              <Matrix synthetic={r.stage3.synthetic} sensitive={r.stage3.sensitive} />
+              <VerdictMatrix synthetic={s1.score} verdict={r.stage1.verdict} manipulation={sem?.score ?? 0} sensitive={r.stage3.sensitive} history={history} />
             </div>
           </section>
 

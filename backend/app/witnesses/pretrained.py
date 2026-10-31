@@ -50,6 +50,8 @@ def loader(fn):
 MODELS = {
     "df_arena": ("DF_Arena_500M_V_1", "Speech-Arena-2025/DF_Arena_500M_V_1"),
     "nii": ("Wav2Vec2-Large-AntiDeepfake", "NII Wav2Vec2-Large-AntiDeepfake"),
+    "nii_mms": ("MMS-300M-AntiDeepfake", "NII MMS-300M AntiDeepfake"),
+    "nii_small": ("Wav2Vec2-Small-AntiDeepfake", "NII Wav2Vec2-Small AntiDeepfake"),
     "wavlm": ("wavlm-base-plus-sv", "microsoft/wavlm-base-plus-sv"),
     "commfor": ("commfor-model-384", "Community Forensics ViT-S/384"),
     "swinv2": ("ai-image-detector-deploy", "haywoodsloan/ai-image-detector-deploy"),
@@ -59,6 +61,8 @@ MODELS = {
     "phishing": ("phishing-email-detection-distilbert_v2.4.1", "cybersectony/phishing-email-detection-distilbert"),
     "nli": ("mDeBERTa-v3-base-xnli-multilingual-nli-2mil7", "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"),
     "yunet": ("yunet", "OpenCV YuNet"),
+    "syncnet": ("syncnet", "SyncNet v2 (VGG, Chung & Zisserman)"),
+    "minilm": ("paraphrase-multilingual-MiniLM-L12-v2", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"),
 }
 
 # Operating thresholds: the probability of "fake" that each model's scores are recentred on. Measured with
@@ -84,12 +88,14 @@ def available(key: str) -> bool:
     if not enabled():
         return False
     d = _dir(key)
-    if key == "nii":
+    if key in ("nii", "nii_mms", "nii_small"):
         return any(d.glob("*.onnx"))
     if key == "yunet":
         return any(d.glob("*.onnx"))
     if key == "gend":
         return (d / "model.safetensors").exists() and (_dir("clip") / "preprocessor_config.json").exists()
+    if key == "syncnet":
+        return (d / "syncnet_v2.model").exists()
     if key == "gend_pe":
         return (d / "model.safetensors").exists() and (d / "config.json").exists()
     return (d / "config.json").exists() and any((d / w).exists() for w in ("model.safetensors", "pytorch_model.bin"))
@@ -110,6 +116,8 @@ CARDS = {  # witness, role, published result (source)
     "yunet": ("face", "Face localisation", "WIDER Face (OpenCV Zoo)"),
     "phishing": ("words", "Phishing / scam message classifier", "English emails and URLs (model card)"),
     "nli": ("words", "Multilingual zero-shot intent", "XNLI 100 languages (model card)"),
+    "syncnet": ("face", "Audio-visual lip-sync", "LRS2 / VoxCeleb lip-sync (ACCV 2016 workshop)"),
+    "minilm": ("casebook", "Dense retrieval (semantic search)", "50+ languages, paraphrase mining (model card)"),
 }
 
 
@@ -180,15 +188,20 @@ def _df_arena():
 
 
 @loader
-def _nii():
+def _onnx(key: str):
+    """An AntiDeepfake ONNX export (same input contract for every size: layer-normed 16 kHz waveform, 2 logits)."""
     import onnxruntime as ort
 
     opts = ort.SessionOptions()
     opts.intra_op_num_threads = max(2, (os.cpu_count() or 4) // 2)
-    sess = ort.InferenceSession(str(next(_dir("nii").glob("*.onnx"))), opts, providers=ort.get_available_providers())
+    sess = ort.InferenceSession(str(next(_dir(key).glob("*.onnx"))), opts, providers=ort.get_available_providers())
     inp = sess.get_inputs()[0]
     fixed = inp.shape[1] if isinstance(inp.shape[1], int) else None
     return sess, inp.name, fixed
+
+
+def _nii():
+    return _onnx("nii")
 
 
 def _layer_norm(x: np.ndarray) -> np.ndarray:
@@ -231,18 +244,18 @@ def df_arena_fake(chunk: np.ndarray) -> float | None:
         return None
 
 
-def nii_fake(chunk: np.ndarray) -> float | None:
-    if not available("nii"):
+def nii_fake(chunk: np.ndarray, key: str = "nii") -> float | None:
+    if not available(key):
         return None
     try:
-        sess, inp, fixed = _nii()
+        sess, inp, fixed = _onnx(key)
         x = _layer_norm(chunk)
         if fixed:
             x = np.tile(x, int(np.ceil(fixed / len(x))))[:fixed]
         logits = sess.run(None, {inp: x[None, :]})[0][0]
         return float(_softmax(logits)[0])  # index 0 = fake, 1 = real (model card)
     except Exception as exc:
-        log.warning("NII AntiDeepfake failed: %s", exc)
+        log.warning("%s failed: %s", name(key), exc)
         return None
 
 
@@ -479,6 +492,28 @@ def detect_faces(frame_bgr: np.ndarray) -> list[tuple[int, int, int, int, float]
         return None
 
 
+def face_landmarks(frame_bgr: np.ndarray) -> dict | None:
+    """Largest YuNet face with its five landmarks (eyes sorted by image x, nose, mouth corners). None if no face."""
+    if not available("yunet"):
+        return None
+    try:
+        h, w = frame_bgr.shape[:2]
+        det = _yunet()
+        with _LOCK:
+            det.setInputSize((w, h))
+            _, faces = det.detect(np.ascontiguousarray(frame_bgr))
+        if faces is None or not len(faces):
+            return None
+        f = max(faces, key=lambda r: r[2] * r[3])
+        pts = f[4:14].reshape(5, 2).astype(float)
+        eyes = sorted(pts[:2].tolist())
+        mouth = sorted(pts[3:5].tolist())
+        return {"box": [int(v) for v in f[:4]], "score": float(f[14]), "eyes": eyes, "nose": pts[2].tolist(), "mouth": mouth}
+    except Exception as exc:
+        log.warning("YuNet landmarks failed: %s", exc)
+        return None
+
+
 def face_crop(frame_bgr: np.ndarray, box: tuple, scale: float = 1.3):
     """Square crop around a face box, enlarged like the GenD/DeepfakeBench preprocessing."""
     from PIL import Image
@@ -524,6 +559,37 @@ def _nli():
 
     torch, dev = _torch()
     return pipeline("zero-shot-classification", model=str(_dir("nli")), device=0 if dev == "cuda" else -1)
+
+
+@loader
+def _minilm():
+    from transformers import AutoModel, AutoTokenizer
+
+    torch, dev = _torch()
+    tok = AutoTokenizer.from_pretrained(str(_dir("minilm")))
+    model = AutoModel.from_pretrained(str(_dir("minilm"))).to(dev).eval()
+    return tok, model, dev
+
+
+def sentence_embeddings(texts: list[str], batch: int = 32) -> np.ndarray | None:
+    """Mean-pooled, L2-normalised sentence vectors (the model's own pooling config), or None if not installed."""
+    if not available("minilm") or not texts:
+        return None
+    try:
+        torch, _ = _torch()
+        out = []
+        with _LOCK, torch.no_grad():
+            tok, model, dev = _minilm()
+            for i in range(0, len(texts), batch):
+                enc = tok(texts[i:i + batch], padding=True, truncation=True, max_length=256, return_tensors="pt").to(dev)
+                h = model(**enc).last_hidden_state
+                m = enc["attention_mask"].unsqueeze(-1).float()
+                v = (h * m).sum(1) / m.sum(1).clamp(min=1e-9)
+                out.append(torch.nn.functional.normalize(v, dim=-1).cpu().numpy())
+        return np.concatenate(out).astype(np.float32)
+    except Exception as exc:
+        log.warning("sentence embeddings failed: %s", exc)
+        return None
 
 
 INTENTS = {

@@ -3,8 +3,9 @@
 Everything a new contributor (human or AI agent) needs to pick MIRAGE up without the history of the conversations that
 built it. Read this first, then [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) and [DETECTION.md](DETECTION.md).
 
-State as of 1 November 2026: `main` at the commit that added this file. CI is green, 21/21 backend tests pass, and
-32/32 demo inputs return their expected verdicts.
+State as of 1 November 2026 (evening): see the top of [CHANGELOG.md](../CHANGELOG.md) for the latest round (command
+centre rebuild, evidence kit, Trustbook admin, Drill mode, liveness, SyncNet lip-sync, C2PA validation, semantic
+casebook, WhatsApp chip, Android share target). 26 backend tests pass in light mode.
 
 ## 1. What MIRAGE is
 
@@ -180,6 +181,14 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Want to change | File |
 |---|---|
 | Add or swap a pretrained model, thresholds, weights | `backend/app/witnesses/pretrained.py`, `scripts/download_models.py` |
+| Lip-sync (SyncNet), C2PA validation | `backend/app/witnesses/syncnet.py`, `provenance.py` (`c2pa_check`) |
+| Command centre data, live ops feed, demo reset | `backend/app/routers/ops.py`, `events.py` (`ops()`), `audit.py` (every audit entry is also a feed event) |
+| Trustbook admin, guided enrolment, Drill mode | `backend/app/routers/trustbook.py`, `models.py` (`Drill`) |
+| Liveness challenge | `backend/app/routers/liveness.py`, `pretrained.face_landmarks()` |
+| Command centre screen | `frontend/src/pages/app/Dashboard.tsx`, `components/command/*` |
+| Shared evidence components | `frontend/src/components/kit/*` (StateKit, ConfidenceBand, VerdictMatrix, EvidenceTimeline) |
+| Share target (phone) | `frontend/public/manifest.webmanifest`, `public/share-sw.js`, `pages/app/Share.tsx` |
+| WhatsApp Web chip | `extension/whatsapp.js`, `extension/whatsapp-hook.js` |
 | Voice / face / image / text logic | `backend/app/witnesses/{voice,face,provenance,words,identity}.py` |
 | Risk fusion, policy rules | `backend/app/fusion/risk.py` |
 | Scam categories, helplines, "what now" plans | `backend/app/fusion/response.py` |
@@ -191,7 +200,8 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | DB schema | `backend/app/models.py` |
 | Screens | `frontend/src/pages/app/*.tsx` (VoiceCheck, RedTeam, CaseView, LiveShield, AttackChain, System, …) |
 | Case components | `frontend/src/components/case/*` (CureConsole, RiskWaterfall, WhatIf, MediaStudio) |
-| Tests | `backend/tests/test_mirage.py` |
+| Tests | `backend/tests/test_mirage.py` (26) |
+| Benchmarks | `scripts/benchmark_models.py` (ROC + calibration), `scripts/noise_robustness.py`, `scripts/measure_claude_judge.py` |
 | CI | `.github/workflows/ci.yml` (CPU torch, light mode; frontend `tsc` and `vite build`; extension `node --check`) |
 | Demo inputs | `demo_inputs/`, `backend/scripts/make_demo_inputs.py`, `verify_demo_inputs.py` |
 
@@ -215,7 +225,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Voice | AUC 1.00 on the benchmark set. Red-team 40/42 caught; both misses are heavy-noise laundering |
 | Images | AUC 0.98, 94 % accuracy. Red-team 15/15 |
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
-| Text | Indian scam SMS set: 0.92 |
+| Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
 | Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
 | Tests / CI | 21/21 pass, both full and light mode; CI green on `main` |
 
@@ -225,18 +235,27 @@ How far the models agree sets the confidence. Every load and every GPU inference
 
 - In-the-wild face swaps and fully generated video (OpenForensics 0.71).
 - Heavy background noise on voice. This is handled as "uncertain", not as a decision.
-- The Chrome extension has not yet been run inside real Chrome. It has only been syntax-checked and API-tested.
+- The Chrome extension (now including the WhatsApp Web chip) has not yet been run inside real Chrome. It has only been
+  syntax-checked and API-tested. The Android share target has not been tried on a phone.
+- The Trustbook voiceprints are still the seeded simulator prints (11 of them, flagged in the Trustbook). The guided,
+  consented enrolment flow exists; it needs the real people to record three takes each. Scenario D's "genuine" voice
+  is still simulator audio for the same reason.
+- The Claude judge is unmeasured: run `scripts/measure_claude_judge.py` with `ANTHROPIC_API_KEY` set.
+- The SyncNet threshold rests on a 15-clip sanity check from one speaker; a lip-sync generator (Wav2Lip and its
+  descendants) can pass it by design.
 - Demo authentication only. There is no licence file yet; the owner has to choose one.
 - Cure connectors are simulated.
 
 **Next steps, in priority order:**
 
-1. Load the extension in Chrome and test it with `demo_inputs/08_extension/test-page.html`.
-2. UI phase 4: accessibility (focus order, aria, contrast) and performance (route splitting, smaller 3D bundle). See
-   [UI_PLAN.md](UI_PLAN.md).
-3. Video: add a temporal or lip-sync model for fully generated video; test on more in-the-wild data.
-4. Voice under noise: try more robust ensembles rather than denoising. Denoising was tested and made detection worse.
-5. Real authentication (OIDC) and a licence. Real connectors only behind explicit configuration.
+1. Load the extension in Chrome and test it with `demo_inputs/08_extension/test-page.html`, Gmail and WhatsApp Web.
+2. Re-enrol Trustbook voiceprints from consented team recordings (Trustbook page), and record a real voice for
+   Scenario D.
+3. UI phase 4: accessibility and performance on the older screens (the new ones were built with keyboard paths and
+   reduced motion). Use EvidenceTimeline and VerdictMatrix in the case media studio too. See [UI_PLAN.md](UI_PLAN.md).
+4. Video: a temporal model for fully generated video with in-sync lips (SyncNet covers talking photos and dubbing).
+5. Measure the Claude judge (needs a key).
+6. Real authentication (OIDC) and a licence. Real connectors only behind explicit configuration.
 
 Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [UI_PLAN.md](UI_PLAN.md).
 
@@ -255,3 +274,9 @@ Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [U
 - **Frontend:** a hidden browser pane pauses requestAnimationFrame, so animated charts render empty. Hence
   `.motion-ok` and static geometry.
 - **Cure engine:** the SQLAlchemy JSON column does not persist changes made in place. Deep-copy, then assign.
+- **Ops feed:** an audit entry is published before its transaction commits, so the command centre refetches on the
+  `case.stage` "verdict" event (published after commit), not on `verdict.issued`.
+- **Attack clock and hours:** case timestamps are stored on the clock the identity witness reads as local time; the
+  command centre reads hours in UTC to match it.
+- **Tests:** the test DB is shared across tests and one test breaks the audit chain on purpose; do not assert the chain
+  is intact in later tests. Use `DATABASE_URL` (not `MIRAGE_DB`) to point a script at another database.

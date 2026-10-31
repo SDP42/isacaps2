@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ModelJury, type JuryMeta } from "@/components/app/ModelJury";
 import { Button } from "@/components/ui/Button";
 import { Empty, Meter, PanelHead, Segmented, Skeleton } from "@/components/ui/primitives";
-import { getToken, post } from "@/lib/api";
+import { api, getToken, post } from "@/lib/api";
 import { cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 
@@ -21,6 +21,53 @@ interface CampaignState {
   id: string; modality: string; attacks: string[]; launders: string[]; total: number; done: number; status: string; error: string | null;
   cells: { attack: string; launder: string; score: number; caught: boolean }[];
   by_launder: Record<string, { rate: number; mean: number }>; insights: string[]; elapsed_s: number;
+}
+
+interface HistoryRun { id: string; modality: string; at: number; detector: string | null; cells: number; caught: number; by_launder: Record<string, { rate: number; mean: number }> }
+
+/**
+ * Robustness over time: one column per finished campaign, one row per laundering channel, each cell the catch rate.
+ * A detector change shows up as a column that turns red or green, so regressions cannot hide behind the latest run.
+ */
+function CampaignHistory({ runs, labels, onOpen, current }: { runs: HistoryRun[]; labels: Record<string, string>; onOpen: (id: string) => void; current?: string }) {
+  if (!runs.length) return <p className="text-[13px] text-muted">No finished campaigns for this modality yet. Each run you start is kept here, so changes to the detectors show up as columns that move.</p>;
+  const launders = [...new Set(runs.flatMap((r) => Object.keys(r.by_launder)))];
+  const tone = (v: number) => `color-mix(in oklab, ${v >= 0.999 ? "var(--color-mint)" : v >= 0.8 ? "var(--color-amber)" : "var(--color-crimson)"} ${Math.round(25 + v * 45)}%, var(--color-ink-2))`;
+  return (
+    <div className="overflow-x-auto">
+      <table className="border-separate border-spacing-[3px] text-[11.5px]">
+        <thead>
+          <tr>
+            <th className="min-w-[150px]" />
+            {runs.map((r) => (
+              <th key={r.id} className="px-0.5 pb-1 font-normal">
+                <button onClick={() => onOpen(r.id)} className={cx("w-[64px] rounded-md px-1 py-1 text-center font-mono text-[10px] leading-tight transition-colors hover:bg-white/[0.05]", current === r.id ? "text-cyan" : "text-dim")}
+                  title={`${r.id}${r.detector ? ` · detector ${r.detector}` : ""}`}>
+                  {new Date(r.at * 1000).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}<br />{new Date(r.at * 1000).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                </button>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th className="pr-3 text-left font-normal text-fg">All channels</th>
+            {runs.map((r) => <td key={r.id} className="h-7 rounded-[5px] text-center font-mono text-[11px] text-fg" style={{ background: tone(r.caught / r.cells) }}>{r.caught}/{r.cells}</td>)}
+          </tr>
+          {launders.map((l) => (
+            <tr key={l}>
+              <th className="truncate pr-3 text-left font-normal text-silver" title={labels[l] ?? l}>{labels[l] ?? l}</th>
+              {runs.map((r) => {
+                const v = r.by_launder[l];
+                return v ? <td key={r.id} className="h-6 rounded-[5px] text-center font-mono text-[10.5px] text-fg" style={{ background: tone(v.rate) }} title={`caught ${Math.round(v.rate * 100)}% · mean score ${v.mean}`}>{Math.round(v.rate * 100)}%</td>
+                  : <td key={r.id} className="h-6 rounded-[5px] border border-dashed border-line text-center text-dim">·</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 const RobustnessTerrain = lazy(() => import("@/components/three/RobustnessTerrain"));
@@ -128,6 +175,12 @@ export default function RedTeam() {
   const [cmod, setCmod] = useState<"audio" | "image">("audio");
   const [camp, setCamp] = useState<CampaignState | null>(null);
   const [view, setView] = useState<"heatmap" | "terrain">("heatmap");
+  const [runs, setRuns] = useState<HistoryRun[]>([]);
+  useEffect(() => {
+    if (camp && camp.status === "running") return;
+    api<HistoryRun[]>("/v1/redteam/campaigns").then(setRuns).catch(() => setRuns([]));
+  }, [camp?.status, camp?.id]);
+  const openRun = (id: string) => api<CampaignState>(`/v1/redteam/campaign/${id}`).then(setCamp).catch((e) => toast.error(e.message));
 
   const attack = cat?.attacks.find((a) => a.key === sel);
   useEffect(() => { if (attack && !attack.has_image && (modality === "image" || modality === "video")) setModality("audio"); }, [attack, modality]);
@@ -276,6 +329,13 @@ export default function RedTeam() {
               )}
             </>
           )}
+        </div>
+      </section>
+
+      <section className="panel">
+        <PanelHead title="Campaign history" meta={`catch rate per laundering channel, every ${cmod === "audio" ? "voice" : "image"} run so far · click a run to open it`} />
+        <div className="p-5">
+          <CampaignHistory runs={runs.filter((r) => r.modality === cmod)} labels={cmod === "audio" ? cat.audio_launder : cat.image_launder} onOpen={openRun} current={camp?.id} />
         </div>
       </section>
     </div>

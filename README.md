@@ -265,7 +265,7 @@ flowchart LR
 | Voice | DF_Arena 500M ⊕ NII Wav2Vec2-Large AntiDeepfake, 4 s windows | AUC 1.00 on real vs deepfake speech; 10/10 Windows TTS caught |
 | Image | Community Forensics ViT-S/384 ⊕ SwinV2 | AUC 0.98, 94% accuracy on Flux, DALL-E 3, SDXL, Midjourney vs real photos |
 | Face | YuNet → GenD CLIP ⊕ GenD Perception Encoder | AUC 0.92 FaceForensics++ / Celeb-DF; 0.71 OpenForensics (weakest) |
-| Text | TF-IDF ⊕ phishing DistilBERT ⊕ mDeBERTa zero-shot (⊕ Claude) | AUC 0.92 Indian SMS scams; 0.90 scam call transcripts |
+| Text | TF-IDF ⊕ phishing DistilBERT ⊕ mDeBERTa zero-shot (⊕ Claude) | AUC 0.94 Indian SMS scams; 0.91 scam call transcripts |
 | Voiceprint | WavLM-base-plus-sv x-vectors | VoxCeleb1 EER 0.84% (published) |
 
 DF_Arena and GenD ship custom code; both are reviewed and vendored (`app/witnesses/df_arena.py`, `gend.py`), so nothing
@@ -419,7 +419,7 @@ Full reference: [docs/API.md](docs/API.md); interactive OpenAPI at http://localh
 │   ├── ml/                         MIRAGE's own model training (synthetic data)
 │   ├── models_store/               own models, metrics.json, benchmark.json (committed)
 │   ├── scripts/                    download_models · fetch_benchmark · benchmark_models · capture_screens
-│   └── tests/                      20 tests: scenarios, rules, voice matrix, response plans, laundering, cure
+│   └── tests/                      26 tests: scenarios, rules, voice matrix, response plans, laundering, cure, ops, drills, C2PA
 ├── frontend/src/
 │   ├── pages/app/                  Dashboard · Investigate · VoiceCheck · LiveShield · CaseView · RedTeam · …
 │   ├── components/                 app/ (ModelJury, RiskRiver, WhatNow, Presenter) · case/ (CureConsole, RiskWaterfall)
@@ -438,9 +438,11 @@ cd backend && MIRAGE_PRETRAINED=off MIRAGE_ASR=off MIRAGE_OCR=off python -m pyte
 cd frontend && npx tsc -b --noEmit && npx vite build
 ```
 
-20 tests cover the eight Scenario Lab verdicts (with citation integrity and Tribunal order), upload rejection, auth,
-text extraction, the credential and harmless-synthetic rules, Shapley additivity, audit-chain tamper detection, the
-voice-check matrix, response plans, red-team laundering and the full Cure Console flow. GitHub Actions runs the
+26 tests (light mode, as CI runs them) cover the Scenario Lab verdicts (with citation integrity and Tribunal order),
+upload rejection, auth, text extraction, the credential and harmless-synthetic rules, Shapley additivity, audit-chain
+tamper detection, the voice-check matrix, response plans, red-team laundering, the full Cure Console flow, the
+command-centre overview and demo reset, Trustbook editing and consent rules, Drill mode, liveness pose directions and
+C2PA validation (including a tampered image). GitHub Actions runs the
 backend suite, the frontend typecheck and build, and extension syntax checks on every push and pull request.
 
 ## Security, privacy and responsible use

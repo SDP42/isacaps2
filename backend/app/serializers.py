@@ -57,6 +57,8 @@ def person(p: Person) -> dict:
         "id": p.id, "name": p.name, "role": p.role, "department": p.department, "circle": p.circle,
         "email": p.email, "phone": p.phone, "reports_to": p.reports_to, "approval_limit_inr": p.approval_limit_inr,
         "usual_channels": p.usual_channels, "usual_hours": p.usual_hours, "aliases": p.aliases,
-        "voiceprint_enrolled": p.voiceprint is not None, "style_baseline": p.style_profile is not None,
+        "voiceprint_enrolled": p.voiceprint is not None,
+        # 512-d WavLM x-vectors come from real enrolment; the 24-d seeded prints come from the speech simulator
+        "voiceprint_kind": None if p.voiceprint is None else "wavlm" if len(p.voiceprint) >= 256 else "simulator", "style_baseline": p.style_profile is not None,
         "code_word_set": p.code_word_set, "impersonation_count": p.impersonation_count,
     }

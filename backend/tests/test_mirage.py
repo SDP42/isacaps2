@@ -22,7 +22,7 @@ from app.witnesses.base import Evidence, WitnessResult
 def client():
     from app import history
 
-    history.populate = lambda: None  # keep tests fast and deterministic
+    history.populate = lambda **_: None  # keep tests fast and deterministic
     from app.main import app
 
     with TestClient(app) as c:
@@ -200,3 +200,97 @@ def test_ocr_normaliser_recovers_glued_words():
     assert "family.help@ibl" in t
     r = words.analyse(t, live=True)
     assert "secrecy" in r.details["tactics"] and r.details["requested_action"] == "payment"
+
+
+def _h(client, persona):
+    return {"authorization": f"Bearer {client.post('/v1/auth/login', json={'persona_id': persona}).json()['token']}"}
+
+
+def test_ops_overview_feed_and_reset(client, token):
+    h = {"authorization": f"Bearer {token}"}
+    r = client.post("/v1/scenarios/harmless_avatar/run", headers=h).json()
+    _wait(client, token, r["id"])
+    d = client.get("/v1/ops/overview", headers=h).json()
+    fact = next(f for f in d["facts"] if f["id"] == r["id"])
+    assert fact["band"] in ("LOW", "MEDIUM", "HIGH", "INCONCLUSIVE") and fact["at"].endswith("+00:00")
+    assert "intact" in d["audit"]  # an earlier test breaks the chain on purpose, so only the shape is checked
+    assert client.post("/v1/ops/reset-demo", headers=_h(client, "employee")).status_code == 403
+    assert client.post("/v1/ops/reset-demo", headers=h).json()["removed"] >= 1
+    for _ in range(40):
+        if not client.get("/v1/ops/overview", headers=h).json()["reset"]["running"]:
+            break
+        time.sleep(0.25)
+    assert client.get("/v1/ops/overview", headers=h).json()["facts"] == []  # populate is stubbed in tests
+
+
+def test_trustbook_edit_and_enrolment_rules(client):
+    admin = _h(client, "admin")
+    p = client.post("/v1/identity/people", json={"name": "Test Vendor", "circle": "external", "usual_channels": ["email"]}, headers=admin).json()
+    assert p["voiceprint_kind"] is None
+    assert client.patch(f"/v1/identity/people/{p['id']}", json={"usual_hours": [20, 3]}, headers=admin).status_code == 422
+    assert client.patch(f"/v1/identity/people/{p['id']}", json={"approval_limit_inr": 1}, headers=_h(client, "employee")).status_code == 403
+    files = [("files", ("a.wav", b"RIFF", "audio/wav"))] * 3
+    r = client.post(f"/v1/identity/people/{p['id']}/enroll-guided", files=files, data={"consent": "false"}, headers=admin)
+    assert r.status_code == 422 and "consent" in r.json()["detail"]
+
+
+def test_drill_needs_consent_and_scores_responses(client, token):
+    analyst = {"authorization": f"Bearer {token}"}
+    assert client.post("/v1/drills", json={"attack": "ceo_voice_wire", "targets": ["employee"]}, headers=analyst).status_code == 422
+    r = client.post("/v1/drills", json={"attack": "ceo_voice_wire", "targets": ["employee"], "consent_confirmed": True}, headers=analyst).json()
+    emp = _h(client, "employee")
+    inbox = client.get("/v1/drills/inbox", headers=emp).json()
+    assert inbox[0]["id"] == r["drills"][0] and "attack" not in inbox[0]  # not disclosed before the answer
+    done = client.post(f"/v1/drills/{inbox[0]['id']}/respond", json={"choice": "verified"}, headers=emp).json()
+    assert done["attack_title"]
+    board = client.get("/v1/drills", headers=analyst).json()
+    assert board["totals"]["verified"] >= 1
+
+
+def test_liveness_pose_directions():
+    from app.routers.liveness import pose, satisfied
+
+    face = lambda eyes, nose, mouth: pose({"eyes": eyes, "nose": nose, "mouth": mouth})
+    base = face([[100, 100], [160, 100]], [130, 130], [[110, 160], [150, 160]])
+    assert satisfied("turn_left", face([[105, 100], [160, 100]], [150, 130], [[115, 160], [152, 160]]), base)
+    assert satisfied("look_up", face([[100, 100], [160, 100]], [130, 115], [[110, 150], [150, 150]]), base)
+    tilt = face([[100, 95], [160, 115]], [130, 130], [[110, 160], [150, 160]])
+    assert satisfied("tilt_left", tilt, base) and not satisfied("tilt_right", tilt, base)
+
+
+def test_c2pa_validation_detects_tampering(tmp_path):
+    pytest.importorskip("c2pa")
+    import datetime
+
+    import c2pa
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.x509.oid import ExtendedKeyUsageOID, NameOID
+    from PIL import Image
+
+    from app.witnesses.provenance import c2pa_check
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    ca_key, key = ec.generate_private_key(ec.SECP256R1()), ec.generate_private_key(ec.SECP256R1())
+    ca_name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Test CA"), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "test")])
+    base = lambda b: b.not_valid_before(now - datetime.timedelta(days=1)).not_valid_after(now + datetime.timedelta(days=2)).serial_number(x509.random_serial_number())
+    ca = base(x509.CertificateBuilder().subject_name(ca_name).issuer_name(ca_name).public_key(ca_key.public_key()))         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)         .add_extension(x509.KeyUsage(False, False, False, False, False, True, True, False, False), critical=True).sign(ca_key, hashes.SHA256())
+    leaf = base(x509.CertificateBuilder().subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Signer"), x509.NameAttribute(NameOID.ORGANIZATION_NAME, "test")]))
+                .issuer_name(ca_name).public_key(key.public_key()))         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)         .add_extension(x509.KeyUsage(True, False, False, False, False, False, False, False, False), critical=True)         .add_extension(x509.ExtendedKeyUsage([ExtendedKeyUsageOID.EMAIL_PROTECTION]), critical=False)         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_key.public_key()), critical=False)         .add_extension(x509.SubjectKeyIdentifier.from_public_key(key.public_key()), critical=False).sign(ca_key, hashes.SHA256())
+    chain = leaf.public_bytes(serialization.Encoding.PEM) + ca.public_bytes(serialization.Encoding.PEM)
+    pk = key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
+    signer = c2pa.Signer.from_info(c2pa.C2paSignerInfo(b"es256", chain, pk, None))
+    src = tmp_path / "src.jpg"
+    Image.new("RGB", (256, 256), (120, 90, 60)).save(src, quality=92)
+    manifest = {"claim_generator_info": [{"name": "test"}], "title": "t", "assertions": [{"label": "c2pa.actions", "data": {"actions": [
+        {"action": "c2pa.created", "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"}]}}]}
+    with c2pa.Builder(manifest) as b:
+        b.sign_file(str(src), str(tmp_path / "ai.jpg"), signer)
+    ok = c2pa_check(tmp_path / "ai.jpg")
+    assert ok["present"] and ok["valid"] and ok["ai_declared"]
+    raw = bytearray((tmp_path / "ai.jpg").read_bytes())
+    raw[-200] ^= 0xFF
+    (tmp_path / "bad.jpg").write_bytes(bytes(raw))
+    assert not c2pa_check(tmp_path / "bad.jpg")["valid"]
+    assert c2pa_check(src) == {"present": False}

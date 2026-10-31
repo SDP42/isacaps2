@@ -1,10 +1,13 @@
 """Provenance witness for still images: AI-generation probability, error-level analysis, EXIF and C2PA credentials.
 
-Missing credentials are never treated as proof of fakery; a valid C2PA manifest from a camera is treated as strong
-exculpatory evidence.
+Missing credentials are never treated as proof of fakery. When the c2pa SDK is installed, an embedded manifest is
+cryptographically validated: a valid manifest is strong exculpatory evidence, a valid manifest that itself declares
+AI generation (IPTC digital source type "trainedAlgorithmicMedia") is decisive the other way, and a manifest that fails
+validation means the file changed after it was signed.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -36,9 +39,41 @@ def _face_check(img: Image.Image) -> tuple[float | None, list[int] | None]:
     return (score[0] if score else None), list(boxes[0][:4])
 
 
+AI_SOURCE = ("trainedalgorithmicmedia", "compositewithtrainedalgorithmicmedia", "algorithmicmedia")
+
+
+def c2pa_check(path: Path) -> dict | None:
+    """Validate embedded content credentials. None when the SDK is missing (presence-only fallback)."""
+    try:
+        from c2pa import Reader
+    except ImportError:
+        return None
+    try:
+        r = Reader(str(path))
+    except Exception:  # no JUMBF / no manifest: the normal case for most images
+        return {"present": False}
+    try:
+        store = json.loads(r.json())
+        state = str(r.get_validation_state() or "")
+    finally:
+        r.close()
+    active = store.get("manifests", {}).get(store.get("active_manifest", ""), {})
+    sig = active.get("signature_info", {}) or {}
+    gen = active.get("claim_generator") or ", ".join(g.get("name", "") for g in active.get("claim_generator_info", []) or [])
+    sources = [str(a.get("digitalSourceType", "")).rsplit("/", 1)[-1].lower()
+               for asr in active.get("assertions", []) if str(asr.get("label", "")).startswith("c2pa.actions")
+               for a in (asr.get("data", {}) or {}).get("actions", [])]
+    codes = [v.get("code", "") for v in store.get("validation_status", []) or []]
+    errors = [c for c in codes if c != "signingCredential.untrusted"]  # untrusted signer is not an integrity failure
+    return {"present": True, "state": state, "valid": state.lower() in ("valid", "trusted") and not errors,
+            "trusted": state.lower() == "trusted", "issuer": sig.get("issuer") or sig.get("common_name"),
+            "signed_at": sig.get("time"), "generator": gen or None, "ai_declared": any(x in AI_SOURCE for x in sources),
+            "errors": errors[:5]}
+
+
 def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
     res = WitnessResult(witness="provenance", artifact_id=artifact_id,
-                        model_version="pixel-forensics-hgb@1.0 + ela + exif + c2pa-presence")
+                        model_version="pixel-forensics-hgb@1.0 + ela + exif + c2pa")
     with Timer() as t:
         try:
             img = Image.open(path)
@@ -77,11 +112,39 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                     f"AI-generation probability {p:.2f}; weak sensor noise and generator-like spectral traces." if pre else
                     "Weak sensor noise, no colour-filter-array correlation and periodic upsampling peaks in the spectrum."),
         ))
-    if markers["c2pa_manifest"]:
+    cred = c2pa_check(path)
+    if cred and cred.get("present"):
+        who = cred.get("issuer") or "an unnamed signer"
+        if cred["valid"] and cred["ai_declared"]:
+            score = max(score, 0.97)
+            res.evidence.append(Evidence(
+                witness="provenance", kind="c2pa_ai_declared", label="credentials declare AI generation", severity=3,
+                artifact_id=artifact_id, text=cred.get("generator") or None,
+                detail=f"Valid content credentials signed by {who} state the image was made by a generative model.",
+            ))
+        elif cred["valid"]:
+            score *= 0.4 if cred["trusted"] else 0.7  # an unknown signer proves integrity, not who signed
+            res.evidence.append(Evidence(
+                witness="provenance", kind="c2pa_valid", label="valid content credentials", severity=0, exculpatory=True,
+                artifact_id=artifact_id, text=cred.get("generator") or None,
+                detail=f"C2PA manifest validates, signed by {who}"
+                       + (f" at {cred['signed_at']}" if cred.get("signed_at") else "") + ". The pixels match what was signed"
+                       + ("." if cred["trusted"] else ", but the signer is not on a trust list, so who signed it is unverified."),
+            ))
+        else:
+            score = max(score, 0.6)
+            res.evidence.append(Evidence(
+                witness="provenance", kind="c2pa_invalid", label="content credentials fail validation", severity=2,
+                artifact_id=artifact_id, text=", ".join(cred["errors"]) or cred.get("state") or None,
+                detail=f"A C2PA manifest from {who} is embedded but does not validate: the file was changed after it "
+                       "was signed, or the signature is broken.",
+            ))
+    elif markers["c2pa_manifest"]:
         score *= 0.5
         res.evidence.append(Evidence(
             witness="provenance", kind="c2pa_present", label="content credentials present", severity=0, exculpatory=True,
-            detail="A C2PA manifest is embedded. Validate the signer before relying on it.", artifact_id=artifact_id,
+            detail="A C2PA manifest is embedded. Install c2pa-python to validate the signer before relying on it.",
+            artifact_id=artifact_id,
         ))
     else:
         res.evidence.append(Evidence(
@@ -125,9 +188,12 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
             res.score = round(float(max(res.score, face_hf * 0.95)), 4)
     res.details["face_model"] = round(face_hf, 4) if face_hf is not None else None
     res.details["face_box"] = face_box
+    res.details["c2pa"] = cred
     res.details.update({"ai_probability": round(p, 4), "exif": exif, "markers": markers, "ela_grid": heat,
                    "features": {k: round(v, 4) for k, v in feats.items()}, "size": list(img.size)})
     res.summary = (f"AI-generation probability {p:.2f}; "
-                   + ("content credentials present" if markers["c2pa_manifest"] else "no content credentials")
+                   + (("valid content credentials" if cred["valid"] else "content credentials fail validation")
+                      if cred and cred.get("present") else
+                      "content credentials present" if markers["c2pa_manifest"] else "no content credentials")
                    + ("; camera EXIF present." if exif.get("Make") else "; no camera EXIF."))
     return res

@@ -15,7 +15,7 @@ from . import audit
 from .agents import tribunal
 from .config import settings
 from .db import session_scope
-from .events import bus
+from .events import bus, ops
 from .fusion.risk import assess
 from .models import Artifact, Case, Finding, Person, TribunalMessage, Verdict
 from .storage import path_for
@@ -42,6 +42,7 @@ def _stage(case_id: str, stage: str, progress: float, note: str = "") -> None:
         if c.status == "queued":
             c.status = "running"
     bus.publish(case_id, "stage", {"stage": stage, "progress": progress, "note": note})
+    ops("case.stage", case_id, stage=stage, progress=progress)
 
 
 def submit(case_id: str, pace: float = 0.25) -> None:

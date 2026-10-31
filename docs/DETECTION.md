@@ -45,12 +45,17 @@ burst still counts but one bad crop does not.
 | Image | ai-image-detector-deploy (SwinV2) | haywoodsloan | — |
 | Face | GenD CLIP ViT-L/14 and GenD Perception-Encoder L | Yermakov et al., WACV 2026 | best mean cross-dataset AUROC (14 sets) |
 | Face detection | YuNet 2023mar | OpenCV Zoo | — |
+| Lip-sync | SyncNet v2 (architecture vendored in `app/witnesses/syncnet.py`, weights a plain state dict) | Chung & Zisserman, ACCV 2016 workshops (VGG) | audio-visual offset and confidence |
+| Image provenance | C2PA manifest validation (`c2pa-python`) | Content Authenticity Initiative | — |
 | Text | phishing-email-detection-distilbert v2.4.1 | cybersectony | — |
 | Text | mDeBERTa-v3-base-xnli-multilingual-nli-2mil7 | MoritzLaurer | XNLI, 100 languages |
 | Text (optional) | Claude via the Anthropic SDK, structured JSON output | Anthropic | — |
+| Casebook retrieval | paraphrase-multilingual-MiniLM-L12-v2 (mean pooling, plain `AutoModel`) | sentence-transformers | 50+ languages |
 
 DF_Arena and GenD ship custom model code. Both were reviewed and vendored into `app/witnesses/df_arena.py` and
-`app/witnesses/gend.py`, so nothing runs with `trust_remote_code` and no repository code is downloaded.
+`app/witnesses/gend.py`, so nothing runs with `trust_remote_code` and no repository code is downloaded. SyncNet's
+architecture was transcribed the same way from the MIT-licensed reference code; its weights load with
+`torch.load(weights_only=True)`.
 
 **Selected and rejected after measurement:** `Organika/sdxl-detector` scored the median *real* photo at 0.40 (AUC 0.70),
 so it would only add false alarms; it was removed. The earlier `MelodyMachine`, `umm-maybe` and `prithivMLmods`
@@ -69,12 +74,35 @@ Models & audit page). The samples are small, so read these numbers as a sanity c
 | Flux / DALL-E 3 / SDXL / Midjourney vs Flickr photos | 105 | AUC 0.979 (Community Forensics) | **AUC 0.982, 94.3% accuracy** at 0.5 (the best single model reached 76–87% before recentring) |
 | FaceForensics++ and Celeb-DF frames | 32 | AUC 0.925 (GenD PE) | AUC 0.917, 84.4% accuracy |
 | OpenForensics face swaps | 80 | AUC 0.756 (GenD CLIP) | AUC 0.71 |
-| Indian SMS spam (`CloveAI/india-spam-sms`) | 120 | AUC 0.904 (phishing model) | Words witness **AUC 0.924** (was 0.839 with TF-IDF only) |
-| Indian multilingual scam SMS | 120 | AUC 0.894 (own TF-IDF) | Words witness AUC 0.829 |
-| Scam phone-call transcripts (`BothBosu/scam-dialogue`) | 120 | AUC 0.977 (own TF-IDF) | Words witness AUC 0.904 |
-| UCI SMS spam (mostly marketing spam) | 119 | AUC 0.762 (own TF-IDF) | Words witness AUC 0.615 |
+| Indian SMS spam (`CloveAI/india-spam-sms`) | 120 | AUC 0.904 (phishing model) | Words witness **AUC 0.944** (0.924 before the 1 November corroboration fixes) |
+| Indian multilingual scam SMS | 120 | AUC 0.894 (own TF-IDF) | Words witness AUC 0.842 |
+| Scam phone-call transcripts (`BothBosu/scam-dialogue`) | 120 | AUC 0.977 (own TF-IDF) | Words witness AUC 0.914 |
+| UCI SMS spam (mostly marketing spam) | 119 | AUC 0.762 (own TF-IDF) | Words witness AUC 0.725 |
 
-All 9 Scenario Lab cases reach their expected verdict with the pretrained layers on (`pytest`: 16 passed).
+Re-run on 1 November 2026 with the same samples: every media number is unchanged (inference is deterministic); the
+Words witness rows moved because zero-shot intents now need corroboration. The script now also stores 41-point ROC
+curves and 10-bin reliability data per model and set, which the Models & audit page draws.
+
+**Lip-sync check (SyncNet).** No public lip-sync deepfake set was reachable from this machine, so this is a sanity
+check, not a benchmark: four 12-second clips of one speaker filmed with his own voice (Wikimedia Commons, CC BY 3.0)
+scored confidence **6.81–8.08** at a steady −2 to −3 frame offset; the same clips with the audio swapped for another
+segment of the same speaker or a TTS voice scored **0.51–1.39**, and the three still-face avatar videos in
+`demo_inputs/03_video_check` scored **0.13–0.31** (n = 15, perfectly separated). The face witness flags "lips do not
+follow the voice" below 3.0, but only when the mouth region actually moves: filmed speech moves 3.1–4.1 (mean
+frame-to-frame change, 0–255), the still pictures 0.001–0.32, so below 1.0 the video is reported as a still picture
+over audio and lip-sync counts neither way (a photo with a voice-over is common and harmless; the scam avatars are
+caught by the AI-frame detectors instead). Wav2Lip-style generators are trained against a SyncNet discriminator, so a high
+confidence is never treated as proof that a video is real.
+
+**C2PA.** Tested with images signed by a throwaway CA in the test suite: an untouched signed image validates, one
+flipped byte in the image data fails with `assertion.dataHash.mismatch`, and a manifest that declares
+`trainedAlgorithmicMedia` is read as signed AI generation. An unknown signer still proves integrity but not identity,
+so it lowers the score less than a trusted one.
+
+**Claude judge.** `scripts/measure_claude_judge.py <data_dir>` runs the text sets with and without the judge and
+records both; it needs `ANTHROPIC_API_KEY`, which this machine does not have, so the judge is still unmeasured.
+
+All 9 Scenario Lab cases reach their expected verdict with the pretrained layers on (`pytest`: 26 passed).
 
 ## What is still weak
 
@@ -83,10 +111,13 @@ All 9 Scenario Lab cases reach their expected verdict with the pretrained layers
   verdict (see [RED_TEAM.md](RED_TEAM.md)).
 - **Face swaps in the wild.** GenD is strong on FaceForensics-style footage but only AUC ~0.7 on OpenForensics; face
   detection is the least reliable media witness, so its confidence is kept modest and lip-sync stays as a second check.
-- **Fully generated video** (Sora/Veo-style) is covered only indirectly, by running the image detectors on keyframes.
+- **Fully generated video** (Sora/Veo-style) is covered by the image detectors on keyframes and, when there is
+  speech, by SyncNet. A generator that renders lips in sync with its own audio passes the lip-sync check; there is
+  still no temporal model for that case (the public VideoMAE checkpoints are trained on FaceForensics face swaps and
+  could not be measured on generated video here).
 - **Text without an LLM.** The local text models are weaker than the media models; the words witness reads
   manipulation tactics, not marketing spam, which explains the UCI result. Setting `ANTHROPIC_API_KEY` adds a Claude
-  judge at the highest weight; its benchmark impact has not been measured here.
+  judge at the highest weight; its benchmark impact has not been measured here (the script for it is ready).
 - **Scenario D's "genuine" voice** is still simulator audio, so the detectors now (correctly) call it synthetic; the
   scenario still lands HIGH on context.
 - Detectors can miss generators released after their training data and heavy re-compression. MIRAGE's answer to that

@@ -7,6 +7,9 @@ import "./styles/index.css";
 // enable CSS entrance animations only once frames are really being painted (see .motion-ok in index.css)
 requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("motion-ok")));
 
+// the only service worker is the Android share target (public/share-sw.js); it never caches the app itself
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/share-sw.js").catch(() => {});
+
 if (import.meta.env.DEV) Object.assign(window, { __motion: MotionGlobalConfig });
 
 createRoot(document.getElementById("root")!).render(

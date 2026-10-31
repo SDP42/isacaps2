@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, SessionLocal, engine
-from .routers import auth, cases, misc, redteam, triage
+from .routers import auth, cases, liveness, misc, ops, redteam, triage, trustbook
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("mirage")
@@ -64,6 +64,9 @@ app.include_router(cases.router)
 app.include_router(misc.router)
 app.include_router(triage.router)
 app.include_router(redteam.router)
+app.include_router(ops.router)
+app.include_router(trustbook.router)
+app.include_router(liveness.router)
 
 
 @app.get("/v1/health")

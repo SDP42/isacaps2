@@ -27,7 +27,22 @@ def metrics(y: np.ndarray, s: np.ndarray) -> dict:
     fpr, tpr, thr = roc_curve(y, s)
     i = int(np.argmin(np.abs(fpr - (1 - tpr))))
     return {"n": len(y), "auc": round(float(roc_auc_score(y, s)), 3), "eer": round(float((fpr[i] + 1 - tpr[i]) / 2), 3),
-            "eer_thr": round(float(np.clip(thr[i], 0, 1)), 3), "acc@0.5": round(float(np.mean((s >= 0.5) == y)), 3)}
+            "eer_thr": round(float(np.clip(thr[i], 0, 1)), 3), "acc@0.5": round(float(np.mean((s >= 0.5) == y)), 3),
+            "roc": roc_points(fpr, tpr), "calibration": calibration(y, s)}
+
+
+def roc_points(fpr: np.ndarray, tpr: np.ndarray, n: int = 41) -> list[list[float]]:
+    """The ROC curve resampled at n evenly spaced false-positive rates (step interpolation), for the Models page."""
+    grid = np.linspace(0, 1, n)
+    return [[round(float(f), 3), round(float(tpr[np.searchsorted(fpr, f, side="right") - 1]), 3)] for f in grid]
+
+
+def calibration(y: np.ndarray, s: np.ndarray, bins: int = 10) -> list[list[float]]:
+    """Reliability bins: [mean predicted score, observed fake rate, count] for each non-empty decile of score."""
+    s = np.clip(s, 0, 1)
+    idx = np.minimum((s * bins).astype(int), bins - 1)
+    return [[round(float(s[idx == b].mean()), 3), round(float(y[idx == b].mean()), 3), int((idx == b).sum())]
+            for b in range(bins) if (idx == b).any()]
 
 
 RESULTS: dict[str, dict] = {}

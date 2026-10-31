@@ -23,7 +23,7 @@ covered by `backend/tests/test_mirage.py` or were verified by clicking through t
 | Live | `POST /live/chunk` (3 s chunks: spoof score, transcript, rolling tactics), `POST /transcribe` (dictation) |
 | Reporting | CERT-In-style PDF with hashes, evidence, Tribunal record and audit head; hash-chained audit log with verification endpoint |
 | Data and ML | Synthetic generators for multilingual messages, speech (source-filter with codec chains), camera vs generator images, a 60-person organisation with 12 months of logs; training with generalisation splits; fusion calibration |
-| Platform | Persona JWT auth with roles, role-filtered case lists, Docker Compose with PostgreSQL, 16 tests |
+| Platform | Persona JWT auth with roles, role-filtered case lists, Docker Compose with PostgreSQL, 26 tests |
 
 ### Frontend
 Landing page with a persistent scroll-driven particle world (five morph targets) and seven sections; persona

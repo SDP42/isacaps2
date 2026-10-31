@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from . import dsp, pretrained
+from . import dsp, syncnet, pretrained
 from .base import Evidence, Timer, WitnessResult
 from .provenance import score_image
 
@@ -30,6 +30,14 @@ def _thumb(frame_bgr: np.ndarray, box: tuple[int, int, int, int] | None, w: int 
     h = int(img.shape[0] * w / img.shape[1])
     ok, buf = cv2.imencode(".jpg", cv2.resize(img, (w, h)), [cv2.IMWRITE_JPEG_QUALITY, 70])
     return "data:image/jpeg;base64," + base64.b64encode(buf.tobytes()).decode() if ok else ""
+
+
+# SyncNet confidence below this means the lips do not follow the speech. Measured: genuine speech 6.8–8.1 (n=4),
+# mismatched audio 0.5–1.4 (n=8), still-face avatars 0.1–0.3 (n=3); see docs/DETECTION.md.
+SYNC_CONF = 3.0
+# Mean frame-to-frame change in the mouth region (0-255 scale). Measured: filmed speech 3.1–4.1, still pictures over
+# audio 0.001–0.32. Below this the video is a still image and lip-sync says nothing either way.
+STILL_MOTION = 1.0
 
 
 def lip_sync(mouth_motion: np.ndarray, fps: float, audio: np.ndarray | None) -> dict | None:
@@ -109,6 +117,8 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         except Exception:
             audio = None
         sync = lip_sync(np.array(mouth), fps / step, audio)
+        # SyncNet (pretrained audio-visual sync) replaces the mouth-energy correlation when it is installed
+        snet = syncnet.analyse(path, audio) if any(b is not None for b in boxes) else None
         # Layer 1 (primary): GenD on every tracked face crop, batched on the GPU
         own_scores = list(scores)
         per_model = pretrained.face_models([c for c in crops if c is not None]) if any(c is not None for c in crops) else None
@@ -167,6 +177,31 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         res.evidence.append(Evidence(witness="face", kind="track_jitter", label="unstable face track", score=round(jitter, 3),
                                      severity=1, detail="The face box wobbles between frames more than natural head motion.",
                                      artifact_id=artifact_id))
+    res.details["syncnet"] = snet
+    if snet is not None:
+        sync = None  # the pretrained model speaks for lip-sync; the energy correlation stays in details only
+        if snet.get("mouth_motion", 9) < STILL_MOTION:
+            res.evidence.append(Evidence(
+                witness="face", kind="still_picture", label="still picture over audio", severity=0,
+                artifact_id=artifact_id, observed=f"mouth motion {snet['mouth_motion']:.2f}",
+                detail="The face does not move, so there is no lip-sync to check. A photo over a voice is common and "
+                       "harmless on its own; it proves nothing about who is speaking.",
+            ))
+        elif snet["confidence"] < SYNC_CONF:
+            score = max(score, 0.8)
+            res.evidence.append(Evidence(
+                witness="face", kind="lip_sync_mismatch", label="lips do not follow the voice", severity=2,
+                artifact_id=artifact_id, score=snet["confidence"],
+                observed=f"SyncNet confidence {snet['confidence']:.2f} (synced speech scores above {SYNC_CONF:.0f})",
+                detail="The mouth does not move with this speech at any offset within ±0.6 s: a still photo animated "
+                       "over a voice, a dubbed track, or audio from somewhere else.",
+            ))
+        else:
+            res.evidence.append(Evidence(
+                witness="face", kind="lip_sync_ok", label="lip-sync consistent", severity=0, exculpatory=True,
+                artifact_id=artifact_id, detail=f"SyncNet finds the voice in step with the lips (confidence "
+                f"{snet['confidence']:.1f}, offset {snet['offset_frames'] * 40:+d} ms). Lip-sync generators can also pass this.",
+            ))
     if sync is not None:
         if abs(sync["offset_ms"]) > 120 or sync["confidence"] < 0.08:
             score = 1 - (1 - score) * 0.75
@@ -197,6 +232,8 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         votes = [m >= 0.5 for m in means.values()]
         agreement = max(votes.count(True), votes.count(False)) / len(votes)
         res.model_version = " + ".join(names) + " (primary) + YuNet + " + res.model_version + " (supporting)"
+    if snet:
+        res.model_version += " + SyncNet v2 (lip-sync)"
         res.details["pretrained"] = {"models": means, "meta": pretrained.meta(per_model), "score": round(pooled, 4),
                                      "own_score": round(float(np.mean(own_scores)), 4),
                                      "agreement": agreement, "agree": agreement == 1.0}

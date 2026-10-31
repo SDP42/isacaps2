@@ -81,7 +81,8 @@ curl -s -X POST localhost:8000/v1/cases -H "authorization: Bearer $TOKEN" \
 
 ## Red-team lab (analyst and admin)
 See [RED_TEAM.md](RED_TEAM.md): `GET /v1/redteam/catalog`, `POST /v1/redteam/generate`, `GET /v1/redteam/samples/{id}/{file}`,
-`POST /v1/redteam/samples/{id}/investigate`, `POST /v1/redteam/campaign`, `GET /v1/redteam/campaign/{id}`.
+`POST /v1/redteam/samples/{id}/investigate`, `POST /v1/redteam/campaign`, `GET /v1/redteam/campaign/{id}`,
+`GET /v1/redteam/campaigns` (every finished campaign, oldest first, with catch rate per laundering channel).
 
 CORS also accepts `chrome-extension://<id>` origins for the MIRAGE Shield extension.
 
@@ -96,3 +97,26 @@ CORS also accepts `chrome-extension://<id>` origins for the MIRAGE Shield extens
 | GET | `/v1/cases/{id}/response` | | the compact "what now" plan |
 
 See [CURE.md](CURE.md).
+
+## Command centre (operations)
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| GET | `/v1/ops/overview` | | `{facts[]: one row per completed case (time, band, risk, interval, channel, action, amount, tactics, witness scores, model agreement, outcome), running[], failed, latency_ms{witness}, models{loaded,total}, campaigns[], impersonated[], baseline_requests, audit, reset}` |
+| GET | `/v1/ops/stream` | `?token=` | SSE `ops` events: every audit action, case stages, voice/text/media quick checks, live-shield alerts, demo-reset progress. A fresh connection replays recent history from the audit log |
+| POST | `/v1/ops/reset-demo` | | analyst+: deletes every case and drill, then rebuilds the seeded 30-day history through the real pipeline in the background. The audit chain is kept and records the reset |
+
+## Trustbook, drills and liveness
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| POST | `/v1/identity/people` | person fields | admin: new Trustbook entry |
+| PATCH | `/v1/identity/people/{id}` | any of name, role, department, email, phone, approval_limit_inr, usual_channels, usual_hours, aliases, code_word_set | admin: updated person (`voiceprint_kind`: `wavlm`, `simulator` or null) |
+| POST | `/v1/identity/people/{id}/enroll-guided` | multipart `files` (3+ takes), `consent=true`, `consent_by` | admin: WavLM print averaged over the takes; refused when any two takes match below 0.75. Consent goes to the audit chain |
+| DELETE | `/v1/identity/people/{id}/voiceprint` | | admin: removes the print |
+| GET | `/v1/drills/attacks` | | analyst+: drillable red-team schemes |
+| POST | `/v1/drills` | `{attack, targets[], voice, consent_confirmed}` | analyst+: sends a simulated attack to each persona's MIRAGE inbox |
+| GET | `/v1/drills` | | analyst+: totals and per-drill outcomes (complied, verified, reported, ignored, median time to answer) |
+| GET | `/v1/drills/inbox` | | the signed-in persona's drills; the scheme is disclosed only after they answer |
+| POST | `/v1/drills/{id}/respond` | `{choice}` | the answer and the reveal |
+| POST | `/v1/liveness/start` | `{count}` | `{session, challenges[{key, prompt}], limit_s}`: random head movements |
+| POST | `/v1/liveness/frame` | multipart `session`, `file` (JPEG) | face box, pose (yaw, pitch, roll), current prompt, whether it advanced |
+| POST | `/v1/liveness/finish` | `{session}` | `{verdict: LIVE \| FAILED \| SUSPECT, results[], deepfake_score, median_reaction_s}` |

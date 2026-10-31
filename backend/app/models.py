@@ -212,3 +212,22 @@ class ResponseRun(Base):
     state_json: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class Drill(Base):
+    """A consented simulated attack sent to a person's MIRAGE inbox; records whether they complied, verified or
+    reported, and how long they took. Content comes from the red-team playbook and is always synthetic."""
+
+    __tablename__ = "drills"
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    campaign: Mapped[str] = mapped_column(String(20), index=True)
+    target: Mapped[str] = mapped_column(String(40), index=True)  # persona id
+    attack: Mapped[str] = mapped_column(String(40))
+    channel: Mapped[str] = mapped_column(String(30))
+    sender: Mapped[str] = mapped_column(String(160))
+    text: Mapped[str] = mapped_column(Text)
+    audio_key: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    created_by: Mapped[str] = mapped_column(String(40))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    response: Mapped[str | None] = mapped_column(String(20), nullable=True)  # complied | verified | reported | ignored
+    responded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

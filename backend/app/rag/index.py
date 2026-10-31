@@ -1,5 +1,6 @@
-"""Hybrid retrieval over the casebook: BM25 (lexical) + TF-IDF character vectors (handles Hinglish spelling variants),
-fused with Reciprocal Rank Fusion. Chunks are heading-aware so every citation points at one coherent passage.
+"""Hybrid retrieval over the casebook: BM25 (lexical) + TF-IDF character vectors (handles Hinglish spelling variants)
++ dense multilingual sentence vectors (paraphrases and other languages, when the MiniLM encoder is installed), fused
+with Reciprocal Rank Fusion. Chunks are heading-aware so every citation points at one coherent passage.
 
 Answers are extractive by default: the best sentences from retrieved chunks, each tagged with its chunk ID. If an LLM is
 configured, it rewrites them but may only use the retrieved text and must keep the citations.
@@ -60,14 +61,28 @@ class Casebook:
         self.bm25 = BM25Okapi([_tok(d) for d in docs])
         self.vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), sublinear_tf=True)
         self.mat = self.vec.fit_transform(docs)
+        # dense multilingual vectors join the fusion when the MiniLM encoder is installed: they match a Hinglish or
+        # paraphrased question to a passage that shares no words with it
+        from ..witnesses import pretrained
+
+        self.dense = pretrained.sentence_embeddings(docs)
 
     def search(self, query: str, k: int = 5, kinds: set[str] | None = None) -> list[dict]:
         if not query.strip():
             return []
         bm = self.bm25.get_scores(_tok(query))
         cs = cosine_similarity(self.vec.transform([query]), self.mat)[0]
+        lists = [bm, cs]
+        dn = None
+        if self.dense is not None:
+            from ..witnesses import pretrained
+
+            q = pretrained.sentence_embeddings([query])
+            if q is not None:
+                dn = self.dense @ q[0]
+                lists.append(dn)
         rrf = np.zeros(len(self.chunks))
-        for scores in (bm, cs):
+        for scores in lists:
             for rank, idx in enumerate(np.argsort(-scores)):
                 rrf[idx] += 1.0 / (60 + rank)
         order = [i for i in np.argsort(-rrf) if not kinds or self.chunks[i].kind in kinds][:k]
@@ -76,6 +91,7 @@ class Casebook:
             "id": self.chunks[i].id, "title": self.chunks[i].title, "heading": self.chunks[i].heading,
             "source": self.chunks[i].source, "kind": self.chunks[i].kind, "text": self.chunks[i].text,
             "score": round(float(rrf[i] / top), 3), "bm25": round(float(bm[i]), 3), "cosine": round(float(cs[i]), 3),
+            "dense": None if dn is None else round(float(dn[i]), 3),
         } for i in order]
 
     def answer(self, question: str, context_hits: list[dict] | None = None, k: int = 4) -> dict:

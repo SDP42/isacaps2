@@ -8,15 +8,15 @@ This is a refinement of the existing visual world (deep ink, cyan / crimson / am
 landing), not a redesign: it already reads as a forensic instrument. The work is to make the data trustworthy, the
 story linear, and the new backend capabilities visible.
 
-## Build status (1 November 2026)
+## Build status (1 November 2026, later)
 
 | Phase | Built | Not yet |
 |---|---|---|
-| 0 · Truth and spine | Charts fixed (the bars and counters depended on a JS animation loop and rendered empty when it paused; marks now draw at final size and CSS entrances only run once frames paint); sidebar regrouped Overview / Detect / Explain / Prove / Intelligence / Demo; Presenter mode (header button, ⌘K, Alt+arrows); duplicate risk ring replaced; attack-chain campaigns wrap into rows and re-fit | Reset-demo-data action |
-| 1 · Evidence components | ModelJury (voice check, case media, red-team); RiskWaterfall (case evidence); "what now" plan in case evidence and verify tabs (`/v1/cases/{id}/response`) | Shared EvidenceTimeline, VerdictMatrix as a reusable component, ConfidenceBand, StateKit |
-| 2 · Live and proof | Live-shield risk river with the plan sliding in at the first HIGH; red-team lab opens on the latest campaign | Command-centre live feed and sparklines, ROC / calibration charts, campaign history |
-| 3 · Purposeful 3D | Robustness terrain (lazy-loaded, on-demand rendering, heatmap stays default) | Spectrogram terrain, voice identity space, campaign constellation |
-| 4 · Polish | Typecheck, build, 19 tests | Accessibility and performance pass, Impeccable detector run |
+| 0 · Truth and spine | Charts fixed; sidebar regrouped; Presenter mode; duplicate risk ring replaced; attack-chain fit; **reset-demo-data action** (command centre header) | — |
+| 1 · Evidence components | ModelJury; RiskWaterfall; "what now" in cases; **EvidenceTimeline** and **VerdictMatrix** (voice check); **ConfidenceBand** (command-centre drawer); **StateKit** (command centre, Trustbook, Drill mode, Share) | EvidenceTimeline and VerdictMatrix inside the case media studio |
+| 2 · Live and proof | Live-shield risk river; red-team lab opens on the latest campaign; **command-centre live feed** (SSE) and posture metrics with trends; **ROC and calibration charts**; **red-team campaign history** | Notification tray outside the command centre |
+| 3 · Purposeful 3D | Robustness terrain | Spectrogram terrain, voice identity space, campaign constellation |
+| 4 · Polish | Typecheck, build, 26 tests | Accessibility and performance pass across the older screens |
 
 ## 1. What the audit found (31 October 2026, 1440×900)
 

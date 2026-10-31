@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from .. import audit, pipeline
 from ..config import settings
 from ..db import get_db
+from ..events import ops
 from ..fusion.playbooks import ALREADY_PAID
 from ..graphs import campaigns, identity_graph
 from ..models import AuditEntry, Beneficiary, Case, Person, RequestLog
@@ -126,6 +127,9 @@ async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang
     rolling = f"{context} {text}".strip()
     w = words.analyse(rolling, live=True) if len(rolling) > 8 else None
     action = w.details["requested_action"] if w and w.status == "ok" else "none"
+    manip = w.score if w and w.status == "ok" else 0.0
+    if (spoof or 0) >= 0.7 and (manip >= 0.6 or action in ("payment", "credential")):
+        ops("live.alert", actor=user.persona_id, risk=round(100 * max(spoof or 0, manip)), action=action)
     return {"spoof": spoof, "level": round(level, 4), "text": text, "lang": detected,
             "tactics": w.details["tactics"] if w and w.status == "ok" else [], "action": action,
             "manipulation": w.score if w and w.status == "ok" else 0.0,
@@ -289,7 +293,11 @@ def models(user: Principal = Depends(current_principal)) -> dict:
     from ..agents import llm
     from ..witnesses import pretrained
 
-    return {"metrics": metrics, "pretrained": pretrained.registry(), "llm": llm.available() or "templates (no LLM configured)",
+    try:
+        bench = json.loads((settings.models_dir / "benchmark.json").read_text())
+    except FileNotFoundError:
+        bench = {}
+    return {"metrics": metrics, "pretrained": pretrained.registry(), "benchmark": bench, "llm": llm.available() or "templates (no LLM configured)",
             "model_version": settings.model_version, "policy_version": settings.policy_version}
 
 

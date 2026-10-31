@@ -73,8 +73,8 @@ image, email or chat: **is it safe to act on this request, and what should I do 
 | Red-team voice campaign | 40/42 laundered attacks caught; misses only under heavy street noise |
 | AI images (Flux, DALL-E 3, SDXL, Midjourney vs real photos) | AUC 0.98, 94% accuracy; red-team image campaign 15/15 |
 | Face swaps | FaceForensics++ / Celeb-DF AUC 0.92; in-the-wild OpenForensics 0.71 (weakest) |
-| Indian SMS scams | Words witness AUC 0.92 |
-| Scenario Lab | 9/9 expected verdicts; 19/19 backend tests |
+| Indian SMS scams | Words witness AUC 0.94 (re-measured 1 November) |
+| Scenario Lab | 9/9 expected verdicts; 26/26 backend tests |
 
 ## 5. Known limits
 

@@ -1,4 +1,4 @@
-import { AudioLines, BookOpenText, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Skull, Waypoints, type LucideIcon } from "lucide-react";
+import { AudioLines, BookOpenText, BookUser, Crosshair, ScanFace, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Skull, Waypoints, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -19,6 +19,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { to: "/app/investigate", label: "New investigation", icon: ScanSearch },
       { to: "/app/voice", label: "Voice check", icon: AudioLines },
       { to: "/app/shield", label: "Live call shield", icon: Radio },
+      { to: "/app/liveness", label: "Liveness check", icon: ScanFace },
       { to: "/app/safety", label: "Personal safety", icon: ShieldCheck },
     ],
   },
@@ -34,6 +35,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { to: "/app/redteam", label: "Red-team lab", icon: Skull, roles: ["analyst", "admin"] },
       { to: "/app/system", label: "Models & audit", icon: Server, roles: ["analyst", "admin"] },
+      { to: "/app/drills", label: "Drill mode", icon: Crosshair },
       { to: "/app/lab", label: "Scenario lab", icon: FlaskConical },
     ],
   },
@@ -41,6 +43,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     group: "Intelligence",
     items: [
       { to: "/app/identity", label: "Identity graph", icon: Network, roles: ["analyst", "admin"] },
+      { to: "/app/trustbook", label: "Trustbook", icon: BookUser, roles: ["analyst", "admin"] },
       { to: "/app/attack-chain", label: "Attack chains", icon: Route, roles: ["analyst", "admin"] },
       { to: "/app/casebook", label: "Casebook", icon: BookOpenText },
     ],

@@ -1,11 +1,12 @@
 import { CheckCircle2, ShieldX } from "lucide-react";
 import { useState } from "react";
+import { BenchCurves, type Benchmark } from "@/components/app/BenchCurves";
 import { Empty, PanelHead, Segmented, Skeleton } from "@/components/ui/primitives";
 import { clock, cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 
 interface Pretrained { key: string; model: string; witness: string; role: string; published: string; installed: boolean; benchmark?: Record<string, { auc?: number; eer?: number; n: number }> }
-interface Models { metrics: Record<string, any>; pretrained?: Pretrained[]; llm: string; model_version: string; policy_version: string }
+interface Models { metrics: Record<string, any>; pretrained?: Pretrained[]; benchmark?: Benchmark; llm: string; model_version: string; policy_version: string }
 interface Audit { chain: { intact: boolean; checked: number; head?: string; broken_at?: number }; entries: { id: number; case_id: string | null; actor: string; action: string; payload_hash: string; prev_hash: string; this_hash: string; ts: string }[] }
 
 const CARDS: Record<string, { title: string; what: string; data: string; upgrade: string }> = {
@@ -71,6 +72,12 @@ export default function System() {
                     ))}
                   </tbody>
                 </table>
+              </section>
+            )}
+            {models.benchmark && (
+              <section className="panel">
+                <PanelHead title="Benchmark curves" meta="measured on public held-out samples · nothing here was trained on them" />
+                <BenchCurves bench={models.benchmark} />
               </section>
             )}
             <div className="grid gap-4 lg:grid-cols-2">

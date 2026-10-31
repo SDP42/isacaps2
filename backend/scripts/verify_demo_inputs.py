@@ -5,10 +5,13 @@
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 
 import httpx
+
+sys.stdout.reconfigure(encoding="utf-8")  # results contain arrows and dashes; a Windows console is cp1252
 
 ROOT = Path(__file__).resolve().parents[2] / "demo_inputs"
 c = httpx.Client(base_url="http://localhost:8000", timeout=300)

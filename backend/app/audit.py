@@ -30,6 +30,10 @@ def record(db: Session, actor: str, action: str, payload: dict, case_id: str | N
     )
     db.add(entry)
     db.flush()
+    from .events import ops
+
+    brief = {k: v for k, v in payload.items() if isinstance(v, (int, float, bool)) or (isinstance(v, str) and len(v) <= 80)}
+    ops(action, case_id, actor, hash=entry.this_hash[:12], **brief)
     return entry
 
 

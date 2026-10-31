@@ -41,6 +41,28 @@ ScrollTrigger, and runs SplitText word-mask reveals on `[data-split]` headings. 
 
 ## Application
 
+- **Command centre** (`pages/app/Dashboard.tsx`, `components/command/*`): one fact row per case from
+  `/v1/ops/overview`, filtered on the client so every panel cross-filters every other. Posture strip (threat condition,
+  five metrics with trend bars and change against the previous period, each one a filter); the threat field (every case
+  as a dot at time × calibrated risk, sized by the amount asked for, hollow when closed, with a square-root volume lane
+  underneath; drag to brush a window, double-click to clear); live feed over SSE (`/v1/ops/stream`, pause holds events
+  instead of dropping them, reconnects with backoff, backfilled from the audit log); incident queue (sortable,
+  J / K / Enter / Esc, `/` to search, a five-cell witness signature per case) with a triage drawer (ConfidenceBand,
+  witness bars with model disagreement, tactics, first verification step, one-click outcomes); "who catches what"
+  channel × witness matrix; tactic and request facets; attack clock (weekday × hour of HIGH cases, on the same clock as
+  the identity witness's out-of-hours check); campaign spotlight; engine health. Reset demo rebuilds the 30-day history
+  and streams its progress into the feed.
+- **Shared kit** (`components/kit`): `StateKit` (error with cause and retry, teaching empty states, offline banner),
+  `ConfidenceBand` (score, interval and an explicit uncertain hatch over the three decision zones), `VerdictMatrix`
+  (the 2×2 with the case placed by its real synthetic and manipulation scores, earlier checks on this device as faint
+  dots), `EvidenceTimeline` (audio, synthetic windows, words and tactic runs on one clock with one playhead; click,
+  drag or arrow keys to seek).
+- **Trustbook** (admin edits, analysts read): channels, hours, limits, code word, and guided voiceprint enrolment from
+  three consented takes. **Drill mode**: launch consented simulated attacks, answer them from your own inbox, and see
+  verified / reported / complied per drill. **Liveness check**: webcam, three random head movements, deepfake score on
+  the face. **Shared to MIRAGE** (`/app/share`): where the Android share sheet lands.
+- **Models & audit** adds ROC curves and reliability diagrams per benchmark set (`BenchCurves`); the **red-team lab**
+  adds campaign history (catch rate per laundering channel, one column per run).
 - **Shell**: role-aware sidebar, mobile drawer, live engine indicator, ⌘K command palette (pages, recent cases,
   run a scenario), page transitions, ClickSpark feedback on every click, ambient gradient.
 - **Investigate**: drop surface with scanning sweep, recorder and dictation, Trustbook autocomplete, channel chips,
