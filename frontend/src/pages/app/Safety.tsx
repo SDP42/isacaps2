@@ -1,7 +1,8 @@
-import { Check, Mic, Phone, ShieldCheck, Upload } from "lucide-react";
+import { Check, Phone, ShieldCheck, Upload } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { DictateButton, RecordButton } from "@/components/app/VoiceControls";
 import { api, post } from "@/lib/api";
 import { cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
@@ -90,16 +91,18 @@ export default function Safety() {
               <span className="text-[13px] text-silver">Who does it say it's from?</span>
               <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="Papa, Bhaiya, the bank…" className="mt-1.5 h-12 w-full rounded-2xl border border-line-2 bg-ink-1 px-4 text-[16px] outline-none placeholder:text-dim focus:border-mint/50" />
             </label>
+            <div className="flex justify-end"><DictateButton onText={(t) => setText((x) => (x ? `${x} ${t}` : t))} label="Speak it instead" /></div>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={5} placeholder="Paste the message here"
               className="w-full rounded-2xl border border-line-2 bg-ink-1 px-4 py-3 text-[16px] leading-relaxed outline-none placeholder:text-dim focus:border-mint/50" />
             <button onClick={() => input.current?.click()} className={cx("flex h-12 w-full items-center justify-center gap-2 rounded-2xl border text-[15px]", file ? "border-mint/50 text-mint" : "border-dashed border-line-2 text-silver")}>
               {file ? <><Check size={16} />{file.name}</> : <><Upload size={16} />Add voice note or screenshot</>}
             </button>
             <input ref={input} type="file" accept="audio/*,image/*,video/*" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            <div className="flex justify-center"><RecordButton onFile={setFile} className="!px-4 !py-2 !text-[14px]" /></div>
             <button onClick={check} disabled={busy} className="mt-2 flex h-14 w-full items-center justify-center gap-2 rounded-full bg-mint text-[16px] font-medium text-ink-0 disabled:opacity-70">
               {busy ? <><span className="size-4 animate-spin rounded-full border-2 border-ink-0 border-r-transparent" />Checking the voice, words and sender…</> : "Check it"}
             </button>
-            <p className="pt-2 text-center text-[12.5px] text-dim"><Mic size={12} className="inline" /> Tip: on your phone, share a WhatsApp voice note straight to MIRAGE.</p>
+            <p className="pt-2 text-center text-[12.5px] text-dim">Tip: hold your phone next to the laptop and record the voice note playing.</p>
           </motion.div>
         ) : (
           <motion.div key="result" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">

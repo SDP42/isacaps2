@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { getToken } from "@/lib/api";
+import { micError } from "@/lib/recorder";
 import { BAND_COLOR, cx } from "@/lib/format";
 import { simulate, type Action } from "@/lib/risk";
 
@@ -57,10 +58,11 @@ export default function LiveShield() {
   const stopRef = useRef<() => void>(() => {});
   const textRef = useRef("");
   const idx = useRef(0);
+  const langRef = useRef<string | null>(null);
   const caller = SAMPLES.find((s) => s.file === running)?.caller ?? "Unknown caller";
 
   const reset = () => {
-    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; setAlert(null); setSecs(0);
+    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; setAlert(null); setSecs(0);
     setRolling({ tactics: [], action: "none", manipulation: 0, spans: [], amount: null });
   };
 
@@ -68,9 +70,11 @@ export default function LiveShield() {
     const fd = new FormData();
     fd.append("file", encodeWav(pcm16k, 16000), "chunk.wav");
     fd.append("context", textRef.current);
+    if (langRef.current) fd.append("lang", langRef.current);
     const i = idx.current++;
     try {
       const r = await fetch("/v1/live/chunk", { method: "POST", body: fd, headers: { authorization: `Bearer ${getToken() ?? ""}` } }).then((x) => x.json());
+      if (r.text && r.lang && !langRef.current) langRef.current = r.lang;
       if (r.text) {
         textRef.current = `${textRef.current} ${r.text}`.trim();
         setTranscript(textRef.current);
@@ -101,10 +105,12 @@ export default function LiveShield() {
 
   const startMic = async () => {
     reset();
+    // Chrome suspends an AudioContext created after an await, so create it now, in the click
+    const ctx = new AudioContext();
+    ctxRef.current = ctx;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } });
-      const ctx = new AudioContext();
-      ctxRef.current = ctx;
+      await ctx.resume();
       const src = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
@@ -124,8 +130,9 @@ export default function LiveShield() {
       const timer = setInterval(() => setSecs((s) => s + 1), 1000);
       stopRef.current = () => { stopMeter(); clearInterval(timer); proc.disconnect(); stream.getTracks().forEach((t) => t.stop()); ctx.close(); };
       setRunning("mic");
-    } catch {
-      toast.error("Microphone unavailable. Use “Play a suspicious call” instead.");
+    } catch (e) {
+      ctx.close().catch(() => {});
+      toast.error(micError(e) + " You can also use “Play a suspicious call”.");
     }
   };
 
@@ -133,6 +140,7 @@ export default function LiveShield() {
     reset();
     const ctx = new AudioContext();
     ctxRef.current = ctx;
+    await ctx.resume();
     const ab = await fetch(`/v1/samples/${file}`).then((r) => r.arrayBuffer());
     const audio = await ctx.decodeAudioData(ab);
     const node = ctx.createBufferSource();

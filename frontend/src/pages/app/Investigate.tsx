@@ -1,9 +1,10 @@
-import { ArrowRight, AudioLines, FileText, Image as ImageIcon, Mic, Square, Trash2, Upload, Video, X } from "lucide-react";
+import { ArrowRight, AudioLines, FileText, Image as ImageIcon, Trash2, Upload, Video, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ProcessingView } from "@/components/app/ProcessingView";
+import { DictateButton, RecordButton } from "@/components/app/VoiceControls";
 import { decodePeaks, Waveform } from "@/components/app/Waveform";
 import { Button } from "@/components/ui/Button";
 import { BandPill, RiskRing } from "@/components/ui/primitives";
@@ -35,47 +36,6 @@ function kindOf(f: File): Item["kind"] {
 async function sha256(f: File) {
   const d = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function Recorder({ onDone }: { onDone: (f: File) => void }) {
-  const [rec, setRec] = useState<MediaRecorder | null>(null);
-  const [secs, setSecs] = useState(0);
-  const chunks = useRef<Blob[]>([]);
-  useEffect(() => {
-    if (!rec) return;
-    const id = setInterval(() => setSecs((s) => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [rec]);
-  const start = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
-      chunks.current = [];
-      mr.ondataavailable = (e) => chunks.current.push(e.data);
-      mr.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        onDone(new File(chunks.current, `voice-note-${Date.now()}.weba`, { type: "audio/webm" }));
-      };
-      mr.start();
-      setSecs(0);
-      setRec(mr);
-    } catch {
-      toast.error("Microphone permission was denied.");
-    }
-  };
-  const stop = () => {
-    rec?.stop();
-    setRec(null);
-  };
-  return rec ? (
-    <button onClick={stop} className="flex items-center gap-2 rounded-full border border-crimson/50 bg-crimson/10 px-3 py-1.5 text-[12.5px] text-crimson">
-      <Square size={11} className="fill-current" /> Stop · {secs}s
-    </button>
-  ) : (
-    <button onClick={start} className="flex items-center gap-2 rounded-full border border-line-2 px-3 py-1.5 text-[12.5px] text-silver hover:border-cyan/40 hover:text-fg">
-      <Mic size={13} /> Record a voice note
-    </button>
-  );
 }
 
 export default function Investigate() {
@@ -214,7 +174,7 @@ export default function Investigate() {
             <p className="relative mt-5 text-[17px] text-fg">{drag ? "Release to seal as evidence" : "Drop voice notes, call recordings, videos, screenshots"}</p>
             <p className="relative mt-1.5 text-[13px] text-muted">or click to browse · paste an image with ⌘V</p>
             <div className="relative mt-6 flex flex-wrap justify-center gap-2" onClick={(e) => e.stopPropagation()}>
-              <Recorder onDone={(f) => add([f])} />
+              <RecordButton onFile={(f) => add([f])} />
             </div>
             <input ref={input} type="file" multiple accept={ACCEPT} className="hidden" onChange={(e) => e.target.files && add(e.target.files)} />
           </div>
@@ -223,7 +183,10 @@ export default function Investigate() {
           <div className="panel">
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
               <p className="label !text-silver">Message, email or chat text</p>
-              <span className="font-mono text-[10.5px] text-dim">English · हिन्दी · Hinglish</span>
+              <span className="flex items-center gap-3">
+                <span className="hidden font-mono text-[10.5px] text-dim sm:inline">English · हिन्दी · Hinglish</span>
+                <DictateButton onText={(t) => setText((x) => (x ? `${x} ${t}` : t))} label="Speak the message" />
+              </span>
             </div>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={6}
               placeholder="Paste exactly what you received, e.g. “Hi, it's Rajesh. In a board meeting, can't talk. Process ₹48,50,000 to the new vendor before 4 PM. Keep this between us.”"
