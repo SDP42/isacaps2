@@ -1,4 +1,4 @@
-import { BookOpenText, Clapperboard, Eye, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Waypoints, type LucideIcon } from "lucide-react";
+import { BookOpenText, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Waypoints, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -13,6 +13,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { to: "/app/dashboard", label: "Command centre", icon: Gauge, roles: ["analyst", "admin", "employee"] },
       { to: "/app/investigate", label: "New investigation", icon: ScanSearch },
+      { to: "/app/shield", label: "Live call shield", icon: Radio },
       { to: "/app/cases", label: "Cases", icon: Waypoints },
       { to: "/app/tribunal", label: "Tribunal", icon: Gavel, roles: ["analyst", "admin", "employee"] },
     ],

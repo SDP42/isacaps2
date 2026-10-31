@@ -19,6 +19,7 @@ const System = lazy(() => import("./pages/app/System"));
 const Safety = lazy(() => import("./pages/app/Safety"));
 const AttackReplay = lazy(() => import("./pages/app/AttackReplay"));
 const Challenge = lazy(() => import("./pages/app/Challenge"));
+const LiveShield = lazy(() => import("./pages/app/LiveShield"));
 
 function Splash() {
   return (
@@ -68,6 +69,7 @@ export default function App() {
               <Route path="safety" element={<Safety />} />
               <Route path="replay" element={<AttackReplay />} />
               <Route path="challenge" element={<Challenge />} />
+              <Route path="shield" element={<LiveShield />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
