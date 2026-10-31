@@ -132,7 +132,10 @@ export default function Challenge() {
 
               <div className="mt-6 flex-1">
                 {!v ? (
-                  <Button className="w-full" disabled={!votes[i]} loading={busy} onClick={reveal}>Reveal MIRAGE's analysis</Button>
+                  <>
+                    <Button className="w-full" disabled={!votes[i]} loading={busy} onClick={reveal}>Reveal MIRAGE's analysis</Button>
+                    <p className="mt-2 text-center text-[12.5px] text-muted">{votes[i] ? "Locked in. Reveal when the room is ready." : "Pick Safe to act or Scam first, then reveal."}</p>
+                  </>
                 ) : (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
                     <div className={cx("rounded-2xl border p-4", item.truth === "scam" ? "border-crimson/40 bg-crimson/[0.06]" : "border-mint/40 bg-mint/[0.06]")}>

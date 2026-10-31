@@ -47,7 +47,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     if (wrap.current) wrap.current.style.transform = "";
   };
   const cls = cx(
-    "inline-flex items-center justify-center font-medium whitespace-nowrap transition-[background,border,color,box-shadow,transform] duration-200 ease-out disabled:opacity-40 disabled:pointer-events-none select-none",
+    "inline-flex items-center justify-center font-medium whitespace-nowrap transition-[background,border,color,box-shadow,transform,filter] duration-200 ease-out hover:-translate-y-px disabled:opacity-35 disabled:saturate-0 disabled:hover:translate-y-0 select-none",
     VARIANT[variant],
     SIZE[size],
     className,

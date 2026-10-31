@@ -82,6 +82,14 @@ input, textarea, select { caret-color: var(--color-cyan); }
 
 a { color: inherit; text-decoration: none; }
 
+/* Tailwind v4 resets buttons to cursor:default; every control must read as clickable */
+button:not(:disabled), [role="button"], [role="tab"], a[href], label[for], select, summary,
+input[type="checkbox"], input[type="radio"], input[type="range"], input[type="file"] { cursor: pointer; }
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; }
+
+/* Shared press feedback for every button */
+button:not(:disabled):active { transform: translateY(1px); }
+
 .tnum { font-variant-numeric: tabular-nums; }
 
 /* Fine forensic grid used behind sections and the app canvas */
