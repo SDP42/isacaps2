@@ -77,7 +77,7 @@ ENTITY_RX = {
     "ifsc": re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b"),
     "iban": re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b"),
     "account": re.compile(r"\b\d{9,18}\b"),
-    "url": re.compile(r"https?://[^\s,)]+", re.I),
+    "url": re.compile(r"https?://[^\s,)]*[^\s,).!?]", re.I),  # no trailing sentence punctuation
     "phone": re.compile(r"\+91[\s-]?\d{5}[\s-]?\d{5}|\b[6-9]\d{9}\b"),
     "email": re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b"),
 }
