@@ -154,10 +154,10 @@ export function Evidence() {
   }, [desktop, reduced]);
 
   return (
-    <section id="evidence" ref={root} className="relative overflow-hidden bg-ink-0 py-24 lg:flex lg:h-dvh lg:flex-col lg:justify-center lg:py-0">
+    <section id="evidence" ref={root} className="relative overflow-hidden py-24 lg:flex lg:h-dvh lg:flex-col lg:justify-center lg:py-0">
       <div className="mx-auto w-full max-w-[1400px] px-4 sm:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-          <h2 className="max-w-[16ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
+          <h2 data-split className="max-w-[16ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             The fake is never <span className="font-serif italic text-cyan">just</span> the face.
           </h2>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted">

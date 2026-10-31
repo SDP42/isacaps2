@@ -1,11 +1,12 @@
 import { ArrowRight, Play } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { faceControls } from "@/components/three/ParticleFace";
+import { useEffect, useRef, useState } from "react";
+import { world } from "@/components/three/World";
 import { Button } from "@/components/ui/Button";
+import CircularText from "@/components/reactbits/CircularText";
+import ShinyText from "@/components/reactbits/ShinyText";
 import { useReducedMotion } from "@/lib/hooks";
 import { gsap, scrollToId } from "./useSmoothScroll";
 
-const HeroCanvas = lazy(() => import("@/components/three/HeroCanvas"));
 
 /** Readouts that drift like live instrument values. */
 function useDrift(base: number, spread: number, ms = 900) {
@@ -67,19 +68,19 @@ export function HeroStory() {
       });
       tl.to(".hero-copy", { opacity: 0, y: -60, filter: "blur(8px)", duration: 0.22, ease: "power2.in" }, 0.04)
         .to(".hero-hud", { opacity: 0, duration: 0.15 }, 0.04)
-        .to(faceControls, { split: 1, rotate: 0.35, duration: 0.3, ease: "none" }, 0.22)
+        .to(world, { split: 1, spin: 0.35, duration: 0.3, ease: "none" }, 0.22)
         .fromTo(".illusion-a", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.12 }, 0.3)
         .fromTo(".split-label", { opacity: 0 }, { opacity: 1, duration: 0.1, stagger: 0.04 }, 0.34)
         .to(".illusion-a", { opacity: 0, y: -40, duration: 0.1 }, 0.58)
         .to(".split-label", { opacity: 0, duration: 0.08 }, 0.58)
-        .to(faceControls, { dissolve: 1, dim: 0.55, duration: 0.25, ease: "none" }, 0.6)
+        .to(world, { dim: 0.6, scale: 0.9, x: 0, duration: 0.25, ease: "none" }, 0.6)
         .fromTo(".illusion-b", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.12 }, 0.66)
         .to(".illusion-b", { opacity: 1, duration: 0.2 }, 0.8)
-        .to(faceControls, { dim: 1, duration: 0.1 }, 0.92);
+        ;
     }, root);
     return () => {
       ctx.revert();
-      Object.assign(faceControls, { split: 0, dissolve: 0, dim: 0, rotate: 0 });
+      Object.assign(world, { morph: 0, split: 0, dim: 0, x: 0.9, y: 0.05, scale: 0.66, spin: 0, active: -1 });
     };
   }, [reduced]);
 
@@ -92,9 +93,6 @@ export function HeroStory() {
         <div className="pointer-events-none absolute right-[-10%] top-[10%] size-[60vw] rounded-full bg-cyan/[0.06] blur-[120px]" />
         <div className="pointer-events-none absolute bottom-[-20%] left-[-10%] size-[50vw] rounded-full bg-violet/[0.05] blur-[140px]" />
 
-        <Suspense fallback={null}>
-          <HeroCanvas className="absolute inset-0" />
-        </Suspense>
 
         {/* scanner framing around the face */}
         <div className="hero-hud pointer-events-none absolute right-[5%] top-[13%] hidden h-[68vh] w-[42vw] lg:block">
@@ -109,6 +107,10 @@ export function HeroStory() {
             <p className="text-muted">VOICEPRINT vs CFO <span className="text-crimson">0.38</span></p>
           </div>
         </div>
+        <div className="hero-hud absolute bottom-[8%] left-[42%] hidden xl:block">
+          <CircularText text="SEEING IS NO LONGER BELIEVING • INVESTIGATE THE EVIDENCE • " size={150} fontSize={10.5}
+            color="#8e99ad" spinDuration={26} onHover="speedUp" ring ringColor="rgba(103,232,249,0.18)" />
+        </div>
         <div className="hero-hud absolute bottom-[12%] right-[5%] hidden lg:block">
           <SyntheticCard />
         </div>
@@ -117,7 +119,9 @@ export function HeroStory() {
         <div className="hero-copy relative z-10 mx-auto flex h-full max-w-[1400px] flex-col justify-center px-4 pb-24 pt-24 sm:px-8">
           <h1 className="max-w-[13ch] text-[clamp(3rem,8.4vw,7.4rem)] font-medium leading-[0.92] tracking-[-0.045em] text-fg">
             Seeing is no longer{" "}
-            <span className="font-serif text-[1.08em] font-normal italic tracking-[-0.02em] text-cyan">believing.</span>
+            <span className="font-serif text-[1.08em] font-normal italic tracking-[-0.02em]">
+              <ShinyText text="believing." color="#67e8f9" shineColor="#f0fdff" speed={3.2} />
+            </span>
           </h1>
           <p className="mt-8 max-w-[34rem] text-[clamp(1.02rem,1.35vw,1.2rem)] leading-relaxed text-silver/90">
             Trust can be manufactured. Requests can be manipulated. MIRAGE investigates what lies beneath the surface.
@@ -159,6 +163,7 @@ export function HeroStory() {
           <div className="illusion-b absolute inset-x-4 top-1/2 mx-auto max-w-4xl -translate-y-1/2 text-center opacity-0 sm:inset-x-8">
             <p className="font-mono text-[11px] tracking-[0.18em] text-crimson">HONG KONG · 2024</p>
             <p className="tnum mt-4 text-[clamp(4rem,13vw,11rem)] font-light leading-[0.9] tracking-[-0.05em]">HK$200m</p>
+            <p className="mt-2 font-mono text-[11px] tracking-[0.18em] text-dim">15 TRANSFERS · 5 ACCOUNTS · 1 VIDEO CALL</p>
             <p className="mx-auto mt-6 max-w-2xl text-[clamp(1.05rem,1.6vw,1.3rem)] leading-relaxed text-silver">
               Fifteen transfers after one video call in which every other participant was synthetic. The employee's first
               instinct was right. The meeting talked him out of it.

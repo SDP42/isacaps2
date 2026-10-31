@@ -48,10 +48,10 @@ export function Risk() {
   };
 
   return (
-    <section id="risk" className="relative bg-ink-0 py-28">
+    <section id="risk" className="relative py-28">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-          <h2 className="max-w-[17ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
+          <h2 data-split className="max-w-[17ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             A fake that asks for nothing is <span className="font-serif italic text-mint">not</span> an emergency.
           </h2>
           <p className="max-w-sm text-[15px] leading-relaxed text-muted">

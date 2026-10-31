@@ -47,11 +47,11 @@ export function Tribunal() {
   }, [desktop, reduced]);
 
   return (
-    <section id="tribunal" ref={root} className="relative overflow-hidden bg-ink-0 py-24 lg:h-dvh lg:py-0">
+    <section id="tribunal" ref={root} className="relative overflow-hidden py-24 lg:h-dvh lg:py-0">
       <div className="pointer-events-none absolute left-1/2 top-1/2 size-[70vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet/[0.05] blur-[140px]" />
       <div className="relative mx-auto grid h-full max-w-[1400px] items-center gap-10 px-4 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
         <div>
-          <h2 className="max-w-[14ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
+          <h2 data-split className="max-w-[14ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             The Tribunal argues <span className="font-serif italic text-violet">before</span> you decide.
           </h2>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted">

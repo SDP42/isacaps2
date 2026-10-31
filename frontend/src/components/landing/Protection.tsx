@@ -31,10 +31,10 @@ export function Protection() {
   const ticks = Math.floor(Math.max(0, p - 0.35) * 9);
 
   return (
-    <section id="protection" ref={root} className="relative bg-ink-0 py-28">
+    <section id="protection" ref={root} className="relative py-28">
       <div className="mx-auto grid max-w-[1400px] gap-16 px-4 sm:px-8 lg:grid-cols-[1fr_420px] lg:items-center">
         <div>
-          <h2 className="max-w-[15ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
+          <h2 data-split className="max-w-[15ch] text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             Detection is evidence. <span className="text-mint">Verification is the control.</span>
           </h2>
           <ol className="relative mt-14 space-y-10 pl-10">
@@ -43,7 +43,7 @@ export function Protection() {
               style={{ height: `calc(${Math.min(1, p * 1.25) * 100}% - 8px)` }} />
             {STEPS.map((s, i) => (
               <li key={s.k} className="relative">
-                <span className="absolute -left-10 top-1 size-[15px] rounded-full border-2 bg-ink-0 transition-colors duration-500"
+                <span className="absolute -left-10 top-1 size-[15px] rounded-full border-2 transition-colors duration-500"
                   style={{ borderColor: i <= active ? s.c : "var(--color-line-2)" }} />
                 <p className={cx("text-2xl font-medium tracking-tight transition-colors duration-500", i <= active ? "text-fg" : "text-dim")}>{s.k}</p>
                 <p className={cx("mt-1.5 max-w-md text-[15px] leading-relaxed transition-colors duration-500", i <= active ? "text-muted" : "text-dim/70")}>{s.t}</p>
@@ -59,7 +59,7 @@ export function Protection() {
         {/* phone */}
         <div className="mx-auto w-full max-w-[360px]">
           <div className="rounded-[44px] border border-line-2 bg-ink-1 p-3 shadow-[0_40px_80px_-30px_rgb(0_0_0/0.9)]">
-            <div className="overflow-hidden rounded-[34px] border border-line bg-ink-0">
+            <div className="overflow-hidden rounded-[34px] border border-line">
               <div className="flex items-center justify-between px-6 pb-2 pt-4 font-mono text-[11px] text-muted">
                 <span>15:42</span><span className="h-5 w-20 rounded-full bg-ink-3" /><span>5G</span>
               </div>

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { cx } from "@/lib/format";
 import { useMedia, useReducedMotion } from "@/lib/hooks";
+import { world } from "@/components/three/World";
 import { ScrollTrigger } from "./useSmoothScroll";
 
 const W = [
@@ -61,15 +62,19 @@ export function Witnesses() {
     return () => st.kill();
   }, [desktop, reduced, manual]);
 
+  useEffect(() => {
+    world.active = active;
+    return () => { world.active = -1; };
+  }, [active]);
   const w = W[active];
   const radius = desktop ? 520 : 300;
 
   return (
-    <section id="witnesses" ref={root} className="relative overflow-hidden bg-ink-0 py-24 lg:h-dvh lg:py-0">
+    <section id="witnesses" ref={root} className="relative overflow-hidden py-24 lg:h-dvh lg:py-0">
       <div className="pointer-events-none absolute inset-0 grid-field-fine opacity-40 [mask-image:radial-gradient(ellipse_at_50%_100%,black,transparent_65%)]" />
       <div className="relative mx-auto grid h-full max-w-[1400px] items-center gap-12 px-4 sm:px-8 lg:grid-cols-[1fr_1.1fr]">
         <div className="relative z-10 lg:pb-24">
-          <h2 className="text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
+          <h2 data-split className="text-[clamp(2.2rem,4.8vw,4.2rem)] font-medium leading-[1] tracking-[-0.035em]">
             Five witnesses.
             <br />
             <span className="text-muted">One question each.</span>

@@ -1,18 +1,25 @@
 import { ArrowRight, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
+import Aurora from "@/components/reactbits/Aurora";
+import CircularText from "@/components/reactbits/CircularText";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-ink-0 pb-10 pt-32">
+    <section id="finale" className="relative overflow-hidden pb-10 pt-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan/40 to-transparent" />
-      <div className="pointer-events-none absolute left-1/2 top-[30%] size-[60vw] -translate-x-1/2 rounded-full bg-cyan/[0.05] blur-[150px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]">
+        <Aurora colorStops={["#0891b2", "#6d28d9", "#67e8f9"]} amplitude={0.9} blend={0.6} speed={0.6} />
+      </div>
       <div className="relative mx-auto max-w-[1400px] px-4 text-center sm:px-8">
-        <h2 className="mx-auto max-w-[18ch] text-[clamp(2.6rem,6.4vw,6rem)] font-medium leading-[0.95] tracking-[-0.045em]">
+        <h2 data-split className="mx-auto max-w-[18ch] text-[clamp(2.6rem,6.4vw,6rem)] font-medium leading-[0.95] tracking-[-0.045em]">
           Before you trust the request,{" "}
           <span className="font-serif font-normal italic text-cyan">investigate the evidence.</span>
         </h2>
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
+        <div className="mx-auto mt-10 w-fit opacity-80">
+          <CircularText text="MIRAGE • FIVE WITNESSES • ONE TRIBUNAL • " size={120} fontSize={9.5} color="#67e8f9" spinDuration={22} onHover="slowDown" />
+        </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button to="/auth" size="lg" magnetic icon={<ArrowRight size={17} />} className="flex-row-reverse">Investigate a file</Button>
           <Button to="/auth" variant="outline" size="lg" magnetic icon={<FlaskConical size={16} />}>Run a scenario</Button>
         </div>
