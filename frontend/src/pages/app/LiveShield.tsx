@@ -2,10 +2,12 @@ import { Mic, PhoneOff, Play, Radio, ShieldAlert, Square } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { getToken } from "@/lib/api";
+import { getToken, post } from "@/lib/api";
 import { micError } from "@/lib/recorder";
 import { BAND_COLOR, cx } from "@/lib/format";
 import { simulate, type Action } from "@/lib/risk";
+import { RiskRiver } from "@/components/app/RiskRiver";
+import { WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
 
 const CHUNK_S = 3;
 const SAMPLES = [
@@ -23,7 +25,7 @@ const CHALLENGES = [
 ];
 const TACTIC_COLOR: Record<string, string> = { urgency: "#fbbf24", authority: "#93c5fd", secrecy: "#a78bfa", fear: "#fb7185", channel_switch: "#67e8f9", bypass: "#f0abfc", reward: "#6ee7b7" };
 
-interface Chunk { i: number; spoof: number | null; risk: number; text: string }
+interface Chunk { i: number; spoof: number | null; risk: number; text: string; tactics: string[] }
 interface Rolling { tactics: string[]; action: string; manipulation: number; spans: { kind: string; text: string }[]; amount: number | null }
 
 function encodeWav(x: Float32Array, sr: number): Blob {
@@ -53,6 +55,7 @@ export default function LiveShield() {
   const [transcript, setTranscript] = useState("");
   const [level, setLevel] = useState<number[]>(Array(32).fill(0));
   const [alert, setAlert] = useState<string | null>(null);
+  const [plan, setPlan] = useState<ResponsePlan | null>(null);
   const [secs, setSecs] = useState(0);
   const ctxRef = useRef<AudioContext | null>(null);
   const stopRef = useRef<() => void>(() => {});
@@ -64,7 +67,7 @@ export default function LiveShield() {
   const caller = SAMPLES.find((s) => s.file === running)?.caller ?? "Unknown caller";
 
   const reset = () => {
-    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; applied.current = -1; parts.current = []; setAlert(null); setSecs(0);
+    setChunks([]); setTranscript(""); textRef.current = ""; idx.current = 0; langRef.current = null; applied.current = -1; parts.current = []; setAlert(null); setPlan(null); setSecs(0);
     setRolling({ tactics: [], action: "none", manipulation: 0, spans: [], amount: null });
   };
 
@@ -89,7 +92,7 @@ export default function LiveShield() {
       }
       const action = (["payment", "credential", "data", "info"].includes(r.action) ? r.action : "none") as Action;
       const risk = simulate(r.spoof ?? 0, r.manipulation ?? 0, 0.35, action, (r.tactics ?? []).some((t: string) => t === "secrecy" || t === "bypass")).risk;
-      setChunks((c) => [...c, { i, spoof: r.spoof, risk, text: r.text }]);
+      setChunks((c) => [...c, { i, spoof: r.spoof, risk, text: r.text, tactics: r.tactics ?? [] }].sort((a, b) => a.i - b.i));
       if ((r.action === "payment" || r.action === "credential") && risk >= 70) {
         setAlert((a) => a ?? CHALLENGES[Math.floor(Math.random() * (r.action === "credential" ? 4 : CHALLENGES.length))]);
       }
@@ -184,6 +187,12 @@ export default function LiveShield() {
   };
   useEffect(() => () => stopRef.current(), []);
 
+  // the first HIGH moment brings in the full "what now" plan for what the caller has said so far
+  useEffect(() => {
+    if (!alert || plan || textRef.current.trim().length < 8) return;
+    post<{ response: ResponsePlan }>("/v1/quick/text", { text: textRef.current }).then((r) => setPlan(r.response)).catch(() => {});
+  }, [alert, plan]);
+
   const current = chunks.length ? chunks[chunks.length - 1].risk : 0;
   const peak = chunks.reduce((m, c) => Math.max(m, c.risk), 0);
   const band = peak >= 70 ? "HIGH" : peak >= 35 ? "MEDIUM" : "LOW";
@@ -265,19 +274,10 @@ export default function LiveShield() {
           {/* risk ribbon */}
           <section className="panel p-5">
             <div className="flex items-center justify-between">
-              <p className="label">Risk ribbon · every {CHUNK_S} s</p>
+              <p className="label">Risk river · every {CHUNK_S} s</p>
               <span className="font-mono text-[11px] text-dim">peak {Math.round(peak)} · {chunks.length} windows</span>
             </div>
-            <div className="mt-4 flex h-20 items-end gap-1 overflow-x-auto">
-              {chunks.map((c) => {
-                const b = c.risk >= 70 ? "HIGH" : c.risk >= 35 ? "MEDIUM" : "LOW";
-                return (
-                  <motion.div key={c.i} initial={{ height: 0, opacity: 0 }} animate={{ height: `${Math.max(8, c.risk)}%`, opacity: 1 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-7 shrink-0 rounded-t" style={{ background: BAND_COLOR[b as "HIGH"] }} title={`${Math.round(c.risk)} · ${c.text}`} />
-                );
-              })}
-              {chunks.length === 0 && <p className="self-center text-[13px] text-dim">Start a call to see the ribbon.</p>}
-            </div>
+            <div className="mt-3"><RiskRiver points={chunks} seconds={CHUNK_S} /></div>
           </section>
 
           {/* transcript */}
@@ -316,6 +316,7 @@ export default function LiveShield() {
               </motion.section>
             )}
           </AnimatePresence>
+          {plan && <WhatNow plan={plan} compact />}
         </div>
       </div>
     </div>

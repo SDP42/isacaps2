@@ -123,8 +123,8 @@ export function useCountUp(target: number, duration = 1100, enabled = true): num
   const [v, setV] = useState(enabled ? 0 : target);
   const reduced = useReducedMotion();
   useEffect(() => {
-    if (!enabled || reduced) {
-      setV(target);
+    if (!enabled || reduced || document.hidden) {
+      setV(target); // a hidden page has no animation frames: show the real number, never a stuck 0
       return;
     }
     let raf = 0;

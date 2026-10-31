@@ -7,13 +7,15 @@ import { AskPanel, ReportPanel, VerifyPanel } from "@/components/case/ActionPane
 import { MediaStudio } from "@/components/case/MediaStudio";
 import { IdentityPanel, MessageIntel } from "@/components/case/MessagePanels";
 import { TribunalFlow } from "@/components/case/TribunalFlow";
-import { EvidenceLedger, LensPanel, VerdictPanel, WitnessPanel } from "@/components/case/VerdictPanels";
+import { EvidenceLedger, VerdictPanel, WitnessPanel } from "@/components/case/VerdictPanels";
+import { WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
+import { RiskWaterfall } from "@/components/case/RiskWaterfall";
 import { WhatIf } from "@/components/case/WhatIf";
 import { Button } from "@/components/ui/Button";
 import { BandPill, Empty, Segmented, Skeleton } from "@/components/ui/primitives";
 import { downloadReport } from "@/lib/api";
 import { clock } from "@/lib/format";
-import { useLiveCase } from "@/lib/hooks";
+import { useApi, useLiveCase } from "@/lib/hooks";
 
 type Tab = "evidence" | "tribunal" | "verify" | "report";
 
@@ -74,7 +76,7 @@ export default function CaseView() {
               <div className="min-w-0 space-y-4">
                 <div className="grid gap-4 xl:grid-cols-[1.35fr_1fr]">
                   <VerdictPanel v={detail.verdict!} onCite={cite} />
-                  <LensPanel v={detail.verdict!} />
+                  <RiskWaterfall v={detail.verdict!} />
                 </div>
                 <WhatIf detail={detail} />
                 <MediaStudio detail={detail} selected={selected} onSelect={setSelected} />
@@ -85,6 +87,7 @@ export default function CaseView() {
                 </div>
               </div>
               <aside className="space-y-4">
+                <CaseResponse caseId={detail.id} compact />
                 <VerifyPanel detail={detail} onChange={setDetail} compact />
                 <EvidenceLedger evidence={detail.evidence} selected={selected} onSelect={setSelected} filter={witness} />
                 <AskPanel caseId={detail.id} onCite={cite} />
@@ -94,6 +97,7 @@ export default function CaseView() {
           {tab === "tribunal" && <div className="panel p-5 sm:p-6"><TribunalFlow messages={detail.tribunal} evidence={detail.evidence} onCite={cite} /></div>}
           {tab === "verify" && (
             <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+              <div className="lg:col-span-2"><CaseResponse caseId={detail.id} /></div>
               <VerifyPanel detail={detail} onChange={setDetail} />
               <AskPanel caseId={detail.id} onCite={cite} />
             </div>
@@ -103,4 +107,10 @@ export default function CaseView() {
       )}
     </div>
   );
+}
+
+/** The emergency plan for this case, from /v1/cases/{id}/response (same plan as the voice check and the extension). */
+function CaseResponse({ caseId, compact = false }: { caseId: string; compact?: boolean }) {
+  const { data } = useApi<ResponsePlan>(`/v1/cases/${caseId}/response`, [caseId]);
+  return data ? <WhatNow plan={data} compact={compact} /> : null;
 }

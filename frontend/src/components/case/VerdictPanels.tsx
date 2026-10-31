@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { BandPill, ETag, Meter, PanelHead, RiskRing } from "@/components/ui/primitives";
+import { BandPill, ETag, PanelHead, RiskRing } from "@/components/ui/primitives";
 import { cx, WITNESS_META } from "@/lib/format";
 import type { CaseDetail, EvidenceItem, Verdict } from "@/lib/types";
 
@@ -39,36 +39,6 @@ export function VerdictPanel({ v, onCite }: { v: Verdict; onCite: (id: string) =
               <br />{v.reasons.find((r) => r.kind === "policy")?.text}
             </p>
           )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const LENS = [
-  { k: "authenticity", label: "Authenticity", sub: "media witnesses", color: "#67e8f9" },
-  { k: "manipulation", label: "Manipulation", sub: "words witness", color: "#fbbf24" },
-  { k: "context", label: "Identity & context", sub: "Trustbook", color: "#fb7185" },
-] as const;
-
-export function LensPanel({ v }: { v: Verdict }) {
-  return (
-    <section className="panel">
-      <PanelHead title="Four lenses" meta="exact Shapley contributions" />
-      <div className="space-y-4 p-5">
-        {LENS.map((l) => (
-          <div key={l.k}>
-            <div className="flex items-baseline justify-between text-[13px]">
-              <span className="text-fg">{l.label} <span className="text-dim">· {l.sub}</span></span>
-              <span className="tnum font-mono text-[12px]" style={{ color: l.color }}>{(v.dims[l.k] ?? 0).toFixed(2)}</span>
-            </div>
-            <Meter value={v.dims[l.k] ?? 0} color={l.color} className="mt-1.5" />
-            <p className="mt-1 font-mono text-[10.5px] text-dim">+{(v.contributions.lenses[l.k] ?? 0).toFixed(1)} risk points</p>
-          </div>
-        ))}
-        <div className="flex items-center justify-between border-t border-line pt-3 text-[13px]">
-          <span className="text-fg">Request sensitivity</span>
-          <span className="font-mono text-[12px] text-violet">S = {v.sensitivity} · {v.requested_action.replace("_", " ")}</span>
         </div>
       </div>
     </section>

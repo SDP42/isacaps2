@@ -195,7 +195,8 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
         votes = [m >= 0.5 for m in means.values()]
         agreement = max(votes.count(True), votes.count(False)) / len(votes)
         res.model_version = " + ".join(names) + " (primary) + YuNet + " + res.model_version + " (supporting)"
-        res.details["pretrained"] = {"models": means, "score": round(pooled, 4), "own_score": round(float(np.mean(own_scores)), 4),
+        res.details["pretrained"] = {"models": means, "meta": pretrained.meta(per_model), "score": round(pooled, 4),
+                                     "own_score": round(float(np.mean(own_scores)), 4),
                                      "agreement": agreement, "agree": agreement == 1.0}
     res.confidence = round(0.4 + 0.4 * (faces_found / len(s)) + (0.1 if sync else 0) + (0.05 if gend else -0.15), 3)
     res.latency_ms = t.ms

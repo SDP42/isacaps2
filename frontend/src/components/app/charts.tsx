@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { useState } from "react";
 import { BAND_COLOR } from "@/lib/format";
 import type { Band } from "@/lib/types";
@@ -39,9 +38,8 @@ export function BandTimeline({ days, height = 150 }: { days: Day[]; height?: num
                 const bh = (v / max) * (height - 6);
                 y -= bh;
                 return (
-                  <motion.rect key={b} x={i * w + w * 0.18} width={w * 0.64} rx={0.4} fill={BAND_COLOR[b]} fillOpacity={b === "INCONCLUSIVE" ? 0.5 : 0.85}
-                    initial={{ y: height, height: 0 }} animate={{ y, height: Math.max(0, bh - 0.6) }}
-                    transition={{ duration: 0.8, delay: i * 0.012, ease: [0.16, 1, 0.3, 1] }} />
+                  <rect key={b} className="mark-rise" x={i * w + w * 0.18} width={w * 0.64} rx={0.4} y={y} height={Math.max(0, bh - 0.6)}
+                    fill={BAND_COLOR[b]} fillOpacity={b === "INCONCLUSIVE" ? 0.5 : 0.85} style={{ animationDelay: `${i * 12}ms` }} />
                 );
               })}
             </g>
@@ -65,8 +63,8 @@ export function RiskHistogram({ bins, height = 110 }: { bins: number[]; height?:
           const band: Band = i < 3.5 ? "LOW" : i < 7 ? "MEDIUM" : "HIGH";
           return (
             <div key={i} className="group relative flex-1">
-              <motion.div className="w-full rounded-t-sm" style={{ background: BAND_COLOR[band], opacity: 0.25 + 0.75 * (v / max) }}
-                initial={{ height: 0 }} animate={{ height: (v / max) * height }} transition={{ duration: 0.8, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }} />
+              <div className="mark-rise w-full rounded-t-sm"
+                style={{ height: (v / max) * height, background: BAND_COLOR[band], opacity: 0.25 + 0.75 * (v / max), animationDelay: `${i * 30}ms` }} />
               <span className="pointer-events-none absolute -top-5 left-1/2 -translate-x-1/2 font-mono text-[10px] text-silver opacity-0 transition-opacity group-hover:opacity-100">{v}</span>
             </div>
           );
@@ -86,7 +84,7 @@ export function HBars({ data, color = "var(--color-cyan)", format }: { data: Rec
         <li key={k} className="grid grid-cols-[96px_1fr_32px] items-center gap-3 text-[12.5px]">
           <span className="truncate capitalize text-muted">{format ? format(k) : k.replace(/_/g, " ")}</span>
           <span className="h-1.5 overflow-hidden rounded-full bg-ink-4">
-            <motion.span className="block h-full rounded-full" style={{ background: color }} initial={{ width: 0 }} animate={{ width: `${(v / max) * 100}%` }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} />
+            <span className="mark-grow block h-full rounded-full" style={{ background: color, width: `${(v / max) * 100}%` }} />
           </span>
           <span className="tnum text-right font-mono text-[11.5px] text-silver">{v}</span>
         </li>

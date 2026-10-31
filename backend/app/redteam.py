@@ -322,7 +322,7 @@ def detect(path: Path, kind: str) -> dict:
                 "summary": f"Face {r.summary} Voice {v.summary}"}
     s = r.score or 0.0
     return {"score": round(s, 4), "caught": s >= 0.5, "summary": r.summary,
-            "models": (r.details.get("pretrained") or {}).get("models")}
+            "models": (r.details.get("pretrained") or {}).get("models"), "meta": (r.details.get("pretrained") or {}).get("meta")}
 
 
 # ---- samples and campaigns ----------------------------------------------------------------------------------------

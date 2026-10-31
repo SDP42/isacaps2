@@ -151,6 +151,11 @@ def recentre(key: str, p: float) -> float:
     return _sig(_logit(p) - _logit(THRESHOLDS.get(key, 0.5)))
 
 
+def meta(keys) -> dict[str, dict]:
+    """Per-model operating threshold and ensemble weight, keyed by display name (drawn by the UI's model jury)."""
+    return {name(k): {"threshold": THRESHOLDS.get(k, 0.5), "weight": WEIGHTS.get(k, 0.3)} for k in keys}
+
+
 def ensemble(scores: dict[str, float]) -> tuple[float, float]:
     """Weighted logit average of recentred member scores. Returns (probability, agreement in [0, 1])."""
     if not scores:

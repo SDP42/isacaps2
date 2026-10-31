@@ -60,6 +60,19 @@ def campaign(body: CampaignIn, user: Principal = Depends(require_role("analyst")
     return redteam.summary(c)
 
 
+@router.get("/campaigns/latest")
+def latest_campaign(modality: str = "audio", user: Principal = Depends(require_role("analyst"))) -> dict | None:
+    """Most recent finished campaign for a modality, so the lab opens with real results instead of an empty grid."""
+    for f in sorted(redteam.ROOT.glob("camp-*.json"), key=lambda q: q.stat().st_mtime, reverse=True):
+        try:
+            d = json.loads(f.read_text())
+        except Exception:
+            continue
+        if d.get("modality") == modality and d.get("status") == "done":
+            return d
+    return None
+
+
 @router.get("/campaign/{cid}")
 def campaign_status(cid: str, user: Principal = Depends(require_role("analyst"))) -> dict:
     c = redteam.CAMPAIGNS.get(cid)

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { LogOut, Menu, Search, X } from "lucide-react";
+import { LogOut, Menu, Presentation, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Logo, LogoMark } from "@/components/ui/Logo";
@@ -10,6 +10,7 @@ import { useApi } from "@/lib/hooks";
 import ClickSpark from "@/components/reactbits/ClickSpark";
 import { CommandPalette } from "./CommandPalette";
 import { NAV } from "./nav";
+import { PresenterBar, setDemoStep, useDemoStep } from "./Presenter";
 
 function LiveIndicator() {
   const { data, reload } = useApi<{ totals: { running: number } }>("/v1/dashboard");
@@ -29,19 +30,19 @@ function LiveIndicator() {
 function SideNav({ onNavigate }: { onNavigate?: () => void }) {
   const { persona } = useAuth();
   return (
-    <nav className="flex flex-col gap-6">
+    <nav className="flex flex-col gap-4">
       {NAV.map((g) => {
         const items = g.items.filter((i) => !i.roles || i.roles.includes(persona?.role ?? ""));
         if (!items.length) return null;
         return (
           <div key={g.group}>
-            <p className="label mb-2 px-3 !text-[10px] !text-dim">{g.group}</p>
+            <p className="label mb-1 px-3 !text-[10px] !text-dim">{g.group}</p>
             <ul className="space-y-0.5">
               {items.map((it) => (
                 <li key={it.to}>
                   <NavLink to={it.to} onClick={onNavigate}
                     className={({ isActive }) => cx(
-                      "group relative flex h-9 items-center gap-3 rounded-lg px-3 text-[13.5px] transition-colors",
+                      "group relative flex h-8 items-center gap-3 rounded-lg px-3 text-[13.5px] transition-colors",
                       isActive ? "bg-ink-3 text-fg" : "text-muted hover:bg-white/[0.03] hover:text-silver",
                     )}>
                     {({ isActive }) => (
@@ -68,6 +69,7 @@ export default function AppShell() {
   const [drawer, setDrawer] = useState(false);
   const loc = useLocation();
   const nav = useNavigate();
+  const demo = useDemoStep();
 
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -135,17 +137,20 @@ export default function AppShell() {
             <span className="hidden gap-1 sm:flex"><Kbd>⌘</Kbd><Kbd>K</Kbd></span>
           </button>
           <div className="ml-auto flex items-center gap-3">
+            <button onClick={() => setDemoStep(demo == null ? 0 : null)}
+              className={cx("hidden items-center gap-2 rounded-full border px-3 py-1 text-[12px] transition-colors md:inline-flex",
+                demo != null ? "border-cyan/50 bg-cyan/10 text-cyan" : "border-line text-muted hover:text-fg")}>
+              <Presentation size={13} /> {demo != null ? "Presenting" : "Present"}
+            </button>
             <LiveIndicator />
             <span className="grid size-8 place-items-center rounded-lg bg-ink-3 text-[12px] text-cyan lg:hidden">{initials}</span>
           </div>
         </header>
-        <AnimatePresence mode="wait">
-          <motion.main key={loc.pathname.split("/").slice(0, 4).join("/")} className="relative min-w-0 flex-1"
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}>
-            <Outlet />
-          </motion.main>
-        </AnimatePresence>
+        <PresenterBar />
+        {/* CSS entrance: a paused animation loop (background tab) must never leave a page invisible */}
+        <main key={loc.pathname.split("/").slice(0, 4).join("/")} className="page-enter relative min-w-0 flex-1">
+          <Outlet />
+        </main>
       </div>
       <CommandPalette open={palette} setOpen={setPalette} />
     </div>

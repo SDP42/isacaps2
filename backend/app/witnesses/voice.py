@@ -144,7 +144,8 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
                      for k in rows[0]["models"]}
         agreement = float(np.mean([r["agree"] for r in rows]))
         res.model_version = " + ".join(pre["models"]) + " (primary) + " + res.model_version + " (supporting)"
-        res.details["pretrained"] = {"models": per_model, "score": round(pooled_pre, 4), "own_score": round(own, 4),
+        res.details["pretrained"] = {"models": per_model, "meta": pretrained.meta(rows[0]["models"]),
+                                     "score": round(pooled_pre, 4), "own_score": round(own, 4),
                                      "agreement": round(agreement, 3), "agree": agreement >= 0.75}
         p, segs = p_pre, [(a, b, None) for a, b in segs_out]
     else:

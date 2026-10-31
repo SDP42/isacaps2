@@ -6,6 +6,7 @@ import { api, post } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { CaseSummary, Scenario } from "@/lib/types";
 import { NAV } from "./nav";
+import { setDemoStep } from "./Presenter";
 
 export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
   const nav = useNavigate();
@@ -36,6 +37,9 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: 
                 className="h-13 w-full border-b border-line bg-transparent px-5 text-[15px] text-fg outline-none placeholder:text-dim" />
               <Command.List className="max-h-[56vh] overflow-y-auto p-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:text-[10.5px] [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-dim">
                 <Command.Empty className="px-4 py-8 text-center text-sm text-muted">No match.</Command.Empty>
+                <Command.Group heading="PRESENT">
+                  <Item onSelect={() => { setOpen(false); setDemoStep(0); nav("/app/redteam"); }} meta="5-minute script">Start the demo walkthrough</Item>
+                </Command.Group>
                 <Command.Group heading="NAVIGATE">
                   {NAV.flatMap((g) => g.items).map((it) => (
                     <Item key={it.to} onSelect={() => go(it.to)} icon={<it.icon size={15} />}>{it.label}</Item>

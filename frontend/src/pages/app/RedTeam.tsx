@@ -1,7 +1,8 @@
 import { Crosshair, FlaskConical, Grid3x3, Loader2, Play, ScanSearch, ShieldCheck, Skull, TriangleAlert } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ModelJury, type JuryMeta } from "@/components/app/ModelJury";
 import { Button } from "@/components/ui/Button";
 import { Empty, Meter, PanelHead, Segmented, Skeleton } from "@/components/ui/primitives";
 import { getToken, post } from "@/lib/api";
@@ -13,7 +14,7 @@ interface Catalog { attacks: Attack[]; audio_launder: Record<string, string>; im
 interface Sample {
   id: string; attack: string; modality: string; launder: string; file: string | null; files: string[]; seconds: number;
   kit: { script: string; voice_engine?: string; image_engine?: string };
-  detection: null | { score: number; caught: boolean; summary: string; models?: Record<string, number> | null };
+  detection: null | { score: number; caught: boolean; summary: string; models?: Record<string, number> | null; meta?: Record<string, JuryMeta> | null };
   semantics: { score: number; tactics: string[]; action: string };
 }
 interface CampaignState {
@@ -21,6 +22,8 @@ interface CampaignState {
   cells: { attack: string; launder: string; score: number; caught: boolean }[];
   by_launder: Record<string, { rate: number; mean: number }>; insights: string[]; elapsed_s: number;
 }
+
+const RobustnessTerrain = lazy(() => import("@/components/three/RobustnessTerrain"));
 
 /** Media served by the API needs the bearer token, so fetch it as a blob. */
 function useAuthedUrl(path: string | null) {
@@ -62,15 +65,7 @@ function SampleView({ s, onInvestigate }: { s: Sample; onInvestigate: () => void
           <span className="tnum font-mono text-[20px] text-fg">{det.score.toFixed(2)}</span>
         </div>
       )}
-      {det?.models && (
-        <div className="flex flex-wrap gap-1.5">
-          {Object.entries(det.models).map(([m, v]) => (
-            <span key={m} className={cx("rounded-md border px-2 py-0.5 font-mono text-[10.5px]", v >= 0.5 ? "border-mint/30 text-mint" : "border-crimson/40 text-crimson")}>
-              {m.split("/").pop()} {v.toFixed(2)}
-            </span>
-          ))}
-        </div>
-      )}
+      {det?.models && <ModelJury compact models={det.models} meta={det.meta} fakeWord={s.modality === "image" ? "AI-generated" : "synthetic"} />}
       <p className="text-[12.5px] text-muted">
         Script read by the Words witness: manipulation {s.semantics.score.toFixed(2)} · asks for {s.semantics.action} · {s.semantics.tactics.join(", ") || "no tactics"}
       </p>
@@ -131,10 +126,18 @@ export default function RedTeam() {
   const [sample, setSample] = useState<Sample | null>(null);
   const [cmod, setCmod] = useState<"audio" | "image">("audio");
   const [camp, setCamp] = useState<CampaignState | null>(null);
+  const [view, setView] = useState<"heatmap" | "terrain">("heatmap");
 
   const attack = cat?.attacks.find((a) => a.key === sel);
   useEffect(() => { if (attack && !attack.has_image && (modality === "image" || modality === "video")) setModality("audio"); }, [attack, modality]);
   useEffect(() => { setLaunder("clean"); }, [modality]);
+  // open on the latest finished campaign for the chosen modality (unless one is running)
+  useEffect(() => {
+    if (camp?.status === "running") return;
+    fetch(`/v1/redteam/campaigns/latest?modality=${cmod}`, { headers: { authorization: `Bearer ${getToken() ?? ""}` } })
+      .then((r) => (r.ok ? r.json() : null)).then((d) => d && setCamp(d)).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cmod]);
   useEffect(() => {
     if (!camp || camp.status !== "running") return;
     const t = setInterval(async () => {
@@ -257,7 +260,16 @@ export default function RedTeam() {
                 <span className="font-mono text-[12px] text-muted">{camp.done}/{camp.total} · {camp.elapsed_s}s · {camp.status}</span>
               </div>
               {camp.error && <p className="text-[13px] text-crimson">{camp.error}</p>}
-              <Heatmap c={camp} cat={cat} />
+              <div className="flex justify-end">
+                <Segmented value={view} onChange={(v) => setView(v as "heatmap" | "terrain")} options={[{ value: "heatmap", label: "Heatmap" }, { value: "terrain", label: "3D terrain" }]} />
+              </div>
+              {view === "heatmap" ? <Heatmap c={camp} cat={cat} /> : (
+                <Suspense fallback={<Skeleton className="h-[420px]" />}>
+                  <RobustnessTerrain cells={camp.cells} attacks={camp.attacks} launders={camp.launders}
+                    attackLabel={(k) => cat.attacks.find((a) => a.key === k)?.title ?? k}
+                    launderLabel={(k) => k} />
+                </Suspense>
+              )}
               {camp.insights.length > 0 && (
                 <ul className="space-y-1 text-[13px] text-silver">{camp.insights.map((s, i) => <li key={i}>· {s}</li>)}</ul>
               )}

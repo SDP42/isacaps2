@@ -85,6 +85,7 @@ async def voice_triage(file: UploadFile = File(...), claimed_sender: str = Form(
     stage1 = {"label": {"ai": "AI-generated voice", "human": "Human voice", "uncertain": "Uncertain"}[synthetic],
               "verdict": synthetic, "score": score, "confidence": v.confidence, "summary": v.summary,
               "models": (v.details.get("pretrained") or {}).get("models"), "agree": (v.details.get("pretrained") or {}).get("agree"),
+              "meta": (v.details.get("pretrained") or {}).get("meta"),
               "windows": v.details.get("windows", []), "waveform": v.details.get("waveform"),
               "duration_s": v.details.get("duration_s"), "channel": v.details.get("channel"), "status": v.status,
               "noisy": noisy}
@@ -135,6 +136,6 @@ async def quick_media(file: UploadFile = File(...), user: Principal = Depends(cu
     label = "Likely AI-generated or manipulated" if s >= 0.7 else "Likely authentic" if s <= 0.3 else "Uncertain"
     severity = "MEDIUM" if s >= 0.7 else "INCONCLUSIVE" if s > 0.3 else "LOW"
     return {"kind": sf.kind, "sha256": sf.sha256, "score": s, "label": label, "summary": r.summary,
-            "models": (r.details.get("pretrained") or {}).get("models"),
+            "models": (r.details.get("pretrained") or {}).get("models"), "meta": (r.details.get("pretrained") or {}).get("meta"),
             "evidence": [e.as_dict() for e in r.evidence if not e.exculpatory][:5],
             "response": resp.build("synthetic_benign" if s >= 0.7 else "benign", severity, s >= 0.7)}

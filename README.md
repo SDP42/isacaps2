@@ -137,7 +137,7 @@ The full catalogue with implementation status is in [docs/FEATURES.md](docs/FEAT
 | `/app/dashboard` | Command centre |
 | `/app/investigate` | New investigation and live processing |
 | `/app/voice` | Voice check: AI or human, what it asks for, combined verdict, what now |
-| `/app/redteam` | Red-team lab: attacker playbook, forge-and-test, robustness campaigns |
+| `/app/redteam` | Red-team lab: attacker playbook, forge-and-test, robustness campaigns (heatmap or 3D terrain) |
 | `/app/shield` | Live Call Shield |
 | `/app/cases`, `/app/cases/:id/:tab` | Case list; case Evidence / Tribunal / Verify / Report |
 | `/app/tribunal/:id` | Courtroom view with docket |
@@ -264,7 +264,9 @@ Hinglish), what is selected but not integrated yet, and the prioritised next ste
 | [docs/USE_CASES.md](docs/USE_CASES.md) | Personas, use cases and scenario behaviour |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, data flow, schema, security |
 | [docs/API.md](docs/API.md) | Every endpoint with inputs and outputs |
+| [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md) | What is built, architecture, the investigation flow, features and use cases, measured results |
 | [docs/PLAN.md](docs/PLAN.md) | Build plan: attack, detect, respond, deploy; priorities and UI direction |
+| [docs/UI_PLAN.md](docs/UI_PLAN.md) | UI audit, components, data visualisation, purposeful 3D and phased UI roadmap |
 | [docs/ATTACKER_PLAYBOOK.md](docs/ATTACKER_PLAYBOOK.md) | How deepfake scam crews operate and evade detectors, with sources |
 | [docs/RED_TEAM.md](docs/RED_TEAM.md) | Red-team lab: guardrails, generators, laundering, findings |
 | [docs/AFTER_DETECTION.md](docs/AFTER_DETECTION.md) | Two-stage voice check and the "what now" response plan |

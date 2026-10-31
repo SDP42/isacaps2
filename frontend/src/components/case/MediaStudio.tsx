@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ModelJury } from "@/components/app/ModelJury";
 import { Waveform } from "@/components/app/Waveform";
 import { PanelHead, Segmented } from "@/components/ui/primitives";
 import { artifactUrl } from "@/lib/api";
@@ -117,25 +118,6 @@ function EmailCard({ email }: { email: any }) {
   );
 }
 
-/** Detector chips: each pretrained model's score, the ensemble, and whether the independent models agree. */
-function Pretrained({ info }: { info?: { models: Record<string, number>; score: number; own_score: number; agree: boolean; agreement?: number } }) {
-  if (!info?.models) return null;
-  const short = (m: string) => m.split("/").pop()!.replace(/-deploy$/, "");
-  return (
-    <span className="inline-flex flex-wrap items-center gap-1.5">
-      {Object.entries(info.models).map(([m, v]) => (
-        <span key={m} title={m} className={cx("rounded-md border px-1.5 py-0.5 font-mono text-[10px]", v >= 0.5 ? "border-crimson/40 text-crimson" : "border-mint/30 text-mint")}>
-          {short(m)} {v.toFixed(2)}
-        </span>
-      ))}
-      <span className={cx("rounded-md border px-1.5 py-0.5 font-mono text-[10px]", info.agree ? "border-mint/30 text-mint" : "border-amber/40 text-amber")}
-        title={`Ensemble ${info.score.toFixed(2)} · MIRAGE supporting model ${info.own_score.toFixed(2)}`}>
-        ensemble {info.score.toFixed(2)} · {info.agree ? "models agree" : "models disagree"}
-      </span>
-    </span>
-  );
-}
-
 function ElaGrid({ grid }: { grid: number[][] }) {
   return (
     <div className="pointer-events-none absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${grid[0]?.length ?? 1}, 1fr)` }}>
@@ -182,7 +164,8 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                   <video key={videoT ?? 0} src={url + (videoT != null ? `#t=${videoT}` : "")} controls className="w-full rounded-xl border border-line bg-black" />
                   {face?.details?.timeline && (
                     <div>
-                      <p className="label mb-2 flex flex-wrap items-center gap-2">Frame inspection · face artefact score <Pretrained info={face.details.pretrained} /></p>
+                      <p className="label mb-2">Frame inspection · face artefact score</p>
+                      {face.details.pretrained?.models && <div className="mb-3"><ModelJury compact models={face.details.pretrained.models} meta={face.details.pretrained.meta} fakeWord="manipulated" /></div>}
                       <FrameTimeline timeline={face.details.timeline} keyframes={face.details.keyframes ?? []} duration={face.details.duration_s || a.duration_s || 1} onSeek={setVideoT} />
                       {face.details.lip_sync && (
                         <div className="mt-4">
@@ -198,7 +181,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
               {(a.kind === "audio" || a.kind === "video") && voice?.details?.waveform && (
                 <div>
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <p className="label flex items-center gap-2">Audio waveform · synthetic-speech windows <Pretrained info={voice.details.pretrained} /></p>
+                    <p className="label flex items-center gap-2">Audio waveform · synthetic-speech windows</p>
                     <p className="font-mono text-[10.5px] text-dim">
                       {voice.details.channel?.codec_guess} · SNR {voice.details.channel?.snr_db} dB
                       {voice.details.voiceprint_similarity != null && <> · voiceprint <span className={voice.details.voiceprint_similarity < (voice.details.voiceprint_threshold ?? 0.43) ? "text-crimson" : "text-mint"}>{voice.details.voiceprint_similarity.toFixed(2)}</span></>}
@@ -206,6 +189,9 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                   </div>
                   <Waveform peaks={voice.details.waveform} duration={voice.details.duration_s} src={a.kind === "audio" ? url : undefined}
                     regions={regions} activeRegion={selected} onRegion={onSelect} windows={voice.details.windows} seekTo={seek} />
+                  {voice.details.pretrained?.models && (
+                    <div className="mt-3"><ModelJury models={voice.details.pretrained.models} meta={voice.details.pretrained.meta} consensus={voice.details.pretrained.score} fakeWord="synthetic" /></div>
+                  )}
                   {a.meta?.asr && <TranscriptStrip asr={a.meta.asr} flagged={flaggedWords} selected={selected} onSelect={onSelect}
                     onSeek={(t) => (a.kind === "video" ? setVideoT(t) : setSeek({ t, n: Date.now() }))} />}
                 </div>
@@ -219,7 +205,7 @@ export function MediaStudio({ detail, selected, onSelect }: { detail: CaseDetail
                     {ela === "ocr" && a.meta?.ocr && <OcrBoxes lines={a.meta.ocr.lines} flagged={ocrFlags} />}
                   </div>
                   <div className="space-y-3">
-                    <Pretrained info={prov.details.pretrained} />
+                    {prov.details.pretrained?.models && <ModelJury compact models={prov.details.pretrained.models} meta={prov.details.pretrained.meta} consensus={prov.details.pretrained.score} fakeWord="AI-generated" />}
                     <Segmented value={ela} onChange={setEla} options={[{ value: "off", label: "Original" }, { value: "on", label: "ELA heat" }, ...(a.meta?.ocr ? [{ value: "ocr" as const, label: "OCR text" }] : [])]} />
                     <dl className="space-y-2 font-mono text-[11.5px]">
                       <div className="flex justify-between"><dt className="text-muted">AI probability</dt><dd className={prov.details.ai_probability > 0.6 ? "text-crimson" : "text-mint"}>{prov.details.ai_probability?.toFixed(2)}</dd></div>
