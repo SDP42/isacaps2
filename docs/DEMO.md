@@ -15,3 +15,18 @@
 | 4:10 | Attack chains | Open the campaign | "Email → WhatsApp → call → video → payment, linked by one mule account." |
 | 4:30 | Report | Export the PDF; show the audit chain intact | "Hash-stamped, CERT-In style, ready for 1930 and the SOC." |
 | 4:50 | Personal safety (phone width) | Paste the "Papa" message | "One plain answer and one button: call Papa on his saved number." |
+
+## Interactive extras (pick by time available)
+
+| Page | Use it for | How to drive it |
+|---|---|---|
+| **Attack replay** | The opening "watch an attack happen" moment | Space to play, → to jump a stage, R to reset; toggle *Without MIRAGE* to show the money leaving, then replay *With MIRAGE* |
+| **Spot the fake** | Audience participation | The room votes Safe / Scam on six exhibits; reveal MIRAGE's analysis each time |
+| **Live call shield** | Real-time protection | "Play a suspicious call" (works without a mic) or the microphone with a phone playing a clip |
+| **What-if lab** (case Evidence tab) | Explainability | "Number matches the Trustbook", "No pressure tactics", "Nothing is requested" |
+| **Callback** (Verify tab) | Closing the loop | Call on the Trustbook number, hear the reply, then "Replay this attack from a new number" |
+| **Personal safety** (phone width) | Consumer angle | "Speak it instead" or record, then the one-button callback to Papa |
+
+Suggested 5-minute order: Attack replay (60 s) → Spot the fake, two exhibits (45 s) → case Evidence with a waveform
+click and the What-if lab (75 s) → Tribunal (30 s) → callback and replay (45 s) → Live call shield (30 s) →
+Models & audit honesty slide (15 s).
