@@ -1,5 +1,5 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import { Building2, CreditCard, Fingerprint, KeyRound, MessageCircle, Phone, ShieldAlert, User, Video, Mail, Users } from "lucide-react";
+import { Building2, CreditCard, Fingerprint, KeyRound, MessageCircle, Phone, ShieldAlert, Video, Mail, Users } from "lucide-react";
 import { cx, inr } from "@/lib/format";
 
 const H = ({ hidden = true }: { hidden?: boolean }) => (
