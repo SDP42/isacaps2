@@ -5,7 +5,7 @@ built it. Read this first, then [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) and [DE
 
 State as of 1 November 2026 (evening): see the top of [CHANGELOG.md](../CHANGELOG.md) for the latest round (command
 centre rebuild, evidence kit, Trustbook admin, Drill mode, liveness, SyncNet lip-sync, C2PA validation, semantic
-casebook, WhatsApp chip, Android share target). 26 backend tests pass in light mode.
+casebook, WhatsApp chip, Android share target) and the noise-conditional voice ensemble. 27 backend tests pass.
 
 ## 1. What MIRAGE is
 
@@ -76,7 +76,7 @@ casebook, WhatsApp chip, Android share target). 26 backend tests pass in light m
 ```bash
 # backend (Python 3.11+, CUDA optional)
 cd backend && python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
-.venv/Scripts/python scripts/download_models.py          # ~6 GB into backend/models_hf (groups: audio image face text redteam)
+.venv/Scripts/python scripts/download_models.py          # ~7 GB into backend/models_hf (default: audio image face text; opt-in: redteam, study)
 .venv/Scripts/uvicorn app.main:app --port 8000
 
 # frontend
@@ -97,7 +97,7 @@ cd frontend && npm install && npm run dev                 # http://localhost:517
   - `MIRAGE_PRETRAINED=off`, `MIRAGE_ASR=off`, `MIRAGE_OCR=off` give the light mode used by CI.
   - `ANTHROPIC_API_KEY` enables the optional Claude judge in the words witness.
   - `MIRAGE_ASR_MODEL` sets the Whisper size (default `base`).
-- **Tests:** `cd backend && .venv/Scripts/python -m pytest -q` runs 21 tests.
+- **Tests:** `cd backend && .venv/Scripts/python -m pytest -q` runs 27 tests.
 - **Demo inputs:** with the API running, `python backend/scripts/verify_demo_inputs.py` rewrites
   `demo_inputs/RESULTS.md`.
 - **Benchmarks:** `scripts/fetch_benchmark.py`, then `scripts/benchmark_models.py`, which writes
@@ -125,7 +125,9 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Modality | Models (threshold) | Notes |
 |---|---|---|
 | Voice | DF_Arena 500M (0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, index 0 = fake) | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": DF_Arena alone scores it (measured in the noise study), confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
-| Voiceprint | WavLM-base-plus-sv | Cosine match at 0.86 |
+| Voiceprint | WavLM-base-plus-sv | Cosine match at 0.86; guided enrolment needs three takes agreeing at 0.75 |
+| Lip-sync | SyncNet v2 (vendored, `weights_only`) | Flags "lips do not follow the voice" below confidence 3.0; still pictures are not scored |
+| Casebook | paraphrase-multilingual MiniLM-L12 | Dense vectors join BM25 and TF-IDF in the rank fusion |
 | Image | Community Forensics ViT-S/384 (0.01) + haywoodsloan SwinV2 (0.1) | Organika SDXL detector removed: it flagged real photos |
 | Face | YuNet detector (Haar fallback) + GenD CLIP L/14 and GenD PE-L (0.75, index 1 = fake) | Median plus attention pooling over frames. The YuNet instance is locked |
 | Text | TF-IDF (own, 0.5) + cybersectony phishing DistilBERT (LABEL_0 and LABEL_2 = safe) + mDeBERTa zero-shot intents (0.9, need corroboration) + optional Claude judge (0.6) | Blended in logit space in `words.py` |
@@ -200,7 +202,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | DB schema | `backend/app/models.py` |
 | Screens | `frontend/src/pages/app/*.tsx` (VoiceCheck, RedTeam, CaseView, LiveShield, AttackChain, System, …) |
 | Case components | `frontend/src/components/case/*` (CureConsole, RiskWaterfall, WhatIf, MediaStudio) |
-| Tests | `backend/tests/test_mirage.py` (26) |
+| Tests | `backend/tests/test_mirage.py` (27) |
 | Benchmarks | `scripts/benchmark_models.py` (ROC + calibration), `scripts/noise_robustness.py`, `scripts/measure_claude_judge.py` |
 | CI | `.github/workflows/ci.yml` (CPU torch, light mode; frontend `tsc` and `vite build`; extension `node --check`) |
 | Demo inputs | `demo_inputs/`, `backend/scripts/make_demo_inputs.py`, `verify_demo_inputs.py` |
@@ -227,7 +229,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
 | Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
 | Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
-| Tests / CI | 21/21 pass, both full and light mode; CI green on `main` |
+| Tests / CI | 27/27 pass, both full and light mode; CI green on `main` |
 
 ## 9. Known limits and next steps
 
