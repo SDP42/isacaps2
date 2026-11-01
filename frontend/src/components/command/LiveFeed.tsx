@@ -124,7 +124,16 @@ export function LiveFeed({
   conn: "connecting" | "live" | "offline";
 }) {
   const [on, setOn] = useState<Record<Group, boolean>>({ verdicts: true, actions: true, pipeline: false });
-  const shown = useMemo(() => events.filter((e) => on[group(e)]), [events, on]);
+  // a stream reconnect replays recent events, so the same event can arrive twice
+  const shown = useMemo(() => {
+    const seen = new Set<string>();
+    return events.filter((e) => {
+      const k = `${e.ts}-${e.kind}-${e.case_id}`;
+      if (seen.has(k) || !on[group(e)]) return false;
+      seen.add(k);
+      return true;
+    });
+  }, [events, on]);
   const perMin = useMemo(() => {
     const now = Date.now() / 1000;
     return events.filter((e) => !e.replay && now - e.ts < 300).length / 5;
