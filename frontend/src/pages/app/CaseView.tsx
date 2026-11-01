@@ -17,6 +17,8 @@ import { BandPill, Empty, Segmented, Skeleton } from "@/components/ui/primitives
 import { downloadReport } from "@/lib/api";
 import { clock } from "@/lib/format";
 import { useApi, useLiveCase } from "@/lib/hooks";
+import { useSimple } from "@/lib/viewMode";
+import { SimpleReport } from "@/components/case/SimpleReport";
 
 type Tab = "evidence" | "tribunal" | "respond" | "verify" | "report";
 
@@ -26,6 +28,7 @@ export default function CaseView() {
   const { detail, live, error, setDetail } = useLiveCase(id);
   const [selected, setSelected] = useState<string | null>(null);
   const [witness, setWitness] = useState<string | null>(null);
+  const simple = useSimple();
 
   const cite = useCallback((eid: string) => {
     setSelected(eid);
@@ -45,17 +48,17 @@ export default function CaseView() {
         <div className="min-w-0">
           <Link to="/app/cases" className="mb-2 inline-flex items-center gap-1 text-[12px] text-muted hover:text-fg"><ArrowLeft size={12} /> Cases</Link>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="font-mono text-[12px] text-dim">{detail.id}</span>
-            {detail.verdict && <BandPill band={detail.verdict.band} withCopy />}
+            {!simple && <span className="font-mono text-[12px] text-dim">{detail.id}</span>}
+            {detail.verdict && !simple && <BandPill band={detail.verdict.band} withCopy />}
             {detail.closed && <span className="rounded-md border border-line px-1.5 py-0.5 font-mono text-[10px] text-muted">closed · {detail.outcome?.replace("_", " ")}</span>}
           </div>
           <h1 className="mt-1 max-w-4xl text-[clamp(1.3rem,2.2vw,1.75rem)] font-medium leading-tight tracking-tight">{detail.title}</h1>
           <p className="mt-1 text-[13px] text-muted">
-            Claimed sender <span className="text-fg">{detail.claimed_sender || "unknown"}</span> · via <span className="text-fg">{detail.channel}</span>
+            {simple ? "From " : "Claimed sender "}<span className="text-fg">{detail.claimed_sender || "unknown"}</span> · via <span className="text-fg">{detail.channel}</span>
             {detail.sender_contact && <> · from <span className="font-mono text-[12px] text-silver">{detail.sender_contact}</span></>} · received {clock(detail.received_at)}
           </p>
         </div>
-        {!running && (
+        {!running && !simple && (
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" icon={<Gavel size={13} />} to={`/app/tribunal/${detail.id}`}>Tribunal view</Button>
             <Button size="sm" icon={<Download size={13} />} onClick={() => downloadReport(detail.id).then(() => toast.success("Report downloaded")).catch((e) => toast.error(e.message))}>
@@ -67,6 +70,8 @@ export default function CaseView() {
 
       {running ? (
         <ProcessingView live={live} detail={detail} />
+      ) : simple ? (
+        <SimpleReport detail={detail} />
       ) : (
         <>
           <Segmented value={tab} onChange={(t) => nav(`/app/cases/${id}/${t}`)}

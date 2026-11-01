@@ -226,19 +226,44 @@ def analyse(path: Path, artifact_id: int | None = None) -> WitnessResult:
                 artifact_id=artifact_id, detail=f"AI-image detectors score the whole frames as generated ({sp:.2f}), as in "
                                                 f"text-to-video or avatar footage."))
     res.score = round(float(score), 4)
+    # The jury shows every detector that voted on this video: the face-swap models on face crops and, for generated
+    # footage, the AI-image models on whole frames. Showing only the face-swap pair made an avatar video read as "0 of
+    # 2 models say fake" beside a high score (field report: a fully generated video looked safe).
+    means: dict[str, float] = {}
+    keys: list[str] = []
     if gend:
         names = [pretrained.name(k) for k in per_model]
-        means = {pretrained.name(k): round(float(np.median(v)), 4) for k, v in per_model.items()}
-        votes = [m >= 0.5 for m in means.values()]
-        agreement = max(votes.count(True), votes.count(False)) / len(votes)
+        means.update({pretrained.name(k): round(float(np.median(v)), 4) for k, v in per_model.items()})
+        keys += list(per_model)
         res.model_version = " + ".join(names) + " (primary) + YuNet + " + res.model_version + " (supporting)"
+    if synth:
+        frame_models: dict[str, list[float]] = {}
+        for v in synth:
+            for k, p in v["models"].items():
+                frame_models.setdefault(k, []).append(p)
+        means.update({pretrained.name(k): round(float(np.mean(v)), 4) for k, v in frame_models.items()})
+        keys += list(frame_models)
     if snet:
         res.model_version += " + SyncNet v2 (lip-sync)"
-        res.details["pretrained"] = {"models": means, "meta": pretrained.meta(per_model), "score": round(pooled, 4),
+    if means:
+        votes = [means[pretrained.name(k)] >= pretrained.THRESHOLDS.get(k, 0.5) for k in keys]
+        agreement = max(votes.count(True), votes.count(False)) / len(votes)
+        res.details["pretrained"] = {"models": means, "meta": pretrained.meta(keys), "score": res.score,
+                                     "face_swap_score": round(pooled, 4) if gend else None,
                                      "own_score": round(float(np.mean(own_scores)), 4),
                                      "agreement": agreement, "agree": agreement == 1.0}
     res.confidence = round(0.4 + 0.4 * (faces_found / len(s)) + (0.1 if sync else 0) + (0.05 if gend else -0.15), 3)
     res.latency_ms = t.ms
-    res.summary = (f"Face artefact score {pooled:.2f} over {len(s)} frames ({faces_found} with a tracked face)"
-                   + (f"; lip-sync offset {sync['offset_ms']:+d} ms." if sync else "."))
+    # lead with the strongest signal, in words a non-expert can act on
+    parts = []
+    sf = (res.details.get("synthetic_frames") or {}).get("score")
+    if sf is not None and sf >= 0.75:
+        parts.append(f"The whole picture looks AI-generated ({sf:.2f})")
+    if gend:
+        parts.append(f"face-swap detectors {pooled:.2f} over {faces_found} tracked faces" if faces_found else "no face could be tracked")
+    if snet and snet.get("confidence") is not None and snet.get("mouth_motion", 1) > 0.05:
+        parts.append(f"lip-sync confidence {snet['confidence']:.1f}")
+    elif sync:
+        parts.append(f"lip-sync offset {sync['offset_ms']:+d} ms")
+    res.summary = f"Video score {res.score:.2f}: " + "; ".join(parts) + "." if parts else f"Video score {res.score:.2f}."
     return res

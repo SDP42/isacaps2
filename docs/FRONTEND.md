@@ -20,6 +20,13 @@ React Bits (via the shadcn registry). Source: `frontend/src`.
 
 ## Landing page (`components/landing`, `components/three`)
 
+**The Truth Lens** (`components/landing/TruthLens.tsx`, after the hero) stacks two identical layouts of a WhatsApp
+voice note: the surface, and MIRAGE's forensic read. A circular CSS mask that follows the pointer reveals the forensic
+layer. It drifts on its own while idle and in view, opens fully with "Reveal all", and stays still under reduced
+motion. Both layers keep identical geometry (borders, an invisible caption, fixed-width timestamps) so words line up
+through the glass.
+
+
 A single fixed `World` canvas sits behind every section: a ~26k-point particle system (density drops on mobile or
 when the performance monitor reports dropped frames) with **five morph targets**, interpolated in the vertex shader
 with per-particle delay and turbulence:
@@ -40,6 +47,22 @@ ScrollTrigger, and runs SplitText word-mask reveals on `[data-split]` headings. 
 (one RAF). The cursor is tracked through R3F's `eventSource` because the canvas sits behind the page.
 
 ## Application
+
+### Simple and Expert views
+
+`lib/viewMode.ts` holds the view (`simple` | `expert`), persisted per browser and mirrored on `<html data-view>`. The
+switch is `components/app/ViewModeToggle.tsx` in the header; the family persona starts in Simple.
+
+| | Simple | Expert |
+|---|---|---|
+| Navigation | Check something, Check a voice, Personal safety, My checks, Ask MIRAGE (`SIMPLE_NAV`) | Full grouped navigation |
+| Case report | `components/case/SimpleReport.tsx`: answer, reasons (`lib/plain.ts`), what to do, call 1930, what to say | Evidence, Tribunal, Respond, Verify, Report tabs |
+| Voice check | Verdict, transcript with tactics, the answer, what to do | Plus model jury, evidence timeline, decision matrix, hash |
+| Copilot | Answer, verdict, steps, contacts | Plus juries, formulas, tables, timelines, "how I answered" |
+| Type | `main { zoom: 1.08 }` | Dense forensic layout |
+
+Simple-mode sentences are translations of the same findings (scores, request, tactics, Trustbook flags); nothing is
+added that the expert view does not show.
 
 - **Command centre** (`pages/app/Dashboard.tsx`, `components/command/*`): one fact row per case from
   `/v1/ops/overview`, filtered on the client so every panel cross-filters every other. Posture strip (threat condition,

@@ -74,6 +74,8 @@ def categorise(action: str, tactics: set[str], text: str = "", circle: str | Non
 
 def build(category: str, severity: str, synthetic: bool | None, *, claimed: str | None = None, org: bool = False) -> dict:
     """Emergency response card. severity: CRITICAL | HIGH | MEDIUM | LOW | INCONCLUSIVE."""
+    if claimed and claimed.strip().lower() in ("unknown", "unknown sender", "n/a", "-", "none"):
+        claimed = None  # "contact Unknown on a number you already have" helps nobody
     who = claimed or "the person they claim to be"
     say = "I'll call you back on your saved number." if category != "digital_arrest" else \
         "I will verify this at my nearest police station. I'm ending this call."

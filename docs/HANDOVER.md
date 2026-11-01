@@ -192,6 +192,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Share target (phone) | `frontend/public/manifest.webmanifest`, `public/share-sw.js`, `pages/app/Share.tsx` |
 | WhatsApp Web chip | `extension/whatsapp.js`, `extension/whatsapp-hook.js` |
 | Field tests (data, detectors, end to end) | `backend/scripts/field_data.py`, `field_test.py`, `field_e2e.py`, `testing/` |
+| Simple / Expert view, plain-language report | `frontend/src/lib/viewMode.ts`, `lib/plain.ts`, `components/app/ViewModeToggle.tsx`, `components/case/SimpleReport.tsx` |
 | Copilot: intents, router, answers, UI | `backend/app/assistant/{catalog,router,engine,skills,knowledge,eval_set}.py`, `routers/assistant.py`, `scripts/train_assistant.py`, `frontend/src/components/assistant/*`, `lib/assistant.ts`, `pages/app/Assistant.tsx` |
 | Voice / face / image / text logic | `backend/app/witnesses/{voice,face,provenance,words,identity}.py` |
 | Risk fusion, policy rules | `backend/app/fusion/risk.py` |
@@ -298,5 +299,8 @@ Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [U
   and the suite reset the demo data and zeroed an audit hash. `backend/pytest.ini` now limits discovery to `tests/`.
 - **Indic text patterns:** Python's `` does not match after Indic vowel signs; use plain substrings (`INDIC_TACTICS`)
   and whole-word checks for short words ("आई" is inside "सीबीआई").
+- **Simple mode must translate, never invent:** every plain sentence in `lib/plain.ts` maps to a finding the expert
+  view shows. When adding a screen, gate expert-only panels with `useSimple()`.
+- **ASR spacing:** Whisper writes "20 ,000"; amount and payment patterns allow a space before a comma.
 - **Tests:** the test DB is shared across tests and one test breaks the audit chain on purpose; do not assert the chain
   is intact in later tests. Use `DATABASE_URL` (not `MIRAGE_DB`) to point a script at another database.

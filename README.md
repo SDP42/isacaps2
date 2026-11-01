@@ -68,6 +68,7 @@ flowchart LR
 | **The cure, not a checklist** | A live response run per scam type: exposure meter, golden-hour clock, challenge questions, pre-filled cybercrime.gov.in / 1930 / bank / Chakshu / CERT-In drafts, evidence-pack ZIP, scam-network blocklist, "who else was targeted", red-team drill. |
 | **Thinks like the attacker** | The red-team lab forges labelled scams (neural voices, SD-Turbo portraits, avatar video) and launders them through phone, WhatsApp, MP3, reverb, noise and screenshots: 41/42 voice and 15/15 image variants caught. |
 | **Where scams arrive** | Voice check, live call shield, and the MIRAGE Shield Chrome extension (right-click checks, tab-call shield, Gmail banners). |
+| **Simple for the person who got the call** | One switch turns the forensic workspace into a plain answer, everyday reasons and what to do, in large type, for a parent or grandparent. Expert mode keeps every score and model. |
 | **A copilot that never makes things up** | Ask anything, drop any file, cross-question the verdict (why, which part, how sure, what if it were real). A router trained locally (MiniLM + n-grams, 90.7% on 108 held-out twisted questions) picks the question; every number comes from MIRAGE's own detectors, benchmark and cases. |
 | **Built for India** | English, Hindi and Hinglish; UPI / IFSC / Indian amount extraction; 1930, cybercrime.gov.in, Sanchar Saathi, CERT-In. |
 

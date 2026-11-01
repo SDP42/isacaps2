@@ -47,7 +47,7 @@ TACTICS: dict[str, list[str]] = {
         r"\bwhatsapp (me|only)\b", r"\bmessage me on whatsapp\b", r"\bcan'?t (take|talk|attend) (calls?|now)\b",
         r"\bcall nahi utha sakta\b", r"\bwhatsapp pe (hi )?reply\b", r"\bthis is a friend'?s number\b",
         r"\bnew number\b", r"\bnaye number\b", r"\bphone (broke|toot gaya)\b", r"\bbaat nahi kar sakta\b",
-        r"\bstay on (this|the) (video )?call\b",
+        r"\bstay on (this|the) (video )?call\b", r"\bjoin (the|our|my) (whatsapp|telegram|vip) (group|channel)\b",
     ],
     "bypass": [
         r"\bdon'?t loop in\b", r"\bdo not loop in\b", r"\bskip (the )?approvals?\b", r"\bapprovals? (will )?slow\b",
@@ -76,7 +76,8 @@ TACTICS["fear"] += [r"\bdisconnected\b", r"\bfir\b", r"\blegal action\b", r"\bco
                     r"\bpolice station\b", r"\bclosed\b(?=.{0,30}\b(account|card)\b)"]
 TACTICS["authority"] += [r"\bcustoms\b", r"\bcrime branch\b", r"\bregulatory authority\b", r"\bincome tax department\b",
                          r"\bnarcotics\b", r"\btrai\b", r"\bsebi\b"]
-TACTICS["reward"] += [r"\bguaranteed\b", r"\b\d+% (monthly|weekly|daily) returns?\b", r"\blottery\b", r"\bjackpot\b",
+TACTICS["reward"] += [r"\b\d+ ?% ?(daily|weekly|monthly|a day|per day|returns?)\b", r"\bearn\b.{0,30}\b(daily|per day|a day|weekly|monthly)\b",
+                      r"\bguaranteed\b", r"\b\d+% (monthly|weekly|daily) returns?\b", r"\blottery\b", r"\bjackpot\b",
                       r"\bcashback\b", r"\bpre-?approved loan\b", r"\bpaisa double\b", r"\bdouble (your )?money\b",
                       r"\bearn(ing)? .{0,20}(per|a|every) (day|week|month)\b", r"\bkamai\b", r"\brefund of\b"]
 _TACTIC_RX = {k: [re.compile(p, re.I) for p in v] + [re.compile(re.escape(s)) for s in INDIC_TACTICS.get(k, [])]
@@ -96,7 +97,7 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
                       r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)",
                       r"\bgift ?cards?\b", r"\b(voucher|redeem|redemption) codes?\b", r"\bscratch (off )?(the )?codes?\b",
                       r"\b(fee|charge|deposit|gst)\b.{0,40}\b(rs\.?|₹|inr|\d{3,})", r"\b(rs\.?|₹)\s?[\d,]+.{0,30}\b(fee|charge|deposit|gst)\b",
-                      r"\binvest\b.{0,30}(rs\.?|₹|\d{4,})", r"\bremit\b", r"\bpay\b.{0,40}\binvoice\b",
+                      r"\binvest\w*\b.{0,40}(rs\.?|₹|\d|lakh|thousand|rupees)", r"\bremit\b", r"\bpay\b.{0,40}\binvoice\b",
                       "रुपये", "रुपए", "पाठव", "அனுப்ப", "ரூபாய்", "পাঠিয়ে", "পাঠান", "টাকা", "મોકલ", "રૂપિયા"]),
     ("data", 0.6, [r"\bsend (me )?(the )?(employee|customer|payroll) (data|list|records)\b", r"\bpan card\b",
                    r"\baadhaar\b.{0,30}(send|share)", r"\bshare (the )?(file|database|records)\b",
@@ -105,7 +106,10 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
     ("info", 0.3, [r"\bshare\b", r"\bupdate\b", r"\bconfirm\b"]),
 ]
 
-_AMOUNT = re.compile(r"(?:₹|rs\.?|inr)\s?([\d,]+(?:\.\d+)?)(?:\s*(lakh|lac|crore|cr|k)\b)?|([\d.]+)\s*(lakh|lac|crore|cr)\b", re.I)
+# Whisper writes "20 ,000" (field report: an avatar's "invest 20 ,000" read as no request), so a space may precede a comma
+_NUM = r"\d[\d,]*(?: ,\d{2,3})*(?:\.\d+)?"
+_AMOUNT = re.compile(rf"(?:₹|rs\.?|inr)\s?({_NUM})(?:\s*(lakh|lac|crore|cr|k)\b)?|([\d.]+)\s*(lakh|lac|crore|cr)\b|"
+                     rf"\b(?:invest|pay|send|transfer|deposit)\w*\s+(?:just |only )?({_NUM})(?![\d.,])(?!\s*(?:lakh|lac|crore|cr|k)\b)", re.I)
 ENTITY_RX = {
     "upi": re.compile(r"\b[\w.\-]{2,40}@(ok\w+|ybl|paytm|ibl|axl|upi|icici|sbi|hdfc\w*|apl|kotak)\b", re.I),
     "ifsc": re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b"),
@@ -156,10 +160,10 @@ class RequestObject:
 def parse_amount(text: str) -> int | None:
     best = None
     for m in _AMOUNT.finditer(text):
-        num = m.group(1) or m.group(3)
+        num = m.group(1) or m.group(3) or m.group(5)
         unit = (m.group(2) or m.group(4) or "").lower()
         try:
-            v = float(num.replace(",", ""))
+            v = float(num.replace(",", "").replace(" ", ""))
         except ValueError:
             continue
         v *= {"lakh": 1e5, "lac": 1e5, "crore": 1e7, "cr": 1e7, "k": 1e3}.get(unit, 1)

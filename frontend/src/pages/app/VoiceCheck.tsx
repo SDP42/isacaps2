@@ -9,6 +9,7 @@ import { SEVERITY_COLOR, WhatNow, type ResponsePlan } from "@/components/app/Wha
 import { Button } from "@/components/ui/Button";
 import { Meter, PanelHead } from "@/components/ui/primitives";
 import { post } from "@/lib/api";
+import { useSimple } from "@/lib/viewMode";
 import { cx, inr } from "@/lib/format";
 
 interface Triage {
@@ -57,6 +58,7 @@ function Highlighted({ text, spans }: { text: string; spans: { kind: string; spa
 }
 
 export default function VoiceCheck() {
+  const simple = useSimple();
   const [file, setFile] = useState<File | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [claimed, setClaimed] = useState("");
@@ -161,12 +163,13 @@ export default function VoiceCheck() {
                   </span>
                   <div className="flex-1">
                     <p className="text-[20px] font-medium" style={{ color: vColor }}>{s1.label}</p>
-                    <p className="text-[12.5px] text-muted">Synthetic-speech probability {(s1.score ?? 0).toFixed(2)} · confidence {s1.confidence.toFixed(2)}</p>
+                    <p className="text-[12.5px] text-muted">{simple ? (s1.verdict === "ai" ? "This voice was made by a computer." : s1.verdict === "human" ? "This sounds like a real person." : "We cannot tell from the voice alone.")
+                      : `Synthetic-speech probability ${(s1.score ?? 0).toFixed(2)} · confidence ${s1.confidence.toFixed(2)}`}</p>
                     <Meter value={s1.score ?? 0} color={vColor} className="mt-2" height={6} />
                   </div>
                 </div>
-                {s1.models && <ModelJury models={s1.models} meta={s1.meta} consensus={s1.score} fakeWord="synthetic" />}
-                <p className="text-[12.5px] text-muted">{s1.summary}</p>
+                {s1.models && !simple && <ModelJury models={s1.models} meta={s1.meta} consensus={s1.score} fakeWord="synthetic" />}
+                {!simple && <p className="text-[12.5px] text-muted">{s1.summary}</p>}
                 {s1.noisy && (
                   <p className="rounded-lg border border-amber/40 bg-amber/[0.06] px-3 py-2 text-[12.5px] text-amber">
                     Background noise hides synthesis artefacts and can make real voices look synthetic, so the voice result is weak evidence here. The verdict leans on what is being asked.
@@ -190,7 +193,7 @@ export default function VoiceCheck() {
                       ))}
                       {!sem.tactics.length && <span className="text-[12px] text-dim">No pressure tactics found</span>}
                     </div>
-                    <dl className="grid grid-cols-2 gap-3 font-mono text-[12px]">
+                    {!simple && <dl className="grid grid-cols-2 gap-3 font-mono text-[12px]">
                       <div><dt className="text-dim">Category</dt><dd className="text-fg">{sem.category_label}</dd></div>
                       <div><dt className="text-dim">Asks for</dt><dd className={sem.action !== "none" ? "text-crimson" : "text-mint"}>{sem.action.replace("_", " ")}</dd></div>
                       {sem.amount_inr != null && <div><dt className="text-dim">Amount</dt><dd className="text-fg">{inr(sem.amount_inr)}</dd></div>}
@@ -198,35 +201,35 @@ export default function VoiceCheck() {
                       {Object.entries(sem.entities).filter(([, v]) => v.length).map(([k, v]) => (
                         <div key={k}><dt className="text-dim">{k.toUpperCase()}</dt><dd className="truncate text-fg">{v.join(", ")}</dd></div>
                       ))}
-                    </dl>
-                    <p className="text-[12.5px] text-muted">Manipulation score {sem.score.toFixed(2)} · {sem.summary}</p>
+                    </dl>}
+                    {!simple && <p className="text-[12.5px] text-muted">Manipulation score {sem.score.toFixed(2)} · {sem.summary}</p>}
                   </>
                 )}
               </div>
             </section>
           </div>
 
-          <section className="panel">
+          {!simple && <section className="panel">
             <PanelHead title="Evidence on one clock" meta="audio, synthetic windows, words and tactics share one playhead · click or drag to seek" />
             <div className="p-4">
               <EvidenceTimeline duration={s1.duration_s} peaks={s1.waveform} windows={s1.windows} words={r.stage2.words}
                 spans={(sem?.spans ?? []).filter((x) => x.span)} src={url ?? undefined} />
             </div>
-          </section>
+          </section>}
 
           <section className="panel">
-            <PanelHead title="3 · Combined verdict" right={<span className="font-mono text-[11px]" style={{ color: SEVERITY_COLOR[r.stage3.severity] }}>{r.stage3.severity}</span>} />
+            <PanelHead title={simple ? "3 · The answer" : "3 · Combined verdict"} right={<span className="font-mono text-[11px]" style={{ color: SEVERITY_COLOR[r.stage3.severity] }}>{r.stage3.severity}</span>} />
             <div className="grid gap-5 p-5 lg:grid-cols-[1fr_1.2fr] lg:items-center">
               <div className="flex gap-3">
                 <MessageSquareWarning className="mt-1 shrink-0" style={{ color: SEVERITY_COLOR[r.stage3.severity] }} />
                 <p className="text-[15px] leading-relaxed text-fg">{r.stage3.why}</p>
               </div>
-              <VerdictMatrix synthetic={s1.score} verdict={r.stage1.verdict} manipulation={sem?.score ?? 0} sensitive={r.stage3.sensitive} history={history} />
+              {!simple && <VerdictMatrix synthetic={s1.score} verdict={r.stage1.verdict} manipulation={sem?.score ?? 0} sensitive={r.stage3.sensitive} history={history} />}
             </div>
           </section>
 
           <WhatNow plan={r.response} />
-          <p className="font-mono text-[10.5px] text-dim">sha256 {r.sha256}</p>
+          {!simple && <p className="font-mono text-[10.5px] text-dim">sha256 {r.sha256}</p>}
         </>
       )}
     </div>

@@ -1,5 +1,27 @@
 # Changelog
 
+## 1 November 2026 (midday): Simple mode, honest video verdicts, the Truth Lens
+
+- **Simple / Expert switch** in the header (like a theme toggle; the family persona starts in Simple):
+  - Simple mode shortens the navigation to five plain items and turns the forensic report into one large-type card:
+    the answer, up to four reasons in everyday words (built from the same findings), what to do, a "call 1930" button
+    and what to say.
+  - The voice check and the copilot hide model juries, formulas, timelines and traces.
+  - Expert mode is unchanged.
+- **Field report fixed: an AI avatar video read as safe.** The investment-endorsement avatar was LOW 34 although the
+  voice was AI (2 of 3 detectors) and every frame was generated. Three causes:
+  1. Whisper's "20 ,000" hid the payment request. Amounts and lures now tolerate ASR spacing.
+  2. The case engine ignored synthetic media with pressure when nothing explicit was asked. New rule
+     `synthetic_media_with_pressure` (HIGH), matching the voice check.
+  3. The face card led with the face-swap number and showed only the face-swap jury. It now lists the whole-frame AI
+     detectors too, and leads with the strongest signal.
+  - Now all three AI demo videos are HIGH (99.6 / 98.1 / 90.1) and the real one LOW (21.3), computed live per upload.
+- "Contact Unknown on a number you already have" no longer appears when the sender is unknown.
+- **Landing page: the Truth Lens.** Drag a glass lens over a WhatsApp voice note from "Papa" to see what MIRAGE
+  hears: synthetic windows, tactic phrases and the verdict. It drifts when idle, has "Reveal all", and respects
+  reduced motion.
+- Tests: 29 → 30.
+
 ## 1 November 2026 (late morning): a third voice detector
 
 - **NII MMS-300M** (multilingual pretraining on 1,400 languages) joins DF_Arena and NII-Large in the voice ensemble.

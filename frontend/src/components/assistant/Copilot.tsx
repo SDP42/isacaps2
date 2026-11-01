@@ -5,6 +5,10 @@ import { useApi } from "@/lib/hooks";
 import { audioFor, reset, send, useCopilot, type Reply, type Turn } from "@/lib/assistant";
 import { useRecorder, micError } from "@/lib/recorder";
 import { cx } from "@/lib/format";
+import { useSimple } from "@/lib/viewMode";
+
+// Simple mode keeps the answer, the verdict and what to do; model juries, formulas, tables and timelines are expert detail
+const EXPERT_BLOCKS = new Set(["jury", "formula", "table", "heatmap", "timeline", "matrix", "sources", "bars"]);
 import { BlockView, Md } from "./Blocks";
 
 interface Meta { samples: { key: string; label: string; kind: string }[]; starters: string[]; router: { accuracy: number | null; n: number | null; trained_on: number | null } }
@@ -55,12 +59,14 @@ export function Orb({ thinking = false, size = 28 }: { thinking?: boolean; size?
 
 function Answer({ r, turns, idx, onAsk, onSample, last }: { r: Reply; turns: Turn[]; idx: number; onAsk: (p: string) => void; onSample: (k: string, l: string) => void; last: boolean }) {
   const [open, setOpen] = useState(false);
+  const simple = useSimple();
   const src = audioFor(turns, idx, r);
+  const blocks = simple ? r.blocks.filter((b) => !EXPERT_BLOCKS.has(b.type)) : r.blocks;
   return (
     <div className="flex items-start gap-3">
       <Orb />
       <div className="min-w-0 flex-1 space-y-2.5">
-        {r.blocks.map((b, i) => (
+        {blocks.map((b, i) => (
           <div key={i} className="copilot-in" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
             <BlockView b={b} onAsk={onAsk} onSample={onSample} audioSrc={src} />
           </div>
@@ -71,11 +77,11 @@ function Answer({ r, turns, idx, onAsk, onSample, last }: { r: Reply; turns: Tur
             {r.did_you_mean.map((s) => <button key={s} onClick={() => onAsk(s)} className="rounded-full border border-line px-2 py-0.5 text-[11px] text-muted hover:border-violet/50 hover:text-fg">{s}</button>)}
           </div>
         )}
-        <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-1 font-mono text-[10px] text-dim hover:text-muted" aria-expanded={open}>
+        {!simple && <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-1 font-mono text-[10px] text-dim hover:text-muted" aria-expanded={open}>
           <ChevronRight size={11} className={cx("transition-transform", open && "rotate-90")} />
           how I answered · {r.intent ?? "—"} · {Math.round(r.confidence * 100)}% · {r.ms} ms
-        </button>
-        {open && (
+        </button>}
+        {open && !simple && (
           <ul className="space-y-0.5 border-l border-line pl-3 font-mono text-[10.5px] text-muted">
             <li>route: {r.method}</li>
             {r.trace.map((t) => <li key={t}>{t}</li>)}

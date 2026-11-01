@@ -2,6 +2,7 @@ import { lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider, useAuth } from "./lib/auth";
+import { useSimple } from "./lib/viewMode";
 
 const Landing = lazy(() => import("./pages/landing/Landing"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -48,7 +49,8 @@ function Protected({ children }: { children: ReactNode }) {
 
 function HomeRedirect() {
   const { persona } = useAuth();
-  return <Navigate to={persona?.role === "family" ? "/app/safety" : "/app/dashboard"} replace />;
+  const simple = useSimple();
+  return <Navigate to={persona?.role === "family" || simple ? "/app/safety" : "/app/dashboard"} replace />;
 }
 
 export default function App() {

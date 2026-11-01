@@ -145,6 +145,11 @@ def assess(results: dict[str, WitnessResult], evidence: list[Evidence]) -> Asses
     elif a >= 0.8 and s >= 0.6:
         band, rule = "HIGH", "synthetic_media_with_sensitive_ask"
         risk = max(risk, 80)
+    elif a >= 0.8 and len(tactics) >= 2 and m >= 0.7:
+        # field report: an AI avatar pushing "guaranteed" daily returns with a deadline was LOW because it asked for no
+        # explicit payment; a synthetic person applying pressure is the endorsement scam whatever the exact ask
+        band, rule = "HIGH", "synthetic_media_with_pressure"
+        risk = max(risk, 75)
     elif a >= 0.8 and no_text and results.get("voice") and results["voice"].status == "ok":
         # field test: a Tamil OTP call in a cloned voice was rated LOW because its words were never transcribed
         band, rule = "MEDIUM", "synthetic_speech_unread"
@@ -191,6 +196,7 @@ RULE_TEXT = {
     "sensitive_action_unverified": "A money or access request is combined with secrecy, a bypassed control or an unverified sender.",
     "synthetic_media_with_sensitive_ask": "Likely synthetic media is being used to push a sensitive request.",
     "synthetic_no_fraud_indicators": "The media looks synthetic but asks for nothing and shows no pressure tactics.",
+    "synthetic_media_with_pressure": "The media looks machine-generated and applies two or more pressure tactics.",
     "synthetic_speech_unread": "The voice looks machine-generated and its words could not be read, so nothing shows it is harmless.",
     "new_beneficiary_large_amount": "A large payment to a never-seen beneficiary is at least medium risk by policy.",
     "insufficient_evidence": "There is not enough reliable evidence. Add the message text or the sender's number.",

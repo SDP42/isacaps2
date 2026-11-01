@@ -10,7 +10,9 @@ import { useApi } from "@/lib/hooks";
 import ClickSpark from "@/components/reactbits/ClickSpark";
 import { Copilot, Orb } from "@/components/assistant/Copilot";
 import { CommandPalette } from "./CommandPalette";
-import { NAV } from "./nav";
+import { NAV, SIMPLE_NAV } from "./nav";
+import { ViewModeToggle } from "./ViewModeToggle";
+import { defaultViewFor, useSimple } from "@/lib/viewMode";
 import { PresenterBar, setDemoStep, useDemoStep } from "./Presenter";
 
 function LiveIndicator() {
@@ -30,9 +32,10 @@ function LiveIndicator() {
 
 function SideNav({ onNavigate }: { onNavigate?: () => void }) {
   const { persona } = useAuth();
+  const simple = useSimple();
   return (
     <nav className="flex flex-col gap-4">
-      {NAV.map((g) => {
+      {(simple ? SIMPLE_NAV : NAV).map((g) => {
         const items = g.items.filter((i) => !i.roles || i.roles.includes(persona?.role ?? ""));
         if (!items.length) return null;
         return (
@@ -72,6 +75,8 @@ export default function AppShell() {
   const loc = useLocation();
   const nav = useNavigate();
   const demo = useDemoStep();
+  const simple = useSimple();
+  useEffect(() => defaultViewFor(persona?.role), [persona?.role]);
 
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -126,6 +131,7 @@ export default function AppShell() {
                 <Logo />
                 <button onClick={() => setDrawer(false)} aria-label="Close navigation"><X size={18} /></button>
               </div>
+              <ViewModeToggle className="mb-5 ml-3" />
               <SideNav onNavigate={() => setDrawer(false)} />
             </motion.aside>
           </motion.div>
@@ -143,12 +149,13 @@ export default function AppShell() {
             <span className="hidden gap-1 sm:flex"><Kbd>⌘</Kbd><Kbd>K</Kbd></span>
           </button>
           <div className="ml-auto flex items-center gap-3">
-            <button onClick={() => setDemoStep(demo == null ? 0 : null)}
+            <ViewModeToggle className="hidden sm:inline-flex" />
+            {!simple && <button onClick={() => setDemoStep(demo == null ? 0 : null)}
               className={cx("hidden items-center gap-2 rounded-full border px-3 py-1 text-[12px] transition-colors md:inline-flex",
                 demo != null ? "border-cyan/50 bg-cyan/10 text-cyan" : "border-line text-muted hover:text-fg")}>
               <Presentation size={13} /> {demo != null ? "Presenting" : "Present"}
-            </button>
-            <LiveIndicator />
+            </button>}
+            {!simple && <LiveIndicator />}
             <span className="grid size-8 place-items-center rounded-lg bg-ink-3 text-[12px] text-cyan lg:hidden">{initials}</span>
           </div>
         </header>

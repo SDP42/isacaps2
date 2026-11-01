@@ -59,3 +59,22 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
 ];
+
+/** Simple mode: only what a person checking a call or message needs, in plain words. */
+export const SIMPLE_NAV: { group: string; items: NavItem[] }[] = [
+  {
+    group: "Check",
+    items: [
+      { to: "/app/investigate", label: "Check something", icon: ScanSearch },
+      { to: "/app/voice", label: "Check a voice", icon: AudioLines },
+      { to: "/app/safety", label: "Personal safety", icon: ShieldCheck },
+    ],
+  },
+  {
+    group: "Help",
+    items: [
+      { to: "/app/cases", label: "My checks", icon: Waypoints },
+      { to: "/app/copilot", label: "Ask MIRAGE", icon: Sparkles },
+    ],
+  },
+];

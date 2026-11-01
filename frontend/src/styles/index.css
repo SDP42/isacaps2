@@ -242,3 +242,7 @@ button:not(:disabled):active { transform: translateY(1px); }
 @keyframes copilot-in { from { opacity: 0; transform: translateY(6px); } }
 .motion-ok .copilot-in { animation: copilot-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) { .motion-ok .copilot-in { animation: none; } }
+
+/* Simple mode: larger, calmer reading for the person who received the call (Expert keeps the dense forensic layout) */
+[data-view="simple"] main { zoom: 1.08; }
+[data-view="simple"] .label { letter-spacing: 0.08em; }

@@ -339,3 +339,12 @@ def test_assistant_conversation_is_grounded(client, token):
     # an action with side effects is never run on a guess
     vague = client.post("/v1/assistant/chat", data={"message": "maybe something with a scenario thing", "session_id": sid}, headers=h).json()
     assert vague["intent"] != "run_scenario" or "Did you want" in vague["blocks"][0]["text"]
+
+
+def test_asr_amounts_and_avatar_lure_are_read():
+    # field report: "Invest just 20 ,000" (Whisper's spacing) read as no request, so an AI avatar's pitch was LOW
+    t = "I personally use this trading platform. Invest just 20 ,000 today and earn 4 % daily guaranteed. join the WhatsApp group now."
+    assert words.requested_action(t)[0] == "payment"
+    assert words.parse_amount(t) == 20000
+    assert {"reward", "channel_switch"} <= {s[0] for s in words.tactic_spans(t)}
+    assert words.parse_amount("send 2 lakh") == 200000 and words.parse_amount("pay 3.2 crore") == 32000000

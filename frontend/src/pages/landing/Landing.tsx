@@ -5,6 +5,7 @@ import { Nav } from "@/components/landing/Nav";
 import { Protection } from "@/components/landing/Protection";
 import { Risk } from "@/components/landing/Risk";
 import { Tribunal } from "@/components/landing/Tribunal";
+import { TruthLens } from "@/components/landing/TruthLens";
 import { useSmoothScroll } from "@/components/landing/useSmoothScroll";
 import { Witnesses } from "@/components/landing/Witnesses";
 import { useWorldDirector } from "@/components/landing/director";
@@ -21,6 +22,7 @@ export default function Landing() {
       <Nav />
       <main className="relative z-10">
         <HeroStory />
+        <TruthLens />
         <Evidence />
         <Witnesses />
         <Tribunal />
