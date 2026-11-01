@@ -1,83 +1,90 @@
 {
  "router": {
-  "accuracy": 0.907,
+  "accuracy": 0.898,
   "n": 108,
   "misses": [
    {
     "q": "ok but what exactly convinced the system this isn't my real manager",
     "want": "why",
     "got": "what_if",
-    "p": 0.315,
+    "p": 0.311,
     "method": "router"
    },
    {
     "q": "can you pinpoint the moment it turns synthetic",
     "want": "where",
     "got": "why",
-    "p": 0.459,
-    "method": "router"
-   },
-   {
-    "q": "is it fake from start to end",
-    "want": "where",
-    "got": "summary",
-    "p": 0.215,
+    "p": 0.46,
     "method": "router"
    },
    {
     "q": "galat bhi ho sakta hai kya",
     "want": "confidence",
     "got": "why",
-    "p": 0.23,
+    "p": 0.233,
     "method": "router"
    },
    {
     "q": "which of your AIs raised the alarm",
     "want": "models",
     "got": "redteam_results",
-    "p": 0.394,
+    "p": 0.415,
     "method": "router"
    },
    {
-    "q": "which channel hurts your detection the most",
-    "want": "redteam_results",
-    "got": "stats",
-    "p": 0.524,
+    "q": "simulate a digital arrest attack for me",
+    "want": "run_scenario",
+    "got": "simulate",
+    "p": 0.613,
+    "method": "router"
+   },
+   {
+    "q": "open the page for the browser shield",
+    "want": "navigate",
+    "got": "extension",
+    "p": 0.515,
     "method": "router"
    },
    {
     "q": "why does asking for money change the risk",
     "want": "risk_engine",
     "got": "what_if",
-    "p": 0.282,
+    "p": 0.273,
     "method": "router"
    },
    {
     "q": "does the whatsapp compression ruin the detection",
     "want": "noise",
     "got": "redteam_results",
-    "p": 0.535,
+    "p": 0.466,
     "method": "router"
    },
    {
     "q": "what's it written in",
     "want": "stack",
     "got": "transcript",
-    "p": 0.679,
+    "p": 0.709,
+    "method": "router"
+   },
+   {
+    "q": "why is yours better than what exists",
+    "want": "compare_tools",
+    "got": "why",
+    "p": 0.379,
     "method": "router"
    },
    {
     "q": "is this just chatgpt with a skin",
     "want": "assistant_how",
     "got": "face_how",
-    "p": 0.602,
+    "p": 0.572,
     "method": "router"
    }
   ],
-  "ms_per_question": 19.9
+  "ms_per_question": 16.3
  },
- "trained_on": 2810,
- "intents": 51,
+ "trained_on": 2850,
+ "intents": 52,
  "features": "MiniLM + char/word n-grams",
  "by_intent": {
   "why": 6,

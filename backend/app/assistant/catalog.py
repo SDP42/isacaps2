@@ -114,6 +114,12 @@ INTENTS: dict[str, dict] = {
     ]},
 
     # ---- actions -------------------------------------------------------------------------------------------------
+    "simulate": {"desc": "Simulate a described situation: build the attack as a real case and show how MIRAGE responds.", "examples": [
+        "imagine the police call me saying my dad is arrested", "simulate a scam call from my boss", "create a scenario where my son asks for money",
+        "what if someone calls pretending to be from my bank", "suppose I get a video call from a CBI officer", "dummy scenario fake lottery call",
+        "test this situation: a recruiter wants a fee", "let's say my mom sends a voice note asking for money", "simulate it",
+        "run a mock attack on me", "make up a scam and test it", "role play a digital arrest call",
+    ]},
     "analyse_text": {"desc": "The user pasted a message, email or SMS and wants it checked for a scam.", "examples": [
         "legit or not: you have won a car", "genuine? your sim will be blocked", "is this mail real", "check this whatsapp forward",
         "is this a scam: your account will be blocked today, share OTP", "check this message",

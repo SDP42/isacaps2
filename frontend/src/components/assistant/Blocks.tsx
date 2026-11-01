@@ -5,6 +5,7 @@ import { ModelJury } from "@/components/app/ModelJury";
 import { EvidenceTimeline } from "@/components/kit/EvidenceTimeline";
 import type { Block, Tone } from "@/lib/assistant";
 import { cx } from "@/lib/format";
+import { artifactUrl } from "@/lib/api";
 
 const TONE: Record<string, string> = {
   crimson: "var(--color-crimson)", amber: "var(--color-amber)", mint: "var(--color-mint)", cyan: "var(--color-cyan)",
@@ -374,6 +375,58 @@ function Actions({ b, onAsk }: { b: Block; onAsk: (p: string) => void }) {
   );
 }
 
+/** The attack the copilot built from a described situation: who, how, what was said, and the evidence it produced. */
+function Scenario({ b }: { b: Block }) {
+  const nav = useNavigate();
+  const audio = (b.media ?? []).find((m: any) => m.kind === "audio");
+  const video = (b.media ?? []).find((m: any) => m.kind === "video");
+  const image = (b.media ?? []).find((m: any) => m.kind === "image");
+  return (
+    <div className="overflow-hidden rounded-xl border border-violet/35 bg-violet/[0.05]">
+      <div className="flex flex-wrap items-center gap-2 border-b border-violet/20 px-4 py-2.5">
+        <span className="font-mono text-[10px] tracking-[0.14em] text-violet">SCENARIO BUILT · SYNTHETIC</span>
+        <span className="ml-auto font-mono text-[10.5px] text-dim">{b.case_id}</span>
+      </div>
+      <div className="space-y-3 p-4">
+        <p className="text-[14px] font-medium text-fg">{b.title}</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {[["Channel", b.channel], ["Claims to be", b.claimed], ["From", b.contact],
+            ["Asks for", b.ask === "none" ? "nothing" : b.ask === "payment" && b.amount ? `₹${Number(b.amount).toLocaleString("en-IN")}` : String(b.ask).replace("_", " ")]].map(([k, v]) => (
+            <div key={k} className="min-w-0 rounded-lg border border-line bg-ink-1/60 px-2.5 py-1.5">
+              <p className="text-[10px] text-dim">{k}</p><p className="truncate text-[12.5px] text-silver" title={v}>{v}</p>
+            </div>
+          ))}
+        </div>
+        <blockquote className="border-l-2 border-violet/50 pl-3 text-[13px] italic leading-relaxed text-silver">“{b.script}”</blockquote>
+        {video && <video controls preload="metadata" className="max-h-56 rounded-lg" src={artifactUrl(b.case_id, video.id)} />}
+        {!video && image && <img alt="" className="max-h-48 rounded-lg" src={artifactUrl(b.case_id, image.id)} />}
+        {audio && <audio controls preload="metadata" className="w-full" src={artifactUrl(b.case_id, audio.id)} />}
+        <p className="font-mono text-[10.5px] text-dim">
+          {b.engine ? `voice: ${b.engine}` : "written channel: no audio"}{b.laundering ? ` · laundered: ${b.laundering}` : ""}{b.image_engine ? ` · face: ${b.image_engine}` : ""}
+        </p>
+        {b.assumptions?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {b.assumptions.map((a: string) => <span key={a} className="rounded-full border border-amber/35 px-2 py-0.5 text-[11px] text-amber">{a}</span>)}
+          </div>
+        )}
+        <button onClick={() => nav(`/app/cases/${b.case_id}`)} className="text-[12px] text-violet hover:underline">Open this case →</button>
+      </div>
+    </div>
+  );
+}
+
+function Versus({ b }: { b: Block }) {
+  const col = (title: string, items: string[], tone: string) => (
+    <div className="rounded-xl border p-3" style={{ borderColor: `color-mix(in srgb, ${tone} 30%, transparent)` }}>
+      <p className="mb-2 text-[12px] font-semibold" style={{ color: tone }}>{title}</p>
+      <ol className="space-y-1.5">{items.map((s, i) => (
+        <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-silver"><span className="font-mono text-[11px]" style={{ color: tone }}>{i + 1}</span>{s}</li>
+      ))}</ol>
+    </div>
+  );
+  return <div className="grid gap-2 sm:grid-cols-2">{col("Without MIRAGE", b.without, "var(--color-crimson)")}{col("With MIRAGE", b.with, "var(--color-mint)")}</div>;
+}
+
 export function BlockView({ b, onAsk, onSample, audioSrc }: { b: Block; onAsk: (p: string) => void; onSample: (k: string, l: string) => void; audioSrc?: string }) {
   switch (b.type) {
     case "lead": return <Md text={b.text} className="text-[14px] leading-relaxed text-silver" />;
@@ -410,6 +463,8 @@ export function BlockView({ b, onAsk, onSample, audioSrc }: { b: Block; onAsk: (
           {b.items.map((s: any, i: number) => <span key={i} className="etag"><FileText size={10} />{s.doc.replace("docs/", "")} · {s.heading}</span>)}
         </div>
       );
+    case "scenario": return <Scenario b={b} />;
+    case "versus": return <Versus b={b} />;
     default: return null;
   }
 }

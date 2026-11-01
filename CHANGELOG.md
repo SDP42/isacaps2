@@ -1,5 +1,21 @@
 # Changelog
 
+## 1 November 2026 (afternoon): copilot scenario simulator
+
+- Describe a situation in the copilot ("imagine the police call me saying they arrested my dad…") and MIRAGE builds
+  it for real:
+  - parses who, channel, ask and language, with its assumptions shown;
+  - writes the attacker's script;
+  - fabricates the evidence: a cloned voice over a phone line or WhatsApp, an AI avatar video, or the message;
+  - runs a genuine case through the full pipeline.
+- The answer shows the attack, the verdict, "without vs with MIRAGE" and links to the cure. Follow-ups such as "make
+  it a video call", "try it in Hindi" and "what if it was really them?" keep the story. Eight scenario types were
+  tested end to end (`docs/COPILOT.md`).
+- **Categories now read call transcripts** (`response.case_text`), not only typed messages, and are speaker-aware:
+  police talking about your father is a digital arrest; your son speaking is a family emergency. Digital-arrest advice
+  never says to call back the "officer".
+- Tests 30 → 31; text benchmarks unchanged (tuned 96.7 % HIGH, held-out 90 %).
+
 ## 1 November 2026 (afternoon): technical demonstration page
 
 - `/technical_demonstration`: scroll through a real case as it moves through MIRAGE. A laptop shows the user's

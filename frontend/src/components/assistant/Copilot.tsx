@@ -14,6 +14,8 @@ import { BlockView, Md } from "./Blocks";
 interface Meta { samples: { key: string; label: string; kind: string }[]; starters: string[]; router: { accuracy: number | null; n: number | null; trained_on: number | null } }
 
 const PENDING: Record<string, string[]> = {
+  forge: ["Reading the situation you described", "Writing the attacker's script", "Synthesising the evidence (cloned voice, video or message)",
+          "Opening a real case and running the five witnesses", "Risk engine, Tribunal and the response plan"],
   route: ["Understanding the question", "Reading MIRAGE's own data", "Composing the answer"],
   media: ["Checking the file type and hashing it", "Running the detectors", "Transcribing and reading the request", "Weighing who is speaking against what they want"],
   scenario: ["Opening a case with the scenario's evidence", "Five witnesses examining it", "Risk engine and Tribunal", "Building the response plan"],

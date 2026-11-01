@@ -29,6 +29,45 @@ separates understanding the question from producing the facts:
   (`num_gpu: 0`), because the detectors already use about 4.9 GB of the 8 GB GPU and Llama 3.1 needs another 5.1 GB.
   It may only pick one of the router's top five intents, never write text.
 
+## Scenario simulator
+
+Describe a situation instead of uploading evidence ("Imagine the police call me saying they arrested my dad and want
+₹50,000 bail") and the copilot runs it for real (`app/assistant/forge.py`):
+
+1. **Parse** the description deterministically: who is impersonated (police, bank, IT, government, boss / CEO,
+   vendor, investment, lottery, job, courier, support, a relative), the channel (phone, voice note, video call,
+   WhatsApp, SMS, email), what is asked (payment and amount, OTP, remote access, data, nothing), and the language
+   (English, Hinglish, Hindi). Every assumption the description left open is shown back as a chip.
+2. **Write the attacker's script** for that scam type, with the levers real scripts use (authority, urgency, secrecy,
+   a payment route).
+3. **Fabricate the evidence**:
+   - calls: a neural-TTS "clone", laundered through an 8 kHz phone line or WhatsApp Opus;
+   - video calls: an SD-Turbo avatar over the voice (stamped synthetic);
+   - written channels: the message or email itself;
+   - "what if it was really them?": a real human recording carries the request.
+4. **Open a real case** and run the full pipeline (custody, five witnesses, risk engine, Tribunal), so the verdict is
+   computed, not scripted.
+5. **Answer** with a storyboard of the attack (script, playable media, assumptions), MIRAGE's verdict, a "without
+   MIRAGE / with MIRAGE" comparison, and links to the case, the Cure Console and the Tribunal.
+
+Follow-ups change one thing and keep the story: "make it a video call", "try it in Hindi", "what if it was really
+them?", "make it a WhatsApp message".
+
+**Tested end to end:**
+
+| Scenario | Verdict |
+|---|---|
+| Police say they arrested my dad, want ₹50,000 bail | CRITICAL 97 · digital arrest |
+| My son calls crying after an accident | CRITICAL 100 · family emergency |
+| WhatsApp from my bank: KYC expired, OTP needed | HIGH 85 · credential theft |
+| CEO on a video call: transfer ₹20 lakh to a new vendor | CRITICAL 99 · executive impersonation |
+| Recruiter wants a ₹4,999 registration fee | CRITICAL 96 · job lure |
+| Manager's voice note about the townhall | LOW 30 · synthetic, harmless |
+| Customs parcel with drugs, arrest threatened | CRITICAL 98 · digital arrest |
+| Hindi call from "the bank" asking for the ATM PIN | CRITICAL 85 · credential theft |
+
+Calls take 15–30 s; a video call takes up to about 70 s, because the avatar is generated first.
+
 ## Accuracy
 
 `python scripts/train_assistant.py` trains the router and scores it on 108 held-out questions in

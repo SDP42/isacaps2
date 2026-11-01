@@ -318,7 +318,7 @@ def case_response(case_id: str, user: Principal = Depends(current_principal), db
     v = c.verdict
     tactics = set(next((f.details_json.get("tactics", []) for f in c.findings if f.witness == "words"), []))
     synthetic = "LIKELY_SYNTHETIC" in (v.tags or [])
-    category = resp.categorise(v.requested_action, tactics, c.message_text or "")
+    category = resp.categorise(v.requested_action, tactics, resp.case_text(c))
     if synthetic and category == "benign":
         category = "synthetic_benign"
     sensitive = v.requested_action in ("payment", "credential", "remote_access")

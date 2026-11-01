@@ -109,7 +109,7 @@ def context(db: Session, c: Case, role: str) -> dict:
     tactics = set(d.get("tactics", []))
     synthetic = bool(v and "LIKELY_SYNTHETIC" in (v.tags or []))
     action = v.requested_action if v else "none"
-    category = resp.categorise(action, tactics, c.message_text or "")
+    category = resp.categorise(action, tactics, resp.case_text(c))
     if category == "benign" and synthetic:
         category = "synthetic_benign"
     if category == "payment_fraud" and c.channel == "email":

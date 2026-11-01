@@ -41,9 +41,10 @@ def meta(user: Principal = Depends(current_principal)) -> dict:
     return {"samples": skills.sample_menu()["items"], "router": {"accuracy": (ev.get("router") or {}).get("accuracy"),
                                                                   "n": (ev.get("router") or {}).get("n"), "trained_on": ev.get("trained_on"),
                                                                   "features": ev.get("features")},
-            "starters": ["Show me how you catch a voice clone", "What is MIRAGE and how does it work?", "Run scenario G (digital arrest)",
-                         "How accurate is it, honestly?", "is this a scam: 'Dear customer, your KYC has expired. Share the OTP to avoid account block.'",
-                         "I already paid a scammer, what now?"]}
+            "starters": ["Imagine the police call me saying they arrested my dad and want ₹50,000 bail",
+                         "Simulate a WhatsApp voice note from my boss asking me to wire 5 lakh to a new vendor",
+                         "Show me how you catch a voice clone", "What is MIRAGE and how does it work?",
+                         "How accurate is it, honestly?", "I already paid a scammer, what now?"]}
 
 
 @router.get("/sample/{key}")

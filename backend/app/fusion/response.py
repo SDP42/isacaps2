@@ -47,6 +47,14 @@ LURE = ("lottery", "lucky draw", "you have won", "you won", "u won", "prize", "g
         "लॉटरी", "इनाम", "जीती", "बक्षीस", "பரிசு", "পুরস্কার", "ઇનામ")
 
 
+def case_text(c) -> str:
+    """Everything readable in a case: the typed message plus what the words witness read from transcripts and OCR.
+    A phone call has no typed message, so categorising on the message alone called a 'police arrested your father'
+    call payment fraud."""
+    read = " ".join(f.details_json.get("text", "") for f in c.findings if f.witness == "words")
+    return f"{c.message_text or ''} {read}".strip()
+
+
 def categorise(action: str, tactics: set[str], text: str = "", circle: str | None = None) -> str:
     t = text.lower()
     # whole words: "आई" (mother) is also the end of "सीबीआई" (CBI)
@@ -55,7 +63,9 @@ def categorise(action: str, tactics: set[str], text: str = "", circle: str | Non
     lure = any(k in t for k in LURE) or "reward" in tactics
     distress = any(k in t for k in ("accident", "hospital", "bail", "trouble", "musibat", "मुसीबत", "अपघात", "दुर्घटना",
                                     "விபத்து", "দুর্ঘটনা", "lost my phone", "new no", "new number"))
-    if family and (action == "payment" or (distress and action == "none" and "fear" in tactics)):
+    about_relative = re.search(r"\byour (father|mother|son|daughter|dad|mom|brother|sister|husband|wife|grandson|granddaughter)\b", t)
+    agency = AGENCY_EN.search(t) or any(k in t for k in AGENCY)
+    if family and not (about_relative and agency) and (action == "payment" or (distress and action == "none" and "fear" in tactics)):
         return "family_emergency"  # "Mom, I'm at the police station" is a family emergency, not a digital arrest
     if (AGENCY_EN.search(t) or any(k in t for k in AGENCY)) and ({"fear", "authority"} & tactics):
         return "digital_arrest"
@@ -77,6 +87,8 @@ def build(category: str, severity: str, synthetic: bool | None, *, claimed: str 
     if claimed and claimed.strip().lower() in ("unknown", "unknown sender", "n/a", "-", "none"):
         claimed = None  # "contact Unknown on a number you already have" helps nobody
     who = claimed or "the person they claim to be"
+    if category == "digital_arrest":
+        who = "your family directly, or your local police station"  # never the 'officer' who called
     say = "I'll call you back on your saved number." if category != "digital_arrest" else \
         "I will verify this at my nearest police station. I'm ending this call."
     now: list[str] = []

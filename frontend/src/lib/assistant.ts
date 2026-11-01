@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { post } from "./api";
+import { getToken, post } from "./api";
 
 export type Tone = "crimson" | "amber" | "mint" | "cyan" | "violet" | "muted";
 export type Block = { type: string; [k: string]: any };
@@ -24,7 +24,7 @@ export interface Turn {
   text?: string;
   file?: { name: string; kind: string; url: string };
   reply?: Reply;
-  pending?: "route" | "media" | "scenario";
+  pending?: "route" | "media" | "scenario" | "forge";
   error?: string;
 }
 
@@ -73,7 +73,9 @@ export async function send(opts: { text?: string; file?: File; sample?: string; 
   const user: Turn = { id: uid(), role: "user", text: opts.label ?? opts.text,
     file: opts.file ? { name: opts.file.name, kind: fileKind(opts.file), url: URL.createObjectURL(opts.file) } : undefined };
   const scenario = /\b(run|launch|start|simulate)\b.*\b(scenario|case|investigation|attack)\b/i.test(opts.text ?? "");
-  const pend: Turn = { id: uid(), role: "assistant", pending: opts.file || opts.sample ? "media" : scenario ? "scenario" : "route" };
+  const forge = /\b(imagine|suppose|simulate|scenario|dummy|pretend\w*|let'?s say|what if (someone|a|my|the|i)|i (get|got|receive|received)|someone (calls|called|messages|texts|emails|sends))\b/i.test(opts.text ?? "")
+    || (state.turns.some((t) => t.reply?.intent === "simulate") && /^\s*(make it|try it|same|what if (it|the caller|he|she) (was|is))/i.test(opts.text ?? ""));
+  const pend: Turn = { id: uid(), role: "assistant", pending: opts.file || opts.sample ? "media" : forge ? "forge" : scenario ? "scenario" : "route" };
   set({ turns: [...state.turns, user, pend], busy: true });
   const fd = new FormData();
   fd.set("message", opts.text ?? "");
@@ -104,5 +106,8 @@ export function audioFor(turns: Turn[], idx: number, reply: Reply): string | und
     if (t.role === "user" && (t.file || t.reply)) break;
   }
   const m = reply.blocks.find((b) => b.type === "timeline")?.src;
-  return m ? `${import.meta.env.VITE_API_URL ?? ""}${m}` : undefined;
+  if (!m) return undefined;
+  const base = `${import.meta.env.VITE_API_URL ?? ""}${m}`;
+  // case artifacts (a simulated call) need the session token; built-in samples are public
+  return m.startsWith("/v1/cases/") ? `${base}?token=${encodeURIComponent(getToken() ?? "")}` : base;
 }

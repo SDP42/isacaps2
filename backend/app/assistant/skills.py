@@ -686,7 +686,7 @@ def case_subject(db, case_id: str) -> dict | None:
     v = c.verdict
     tactics = set(next((f.details_json.get("tactics", []) for f in c.findings if f.witness == "words"), []))
     synthetic = "LIKELY_SYNTHETIC" in (v.tags or [])
-    category = resp.categorise(v.requested_action, tactics, c.message_text or "")
+    category = resp.categorise(v.requested_action, tactics, resp.case_text(c))
     if synthetic and category == "benign":
         category = "synthetic_benign"
     sensitive = v.requested_action in ("payment", "credential", "remote_access")
@@ -796,6 +796,71 @@ def s_redteam_results(ctx) -> dict:
             blocks.append(bullets("What it found", [fix(str(i.get("text", i)) if isinstance(i, dict) else str(i)) for i in c["insights"]][:4], "amber"))
     blocks.append(actions(go("Open the red-team lab", "/app/redteam")))
     return {"blocks": blocks, "suggestions": ["How do you handle noisy audio?", "What are the limitations?", "How do attackers evade detectors?"]}
+
+
+# ---- scenario forge -------------------------------------------------------------------------------------------------
+
+CHANNEL_LABEL = {"phone": "Phone call", "voice_note": "WhatsApp voice note", "video": "Video call", "whatsapp": "WhatsApp message",
+                 "sms": "SMS", "email": "Email"}
+
+
+def s_simulate(ctx) -> dict:
+    """Build the described situation as a real case (attacker script, synthetic evidence, full pipeline), then explain
+    what MIRAGE did and what would have happened without it."""
+    import tempfile
+    from datetime import datetime, timezone
+
+    from .. import pipeline
+    from ..routers.cases import create_case
+    from . import forge
+
+    base = ctx.session.get("forge")
+    spec = forge.parse(ctx.text, forge.Spec(**base) if base and forge.is_modifier(ctx.text) else None)
+    with tempfile.TemporaryDirectory() as d:
+        files, message, info = forge.build(spec, Path(d))
+    if spec.real_voice:
+        message = info["script"]  # a real recording cannot say the scam words, so the request travels as the message
+    case = create_case(ctx.db, ctx.user, files, message, forge.claimed(spec), forge.CHANNEL[spec.channel],
+                       forge.sender_contact(spec), datetime.now(timezone.utc), title=f"Simulated · {spec.title}", scenario="forge")
+    cid = case.id
+    pipeline.submit(cid, pace=0.0)
+    t0 = time.time()
+    while time.time() - t0 < 180:
+        ctx.db.expire_all()
+        if ctx.db.get(Case, cid).status in ("complete", "failed"):
+            break
+        time.sleep(0.8)
+    ctx.session["forge"] = spec.as_dict()
+    sub = case_subject(ctx.db, cid)
+    media = [{"id": a["id"], "kind": a["kind"], "filename": a["filename"]} for a in (sub or {}).get("data", {}).get("artifacts", [])]
+    scenario = {"type": "scenario", "title": spec.title, "channel": CHANNEL_LABEL[spec.channel], "claimed": forge.claimed(spec),
+                "contact": forge.sender_contact(spec), "ask": spec.ask, "amount": spec.amount, "language": spec.language,
+                "assumptions": spec.assumptions, "script": info["script"], "engine": info["engine"], "laundering": info["laundering"],
+                "image_engine": info["image_engine"], "case_id": cid, "media": media, "real_voice": spec.real_voice}
+    if not sub:
+        return {"blocks": [lead(f"I built the scenario as case {cid}, but the investigation is still running."), scenario,
+                           actions(go("Watch it live", f"/app/cases/{cid}"))], "suggestions": ["Open the latest case"]}
+    ctx.set_subject(sub)
+    v = view(sub)
+    audio = next((m for m in media if m["kind"] == "audio"), None)
+    if audio:
+        v["src"] = f"/v1/cases/{cid}/artifacts/{audio['id']}"
+    r = v["response"]
+    took = time.time() - t0
+    intro = (f"I turned your description into a real attack and ran it through MIRAGE as case **{cid}** ({took:.0f} s, full "
+             f"pipeline: custody, five witnesses, risk engine, Tribunal). **Verdict: {v['band']} {v['risk']:.0f}/100.** {v['summary']}")
+    blocks = [lead(intro), scenario]
+    blocks += [b for b in card(v, "") if b.get("type") not in ("lead", "actions")]
+    blocks.append({"type": "versus", "without": forge.ATTACK.get(spec.category, forge.ATTACK["payment_fraud"]),
+                   "with": [f"Flagged {v['band']} ({v['risk']:.0f}/100): {r['category_label']}",
+                            *(r["do_now"][:2] if v["band"] != "LOW" else ["Nothing to do: it asks for nothing risky"]),
+                            "Report path ready: 1930, cybercrime.gov.in, the bank" if r.get("report_to") else "No report needed"]})
+    blocks.append(actions(go("Open the case", f"/app/cases/{cid}"), go("Run the cure", f"/app/cases/{cid}/respond"),
+                          go("See the Tribunal", f"/app/tribunal/{cid}")))
+    sug = ["Why?", "What should I do now?"]
+    sug += [x for x in ("Make it a video call", "Try it in Hindi", "What if it was really them?", "Make it a WhatsApp message")
+            if not (x.endswith("video call") and spec.channel == "video") and not (x.endswith("Hindi") and spec.language == "hi")]
+    return {"blocks": blocks, "suggestions": sug[:5]}
 
 
 # ---- knowledge ---------------------------------------------------------------------------------------------------
@@ -1190,6 +1255,7 @@ def k_docs(ctx, alternatives: list[dict]) -> dict:
 
 
 INTENT_PROMPTS = {
+    "simulate": "Simulate a scenario",
     "why": "Why?", "where": "Which part is fake?", "confidence": "How sure are you?", "models": "Which models checked it?",
     "transcript": "What did they say?", "tactics": "What tricks are they using?", "what_now": "What should I do now?",
     "what_if": "What if it was a real person?", "score_math": "How was the score calculated?", "report": "How do I report this?",
@@ -1209,7 +1275,7 @@ INTENT_PROMPTS = {
 SUBJECT_SKILLS = {"why": s_why, "where": s_where, "confidence": s_confidence, "models": s_models, "transcript": s_transcript,
                   "tactics": s_tactics, "what_now": s_what_now, "what_if": s_what_if, "score_math": s_score_math, "report": s_report,
                   "summary": s_summary, "verify_callback": s_verify}
-SKILLS = {"analyse_text": s_analyse_text, "analyse_sample": s_analyse_sample, "run_scenario": s_run_scenario, "open_case": s_open_case,
+SKILLS = {"simulate": s_simulate, "analyse_text": s_analyse_text, "analyse_sample": s_analyse_sample, "run_scenario": s_run_scenario, "open_case": s_open_case,
           "stats": s_stats, "navigate": s_navigate, "redteam_results": s_redteam_results, "about": k_about, "how_overall": k_how,
           "witnesses": k_witnesses, "voice_how": k_voice, "image_how": k_image, "face_how": k_face, "text_how": k_text,
           "risk_engine": k_risk, "tribunal": k_tribunal, "cure": k_cure, "redteam_how": k_redteam, "extension": k_extension,

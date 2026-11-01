@@ -348,3 +348,18 @@ def test_asr_amounts_and_avatar_lure_are_read():
     assert words.parse_amount(t) == 20000
     assert {"reward", "channel_switch"} <= {s[0] for s in words.tactic_spans(t)}
     assert words.parse_amount("send 2 lakh") == 200000 and words.parse_amount("pay 3.2 crore") == 32000000
+
+
+def test_scenario_forge_reads_open_ended_situations():
+    from app.assistant import forge
+
+    s = forge.parse("Imagine I get a fake call from the police saying they have arrested my dad and want 50000 bail")
+    assert (s.role, s.category, s.channel, s.ask, s.amount, s.relative) == ("police", "digital_arrest", "phone", "payment", 50000, "your father")
+    v = forge.parse("make it a video call", forge.Spec(**s.as_dict()))
+    assert (v.role, v.channel, v.relative) == ("police", "video", "your father")  # a follow-up keeps the story
+    assert forge.parse("suppose my son calls crying that he had an accident").category == "family_emergency"
+    assert forge.parse("simulate a whatsapp message from my bank saying my KYC expired").ask == "credential"
+    assert forge.parse("imagine a recruiter wants a 4999 fee for a work from home job").amount == 4999
+    assert forge.parse("what if my manager sends a townhall reminder voice note").ask == "none"
+    assert forge.is_scenario("imagine someone calls pretending to be my boss") and not forge.is_scenario("why is it fake?")
+    assert "arrested" in forge.script(s) and "do not disconnect" in forge.script(s).lower()

@@ -90,10 +90,18 @@ def reply(text: str, sid: str | None, user, db, *, upload: tuple[str, bytes] | N
         else:
             if not text:
                 raise HTTPException(422, "Ask a question, paste a message or attach a file.")
-            route = router.route(text, has_subject=sess["subject"] is not None)
+            from . import forge
+
+            if forge.is_scenario(text) or (sess.get("forge") and forge.is_modifier(text)):
+                # a described situation: build it and investigate it for real (forge.py)
+                route = {"intent": "simulate", "confidence": 1.0, "method": "scenario", "alternatives": [],
+                         "entities": router.entities(text)}
+            else:
+                route = router.route(text, has_subject=sess["subject"] is not None)
             ctx.ent = route["entities"]
             intent = route["intent"]
-            trace.append(f"Understood as “{INTENTS[intent]['desc']}” ({route['confidence']:.0%}, {route['method']})")
+            trace.append("Understood as a situation to simulate: built the attack and ran it as a real case" if intent == "simulate"
+                         else f"Understood as “{INTENTS[intent]['desc']}” ({route['confidence']:.0%}, {route['method']})")
             low_subject = INTENTS[intent].get("kind") == SUBJECT and sess["subject"] is not None
             if route["confidence"] < 0.3 and route["method"] == "router" and intent not in ("greet", "thanks") and not low_subject:
                 out = skills.k_docs(ctx, route["alternatives"] + [{"intent": intent}])
@@ -104,6 +112,8 @@ def reply(text: str, sid: str | None, user, db, *, upload: tuple[str, bytes] | N
                 out = {"blocks": [skills.lead(f"Did you want me to **{prompt.lower().rstrip('?')}**? I only run actions when I'm sure; tap it to go ahead.")],
                        "suggestions": [prompt] + [skills.INTENT_PROMPTS[a["intent"]] for a in route["alternatives"] if a["intent"] in skills.INTENT_PROMPTS][:3]}
                 trace.append("Not confident enough to run an action: asked first")
+            elif intent == "simulate":
+                out = skills.s_simulate(ctx)
             elif INTENTS[intent].get("kind") == SUBJECT:
                 if sess["subject"]:
                     trace.append(f"About: {sess['subject'].get('label')}")
