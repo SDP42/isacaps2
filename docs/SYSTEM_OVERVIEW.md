@@ -70,7 +70,7 @@ image, email or chat: **is it safe to act on this request, and what should I do 
 | Area | Result |
 |---|---|
 | Synthetic speech (public deepfake set) | AUC 1.00; 10/10 Windows TTS clones caught |
-| Red-team voice campaign | 40/42 laundered attacks caught; misses only under heavy street noise |
+| Red-team voice campaign | 41/42 laundered attacks caught (noise-conditional ensemble); the miss is heavy street noise |
 | AI images (Flux, DALL-E 3, SDXL, Midjourney vs real photos) | AUC 0.98, 94% accuracy; red-team image campaign 15/15 |
 | Face swaps | FaceForensics++ / Celeb-DF AUC 0.92; in-the-wild OpenForensics 0.71 (weakest) |
 | Indian SMS scams | Words witness AUC 0.94 (re-measured 1 November) |

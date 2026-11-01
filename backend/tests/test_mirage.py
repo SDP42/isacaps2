@@ -294,3 +294,21 @@ def test_c2pa_validation_detects_tampering(tmp_path):
     (tmp_path / "bad.jpg").write_bytes(bytes(raw))
     assert not c2pa_check(tmp_path / "bad.jpg")["valid"]
     assert c2pa_check(src) == {"present": False}
+
+
+def test_noisy_audio_is_judged_by_the_noise_robust_model(monkeypatch):
+    import numpy as np
+
+    from app.witnesses import pretrained
+
+    monkeypatch.setattr(pretrained, "available", lambda k: k in ("df_arena", "nii"))
+    monkeypatch.setattr(pretrained, "df_arena_fake", lambda c: 0.9)
+    monkeypatch.setattr(pretrained, "nii_fake", lambda c, key="nii": 0.1)
+    x = np.zeros(16000 * 6, dtype=np.float32)
+    clean = pretrained.audio_scores(x)
+    noisy = pretrained.audio_scores(x, noisy=True)
+    assert not clean["noise_mode"] and set(clean["windows"][0]["models"]) == {"df_arena", "nii"}
+    assert noisy["noise_mode"] and set(noisy["windows"][0]["models"]) == {"df_arena"}
+    assert noisy["windows"][0]["p"] > clean["windows"][0]["p"]
+    monkeypatch.setattr(pretrained, "available", lambda k: k == "nii")  # without DF_Arena, NII still answers
+    assert not pretrained.audio_scores(x, noisy=True)["noise_mode"]

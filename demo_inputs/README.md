@@ -30,7 +30,7 @@ Open **Voice check**, drop a file (or use the extension's *Voice / image* tab).
 | `02_ai_family_emergency_hinglish.ogg` | Hindi neural voice, "Papa, accident…", ₹75,000 to a UPI ID, over a phone line | AI voice · payment · **CRITICAL** |
 | `03_ai_townhall_announcement_harmless.mp3` | Neural voice announcing a townhall | AI voice · nothing asked · **LOW, synthetic but harmless** |
 | `04_human_voice_audiobook_librispeech.wav` | A real human reading (LibriSpeech, CC BY 4.0) | Human voice · **LOW** |
-| `05_ai_otp_helpdesk_noisy_street.wav` | Neural "IT help desk" asking for the OTP, buried in 10 dB street noise | **Uncertain** voice (noise) · credential · **HIGH unverified request** (shows the noise rule) |
+| `05_ai_otp_helpdesk_noisy_street.wav` | Neural "IT help desk" asking for the OTP, buried in 10 dB street noise | **AI-generated** voice even in noise (DF_Arena alone below 19 dB SNR) · credential · **CRITICAL** (was Uncertain / HIGH before the noise-conditional ensemble; the credential rule makes it HIGH either way) |
 
 ## 02 · Image check
 

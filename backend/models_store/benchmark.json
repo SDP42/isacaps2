@@ -6601,6 +6601,42 @@
     "nii+nii_mms+nii_small": 0.52,
     "df_arena+nii+nii_mms+nii_small": 0.689
    }
+  },
+  "operating_point": {
+   "note": "40 real + 50 fake clips (audio_df + audio_tts) under red-team street noise, first 12 s, mean window probability",
+   "street@10": {
+    "old_ensemble": {
+     "real_flagged_0.5": 0,
+     "real_flagged_0.9": 0,
+     "fake_caught_0.5": 40,
+     "fake_caught_0.9": 27
+    },
+    "df_arena_alone": {
+     "real_flagged_0.5": 1,
+     "real_flagged_0.9": 1,
+     "fake_caught_0.5": 48,
+     "fake_caught_0.9": 43
+    }
+   },
+   "street@5": {
+    "old_ensemble": {
+     "real_flagged_0.5": 3,
+     "real_flagged_0.9": 0,
+     "fake_caught_0.5": 34,
+     "fake_caught_0.9": 19
+    },
+    "df_arena_alone": {
+     "real_flagged_0.5": 7,
+     "real_flagged_0.9": 4,
+     "fake_caught_0.5": 46,
+     "fake_caught_0.9": 44
+    }
+   },
+   "redteam_campaign_after": {
+    "caught": 41,
+    "total": 42,
+    "noise_channel": "5/6 (was 4/6)"
+   }
   }
  }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1 November 2026 (night): noise-conditional voice ensemble
+
+- Below 19 dB SNR the voice witness (and the live shield) scores with DF_Arena alone, the model that degraded least
+  in the noise study (`pretrained.NOISY_AUDIO_KEYS`). Red-team voice campaign 40/42 → 41/42 (street noise 4/6 → 5/6);
+  noisy fakes caught at ≥ 0.9 rose from 27 to 43 of 50 at 10 dB, while real voices flagged rose from 0 to 1 of 40
+  (0 to 4 of 40 at 5 dB). The noisy demo clip is now called AI-generated (CRITICAL) instead of Uncertain.
+- Tests: 27 (new: noisy audio uses only the noise-robust model).
+
 ## 1 November 2026 (evening): command centre, evidence kit, Trustbook, drills, liveness, lip-sync
 
 - **Command centre rebuilt** as a cross-filtering operations floor on one fact table (`/v1/ops/overview`): posture

@@ -51,7 +51,7 @@ Published robustness studies agree on the pattern the red-team lab reproduces:
 | MP3 32 kbit/s | 6/6 | — |
 | Room reverb | 6/6 | — |
 | Speaker-to-mic replay | 6/6 | — |
-| **Street noise, 10 dB SNR** | **4/6** | — |
+| **Street noise, 10 dB SNR** | **5/6** (4/6 before the noise-conditional ensemble) | — |
 | JPEG q40 / resize / screenshot / social pipeline | — | 12/12 |
 
 Noise is the weak spot. We tested two fixes. Denoising before detection made it worse (it erases the artefacts the

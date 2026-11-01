@@ -67,7 +67,7 @@ NOISY_SNR_DB = 19.0
 
 def chunk_score(x: np.ndarray) -> tuple[float, str]:
     """Synthetic-speech probability for one short live chunk: pretrained ensemble when installed, else our model."""
-    pre = pretrained.audio_scores(x)
+    pre = pretrained.audio_scores(x, noisy=channel_profile(x)["snr_db"] < NOISY_SNR_DB)
     if pre:
         return float(np.mean([r["p"] for r in pre["windows"]])), "pretrained"
     return float(load_model("voice_clf.joblib")["model"].predict_proba(dsp.features(x)[None, :])[0, 1]), "own"
@@ -133,7 +133,7 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
     # Layer 1 (primary): pretrained anti-spoofing ensemble per 4 s window. Layer 2: MIRAGE's own acoustic model, which
     # is trained on simulated speech, so it only nudges the score and supplies the explanation features.
     own = _pool(p)
-    pre = pretrained.audio_scores(x)
+    pre = pretrained.audio_scores(x, noisy=chan["snr_db"] < NOISY_SNR_DB)
     if pre:
         rows = pre["windows"]
         segs_out = [(r["t0"], r["t1"]) for r in rows]
@@ -146,7 +146,8 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
         res.model_version = " + ".join(pre["models"]) + " (primary) + " + res.model_version + " (supporting)"
         res.details["pretrained"] = {"models": per_model, "meta": pretrained.meta(rows[0]["models"]),
                                      "score": round(pooled_pre, 4), "own_score": round(own, 4),
-                                     "agreement": round(agreement, 3), "agree": agreement >= 0.75}
+                                     "agreement": round(agreement, 3), "agree": agreement >= 0.75,
+                                     "noise_mode": pre["noise_mode"]}
         p, segs = p_pre, [(a, b, None) for a, b in segs_out]
     else:
         pooled, agreement = own, None
@@ -205,7 +206,9 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
         res.evidence.append(Evidence(
             witness="voice", kind="noisy_channel", label="noise masks the voice", severity=0,
             detail=f"Background noise (SNR {chan['snr_db']:.0f} dB) hides synthesis artefacts and can make real voices look "
-                   "synthetic; the voice score is weak evidence here, so verify through a known number.",
+                   "synthetic; the voice score is weak evidence here, so verify through a known number."
+                   + (" The score comes from DF_Arena alone, the detector that held up best under noise in our tests."
+                      if pre and pre.get("noise_mode") else ""),
         ))
     if chan["compressed"]:
         res.evidence.append(Evidence(

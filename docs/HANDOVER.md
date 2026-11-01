@@ -124,7 +124,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 
 | Modality | Models (threshold) | Notes |
 |---|---|---|
-| Voice | DF_Arena 500M (0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, index 0 = fake) | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
+| Voice | DF_Arena 500M (0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, index 0 = fake) | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": DF_Arena alone scores it (measured in the noise study), confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
 | Voiceprint | WavLM-base-plus-sv | Cosine match at 0.86 |
 | Image | Community Forensics ViT-S/384 (0.01) + haywoodsloan SwinV2 (0.1) | Organika SDXL detector removed: it flagged real photos |
 | Face | YuNet detector (Haar fallback) + GenD CLIP L/14 and GenD PE-L (0.75, index 1 = fake) | Median plus attention pooling over frames. The YuNet instance is locked |
@@ -222,7 +222,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 
 | Area | Result |
 |---|---|
-| Voice | AUC 1.00 on the benchmark set. Red-team 40/42 caught; both misses are heavy-noise laundering |
+| Voice | AUC 1.00 on the benchmark set. Red-team 41/42 caught after the noise-conditional ensemble (was 40/42); the miss is heavy street noise |
 | Images | AUC 0.98, 94 % accuracy. Red-team 15/15 |
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
 | Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
@@ -234,7 +234,9 @@ How far the models agree sets the confidence. Every load and every GPU inference
 **Known limits:**
 
 - In-the-wild face swaps and fully generated video (OpenForensics 0.71).
-- Heavy background noise on voice. This is handled as "uncertain", not as a decision.
+- Heavy background noise on voice. Below 19 dB SNR DF_Arena alone scores the audio (it held up best in the noise
+  study); this catches far more noisy fakes but flags about 1 in 40 real voices at 10 dB and 4 in 40 at 5 dB, so the
+  evidence stays marked weak.
 - The Chrome extension (now including the WhatsApp Web chip) has not yet been run inside real Chrome. It has only been
   syntax-checked and API-tested. The Android share target has not been tried on a phone.
 - The Trustbook voiceprints are still the seeded simulator prints (11 of them, flagged in the Trustbook). The guided,

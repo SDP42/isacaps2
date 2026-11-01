@@ -110,9 +110,22 @@ red-team street noise and white noise; written to `benchmark.json` under `noise_
 | White noise 10 dB | **0.856** | 0.516 | 0.564 | 0.541 | 0.774 |
 
 DF_Arena degrades least; the NII models, including the two trained with data augmentation, fall faster, and every
-ensemble that adds them is worse than DF_Arena alone in noise. The measured next step is a noise-conditional
-ensemble (DF_Arena alone below the noisy-SNR line). The two augmented NII models are downloaded by the study only;
-they are not part of the shipped ensemble.
+ensemble that adds them is worse than DF_Arena alone in noise. **Shipped:** when the voice witness measures an SNR
+below 19 dB, the pretrained layer uses DF_Arena alone (`pretrained.NOISY_AUDIO_KEYS`); clean audio keeps the
+two-model ensemble. Noisy evidence is still reported as weak, and the triage band stays wide. The two augmented NII
+models are downloaded by the study only; they are not part of the shipped ensemble.
+
+The trade-off, measured at the decision points (40 real and 50 fake clips under street noise):
+
+| Street noise | Real voices flagged at ≥ 0.9 | Fakes caught at ≥ 0.9 | Fakes caught at ≥ 0.5 |
+|---|---|---|---|
+| 10 dB, old ensemble → DF_Arena alone | 0 → 1 of 40 | 27 → 43 of 50 | 40 → 48 of 50 |
+| 5 dB, old ensemble → DF_Arena alone | 0 → 4 of 40 | 19 → 44 of 50 | 34 → 46 of 50 |
+
+So noisy fakes are caught far more often, at the cost of occasionally calling a very noisy real voice synthetic.
+That cost is bounded: noisy evidence stays "weak" at lower confidence, a harmless request still lands LOW, and a
+sensitive request was already HIGH with the same advice (call back on the saved number). The red-team voice
+campaign went from 40/42 to **41/42** (street noise 4/6 → 5/6).
 
 **Claude judge.** `scripts/measure_claude_judge.py <data_dir>` runs the text sets with and without the judge and
 records both; it needs `ANTHROPIC_API_KEY`, which this machine does not have, so the judge is still unmeasured.

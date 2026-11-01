@@ -259,11 +259,21 @@ def nii_fake(chunk: np.ndarray, key: str = "nii") -> float | None:
         return None
 
 
-def audio_scores(x: np.ndarray) -> dict | None:
-    """Per-window scores from every available anti-spoofing model, plus the ensemble per window."""
+# Noise study (scripts/noise_robustness.py, 90 clips): as noise rises NII loses separation far faster than DF_Arena
+# (white noise at 10 dB: AUC 0.52 vs 0.86; street noise at 5 dB: 0.71 vs 0.96) and pulls every ensemble below DF_Arena
+# alone. The NII models trained with augmentation did no better. So noisy audio is judged by DF_Arena alone.
+NOISY_AUDIO_KEYS = ("df_arena",)
+
+
+def audio_scores(x: np.ndarray, noisy: bool = False) -> dict | None:
+    """Per-window scores from the anti-spoofing models, plus the ensemble per window. In noisy audio only the models
+    that held up in the noise study vote (when they are installed)."""
     keys = [k for k in ("df_arena", "nii") if available(k)]
     if not keys:
         return None
+    noise_mode = noisy and any(k in keys for k in NOISY_AUDIO_KEYS)
+    if noise_mode:
+        keys = [k for k in keys if k in NOISY_AUDIO_KEYS]
     wins = audio_windows(x)
     rows = []
     for t0, t1, c in wins:
@@ -277,7 +287,7 @@ def audio_scores(x: np.ndarray) -> dict | None:
             rows.append({"t0": t0, "t1": t1, "models": s, "p": p, "agree": agree})
     if not rows:
         return None
-    return {"windows": rows, "models": [name(k) for k in keys]}
+    return {"windows": rows, "models": [name(k) for k in keys], "noise_mode": noise_mode}
 
 
 @loader
