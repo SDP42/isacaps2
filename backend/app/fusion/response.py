@@ -6,6 +6,8 @@ what evidence to keep. Indian reporting channels first, because PS-02 targets In
 """
 from __future__ import annotations
 
+import re
+
 HELPLINES = {
     "1930": {"label": "National Cyber Crime Helpline 1930", "href": "tel:1930",
              "why": "Reported within the golden hour, money still in transit can be frozen across banks."},
@@ -34,22 +36,37 @@ CATEGORIES = {
 }
 
 
+# Field test: category was right for 48% of scams, mostly because these words were English-only (testing/TEST_REPORT.md).
+AGENCY_EN = re.compile(r"\b(arrest\w*|cbi|police|customs|court|narcotics|warrant|crime branch|fir|telecom regulatory|trai|"
+                       r"contraband)\b")
+AGENCY = ("सीबीआई", "पुलिस", "पोलीस", "अरेस्ट", "गिरफ्तार", "गुन्हा", "போலீஸ்", "கைது", "পুলিশ", "પોલીસ")
+FAMILY = ("papa", "mummy", "beta", "mom", "dad", "uncle", "aunty", "grandpa", "grandma", "nani", "nana", "dadi", "dada", "accident", "hospital", "bail", "मम्मी", "पापा", "माँ",
+          "बेटा", "आई", "बाबा", "अपघात", "दुर्घटना", "अस्पताल", "அம்மா", "அப்பா", "விபத்து", "মা", "বাবা", "দুর্ঘটনা", "મમ્મી", "અકસ્માત")
+LURE = ("lottery", "lucky draw", "you have won", "you won", "u won", "prize", "guaranteed", "returns", "invest", "stock tips",
+        "trading", "crypto", "refund", "cashback", "pre-approved", "loan of", "job", "earn", "kamai", "paisa double", "kbc",
+        "लॉटरी", "इनाम", "जीती", "बक्षीस", "பரிசு", "পুরস্কার", "ઇનામ")
+
+
 def categorise(action: str, tactics: set[str], text: str = "", circle: str | None = None) -> str:
     t = text.lower()
-    if {"fear", "authority"} <= tactics and any(k in t for k in ("arrest", "cbi", "police", "customs", "court", "narcotics", "warrant")):
+    # whole words: "आई" (mother) is also the end of "सीबीआई" (CBI)
+    tokens = {w.strip(".,!?।:;\"'()-") for w in t.split()}
+    family = circle == "family" or any((k in tokens) if len(k) <= 4 else (k in t) for k in FAMILY)
+    lure = any(k in t for k in LURE) or "reward" in tactics
+    distress = any(k in t for k in ("accident", "hospital", "bail", "trouble", "musibat", "मुसीबत", "अपघात", "दुर्घटना",
+                                    "விபத்து", "দুর্ঘটনা", "lost my phone", "new no", "new number"))
+    if family and (action == "payment" or (distress and action == "none" and "fear" in tactics)):
+        return "family_emergency"  # "Mom, I'm at the police station" is a family emergency, not a digital arrest
+    if (AGENCY_EN.search(t) or any(k in t for k in AGENCY)) and ({"fear", "authority"} & tactics):
         return "digital_arrest"
-    if action == "credential":
-        return "credential_theft"
     if action == "remote_access":
         return "remote_access"
-    if action == "payment" and "reward" in tactics and "authority" not in tactics:
-        return "reward_scam"  # "pay a fee to win / invest" is a lure, not an executive impersonation
+    if lure and (action in ("payment", "credential") or "reward" in tactics):
+        return "reward_scam"  # "pay a fee to win / invest / get your refund" is a lure, not an executive impersonation
+    if action == "credential":
+        return "credential_theft"
     if action == "payment":
-        if circle == "family" or any(k in t for k in ("papa", "mummy", "beta", "accident", "hospital", "mom", "dad")):
-            return "family_emergency"
-        return "payment_fraud"
-    if "reward" in tactics:
-        return "reward_scam"
+        return "family_emergency" if family else "payment_fraud"
     if action == "data":
         return "data_theft"
     return "benign"

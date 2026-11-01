@@ -19,6 +19,10 @@ from . import dsp
 log = logging.getLogger("mirage.dissect")
 
 
+HINGLISH_LANGS = ("hi", "ur", "pa", "ne", "sd")
+NATIVE_LANGS = ("mr", "bn", "gu", "ta", "te", "kn", "ml", "or", "as")
+
+
 @functools.cache
 def _whisper():
     from faster_whisper import WhisperModel
@@ -37,10 +41,13 @@ def transcribe(path: Path) -> dict | None:
         model = _whisper()
         lang, _, _ = model.detect_language(audio)
         # Hinglish is often mistaken for Urdu or Punjabi; transcribe it as Hindi so the lexicon can read it
-        hinglish = lang in ("hi", "ur", "pa", "ne", "mr", "bn", "gu", "sd")
+        hinglish = lang in HINGLISH_LANGS
         # Whisper writes Hindi in Urdu or Devanagari script; a romanised prompt yields the Hinglish people actually type
         prompt = "Hinglish, Roman script: Bhai, paise abhi bhejo, kisi ko mat batana. OTP bata do jaldi." if hinglish else None
-        segs, info = model.transcribe(audio, language="en" if hinglish or lang != "en" else "en", initial_prompt=prompt,
+        # field test: forcing English made Tamil, Marathi and Bengali calls come back empty, so their scam requests were
+        # never read; those languages are now written in their own script, which the words witness reads
+        target = lang if lang in NATIVE_LANGS else "en"
+        segs, info = model.transcribe(audio, language=target, initial_prompt=prompt,
                                       word_timestamps=True, vad_filter=True, beam_size=1,
                                       condition_on_previous_text=False)
         words = []
@@ -55,7 +62,7 @@ def transcribe(path: Path) -> dict | None:
         uniq = len({re.sub(r"\W", "", w["w"].lower()) for w in words}) / len(words)
         if np.mean([w["p"] for w in words]) < 0.45 or uniq < (0.6 if len(words) < 12 else 0.35):
             return None
-        return {"text": text, "language": "hi-Latn (Hinglish)" if hinglish else info.language, "language_p": round(float(info.language_probability), 2),
+        return {"text": text, "language": "hi-Latn (Hinglish)" if hinglish else lang if target != "en" else info.language, "language_p": round(float(info.language_probability), 2),
                 "words": words, "engine": f"faster-whisper/{os.getenv('MIRAGE_ASR_MODEL', 'base')}"}
     except Exception as exc:  # pragma: no cover - optional dependency
         log.warning("ASR unavailable: %s", exc)
@@ -68,11 +75,12 @@ def transcribe_array(x: np.ndarray, context: str = "", lang_hint: str | None = N
     lang = lang_hint
     if not lang:
         lang, _, _ = model.detect_language(x)
-    hinglish = lang in ("hi", "ur", "pa", "ne", "mr", "bn", "gu", "sd", "hi-Latn")
+    hinglish = lang in HINGLISH_LANGS + ("hi-Latn",)
     prompt = context[-200:] or None
     if hinglish:
         prompt = ("Hinglish, Roman script: Bhai, paise abhi bhejo, kisi ko mat batana. " + (context[-150:] if context else "")).strip()
-    segs, _ = model.transcribe(x, language="en", initial_prompt=prompt, vad_filter=True, beam_size=1,
+    target = lang if lang in NATIVE_LANGS else "en"
+    segs, _ = model.transcribe(x, language=target, initial_prompt=prompt, vad_filter=True, beam_size=1,
                                condition_on_previous_text=False)
     return " ".join(s.text.strip() for s in segs).strip(), ("hi-Latn" if hinglish else (lang or "en"))
 

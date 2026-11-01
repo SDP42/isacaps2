@@ -26,13 +26,13 @@ Produced by `backend/scripts/verify_demo_inputs.py` against the running API (01 
 | 04_messages | `04_investment_whatsapp_group.txt` | HIGH · Prize, refund, job or investment lure · tactics reward |
 | 04_messages | `05_benign_meeting_reminder.txt` | LOW · No scam pattern · tactics none |
 | 04_messages | `06_legit_bank_otp_notice.txt` | LOW · No scam pattern · tactics none |
-| 04_messages | `07_whatsapp_cfo_chat_screenshot.png` | case MRG-0529 → HIGH 93 |
-| 05_emails | `01_vendor_bank_change_bec.eml` | case MRG-0530 → HIGH 99 |
-| 05_emails | `02_ceo_gift_cards_urgent.eml` | case MRG-0531 → HIGH 96 |
-| 05_emails | `03_password_expiry_phishing.eml` | case MRG-0532 → HIGH 97 |
-| 05_emails | `04_benign_hr_newsletter.eml` | case MRG-0533 → LOW 27 |
-| 06_full_investigations | `A_cfo_voice_wire` | case MRG-0534 → HIGH 100 (expected HIGH / CRITICAL · voice-clone payment fraud) |
-| 06_full_investigations | `B_digital_arrest_video` | case MRG-0535 → HIGH 100 (expected HIGH · digital arrest, synthetic face and voice) |
-| 06_full_investigations | `C_family_emergency` | case MRG-0536 → HIGH 100 (expected HIGH · family emergency scam) |
-| 06_full_investigations | `D_vendor_bec_email` | case MRG-0537 → HIGH 100 (expected HIGH · vendor BEC with AI headshot) |
-| 06_full_investigations | `E_harmless_ai_townhall` | case MRG-0538 → LOW 30 (expected LOW · synthetic but harmless) |
+| 04_messages | `07_whatsapp_cfo_chat_screenshot.png` | case MRG-0479 → HIGH 93 |
+| 05_emails | `01_vendor_bank_change_bec.eml` | case MRG-0480 → HIGH 99 |
+| 05_emails | `02_ceo_gift_cards_urgent.eml` | case MRG-0481 → HIGH 95 |
+| 05_emails | `03_password_expiry_phishing.eml` | case MRG-0482 → HIGH 97 |
+| 05_emails | `04_benign_hr_newsletter.eml` | case MRG-0483 → LOW 21 |
+| 06_full_investigations | `A_cfo_voice_wire` | case MRG-0484 → HIGH 100 (expected HIGH / CRITICAL · voice-clone payment fraud) |
+| 06_full_investigations | `B_digital_arrest_video` | case MRG-0485 → HIGH 100 (expected HIGH · digital arrest, synthetic face and voice) |
+| 06_full_investigations | `C_family_emergency` | case MRG-0486 → HIGH 100 (expected HIGH · family emergency scam) |
+| 06_full_investigations | `D_vendor_bec_email` | case MRG-0487 → HIGH 100 (expected HIGH · vendor BEC with AI headshot) |
+| 06_full_investigations | `E_harmless_ai_townhall` | case MRG-0488 → LOW 27 (expected LOW · synthetic but harmless) |

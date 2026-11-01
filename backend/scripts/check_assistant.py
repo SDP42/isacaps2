@@ -1,6 +1,6 @@
 """End-to-end answer-quality test for the copilot, against the running API.
 
-    python scripts/test_assistant.py            # API on localhost:8000
+    python scripts/check_assistant.py            # API on localhost:8000
 
 Each conversation is a list of (question, expected intents, checks). It reports wrong intents, empty or failed answers,
 answers missing an expected block type or phrase, and slow turns. Questions here are new phrasings, not copies of
@@ -75,7 +75,7 @@ CONVERSATIONS = {
         ("suppose the voice was genuine", {"what_if"}, {"bars"}, []),
         ("pull up the latest high risk incident", {"open_case"}, {"verdict"}, []),
         ("how many incidents do we have overall", {"stats"}, {"facts"}, []),
-        ("show me MRG-0537", {"open_case"}, {"verdict"}, ["MRG-0537"]),
+        ("show me MRG-0412", {"open_case"}, {"verdict"}, ["MRG-0412"]),
     ],
     "judge questions, cold": [
         ("in one breath, what is this", {"about"}, {"flow"}, []),

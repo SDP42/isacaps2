@@ -2,6 +2,7 @@
 Voice check screen and the Chrome extension. Every answer ends in an emergency response (fusion/response.py)."""
 from __future__ import annotations
 
+import re
 import tempfile
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from ..witnesses import face, provenance, transcribe, voice, words
 
 router = APIRouter(prefix="/v1", tags=["triage"])
 SENSITIVE = {"payment", "credential", "remote_access", "data"}
+GIFT = re.compile(r"gift ?cards?|voucher codes?|scratch", re.I)
 AI_AT, HUMAN_AT = 0.7, 0.3
 
 
@@ -39,6 +41,10 @@ def _decide(synthetic: str, sem: dict | None) -> tuple[str, str, str]:
     """Stage 3: the 2x2 matrix of who is speaking (AI / human / uncertain) and what they ask (sensitive or not)."""
     sensitive = bool(sem) and (sem["action"] in SENSITIVE or sem["category"] in ("digital_arrest", "family_emergency"))
     pressure = bool(sem) and len(sem["tactics"]) >= 2
+    if synthetic == "ai" and not sem:
+        # field test: Tamil, Marathi and Bengali scam calls were called "harmless" because their words were never read
+        return "MEDIUM", "synthetic_unread", ("A machine-generated voice, but its words could not be read (language or audio "
+                                              "quality). Nothing proves it is harmless: verify before acting on it.")
     if synthetic == "ai" and sensitive:
         return "CRITICAL", "voice_clone_scam", "A machine-generated voice is asking for something sensitive: the classic voice-clone scam."
     if synthetic == "ai":
@@ -124,10 +130,22 @@ def text_core(text: str, org: bool = False, actor: str = "assistant") -> dict:
     sem = _semantics(text, "message")
     if not sem:
         raise HTTPException(422, "Paste at least a few words.")
-    s = sem["score"]
-    severity = "HIGH" if s >= 0.7 and sem["action"] in SENSITIVE else "MEDIUM" if s >= 0.5 or sem["action"] in SENSITIVE else "LOW"
-    if sem["category"] == "digital_arrest":
+    s, sensitive, n_tac = sem["score"], sem["action"] in SENSITIVE, len(sem["tactics"])
+    # field test: indirect and multilingual scams scored 0.4-0.7 with two or more tactics and stayed MEDIUM, while money
+    # mentions with no pressure (a son asking for trip money) were MEDIUM too; tactics now count alongside the score
+    if sensitive and (s >= 0.7 or n_tac >= 2 or (s >= 0.5 and n_tac >= 1) or (n_tac >= 1 and GIFT.search(text))):
+        severity = "HIGH"
+    elif (sensitive and (s >= 0.3 or n_tac >= 1)) or s >= 0.6 or (n_tac >= 2 and s >= 0.45):
+        severity = "MEDIUM"
+    else:
+        severity = "LOW"
+    if sem["action"] in ("credential", "remote_access"):
+        severity = "HIGH"  # the same policy rule as the case pipeline (credential_request)
+    if sem["category"] == "digital_arrest" and severity in ("HIGH", "MEDIUM") and (sensitive or "fear" in sem["tactics"]):
         severity = "CRITICAL"
+    if (severity != "LOW" and not sem["tactics"] and not sensitive and words.NOTICE_PAYMENT.search(text)) or \
+            (severity == "MEDIUM" and not sensitive and words.NOTICE_CREDENTIAL.search(text)):
+        severity = "LOW"  # a transaction alert or a code notice, even when its wording resembles scam SMS
     ops("triage.text", actor=actor, severity=severity, category=sem["category"])
     return {"semantics": sem, "severity": severity, "response": resp.build(sem["category"], severity, None, org=org)}
 

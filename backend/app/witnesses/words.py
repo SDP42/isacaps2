@@ -55,20 +55,53 @@ TACTICS: dict[str, list[str]] = {
         r"\bdon'?t involve\b", r"\bबाद में दूँगा\b", r"\bऑडिट को\b", r"\bdon'?t tell audit\b",
     ],
 }
-_TACTIC_RX = {k: [re.compile(p, re.I) for p in v] for k, v in TACTICS.items()}
+# Field test (testing/TEST_REPORT.md): Bengali, Gujarati, Marathi and Tamil scams read as LOW because only English,
+# Hinglish and Hindi had patterns, and `\b` never matches after an Indic vowel sign. These are plain substrings.
+INDIC_TACTICS: dict[str, list[str]] = {
+    "urgency": ["तुरंत", "फ़ौरन", "फौरन", "आज ही", "लगेच", "ताबडतोब", "உடனே", "உடனடியாக", "এখনই", "আজই", "তাড়াতাড়ি",
+                "તરત", "હમણાં", "આજે જ"],
+    "authority": ["सीबीआई", "पुलिस", "पोलीस", "अधिकारी", "सायबर", "बैंक से", "போலீஸ்", "காவல்", "வங்கியிலிருந்து",
+                  "পুলিশ", "ব্যাংক থেকে", "પોલીસ", "બેંકમાંથી"],
+    "secrecy": ["मत बताना", "मत बताइए", "मत बताओ", "सांगू नको", "सांगू नका", "कोणालाही सांगू", "சொல்லாதீர்கள்",
+                "சொல்ல வேண்டாம்", "বলবে না", "বলো না", "কাউকে বলবেন না", "કહેશો નહીં", "કહેતા નહીં"],
+    "fear": ["गिरफ्तार", "अरेस्ट", "अपराध", "बंद हो जाएगा", "अपघात", "गुन्हा", "अटक", "விபத்து", "முடக்கப்படும்",
+             "கைது", "মামলা", "বন্ধ হয়ে যাবে", "দুর্ঘটনা", "અકસ્માત", "ધરપકડ"],
+    "reward": ["लॉटरी", "इनाम", "जीती", "जीता", "बक्षीस", "பரிசு", "வென்றுள்ளீர்கள்", "পুরস্কার", "লটারি", "ઇનામ", "લોટરી"],
+}
+TACTICS["urgency"] += [r"\bwithin \d+ ?(hrs?|hours?|h)\b", r"\bin \d+ (hours?|hrs?|minutes?|mins?)\b", r"\blimited (slots|seats|time)\b",
+                       r"\boffer ends\b", r"\bat the earliest\b", r"\bb4 eod\b", r"\bend of (the )?day\b"]
+TACTICS["secrecy"] += [r"\bdon'?t mention\b", r"\bdo not mention\b", r"\bbetween us\b", r"\btell no one\b", r"\bdont cc\b",
+                       r"\bdon'?t (tell|inform) (mom|dad|mummy|papa|family|anyone)\b"]
+TACTICS["fear"] += [r"\bdisconnected\b", r"\bfir\b", r"\blegal action\b", r"\bcontraband\b", r"\bbail\b", r"\bwarrant\b",
+                    r"\bpolice station\b", r"\bclosed\b(?=.{0,30}\b(account|card)\b)"]
+TACTICS["authority"] += [r"\bcustoms\b", r"\bcrime branch\b", r"\bregulatory authority\b", r"\bincome tax department\b",
+                         r"\bnarcotics\b", r"\btrai\b", r"\bsebi\b"]
+TACTICS["reward"] += [r"\bguaranteed\b", r"\b\d+% (monthly|weekly|daily) returns?\b", r"\blottery\b", r"\bjackpot\b",
+                      r"\bcashback\b", r"\bpre-?approved loan\b", r"\bpaisa double\b", r"\bdouble (your )?money\b",
+                      r"\bearn(ing)? .{0,20}(per|a|every) (day|week|month)\b", r"\bkamai\b", r"\brefund of\b"]
+_TACTIC_RX = {k: [re.compile(p, re.I) for p in v] + [re.compile(re.escape(s)) for s in INDIC_TACTICS.get(k, [])]
+              for k, v in TACTICS.items()}
 
 ACTIONS: list[tuple[str, float, list[str]]] = [
     ("credential", 1.0, [r"\botp\b", r"\bpassword\b", r"\b6-digit code\b", r"\bverification code\b", r"\bpin\b",
-                         r"\blogin\b.*\bverify\b", r"\bverify your (account|password)\b"]),
+                         r"\blogin\b.*\bverify\b", r"\bverify your (account|password)\b", r"\bcard details\b", r"\bcvv\b",
+                         r"\b(enter|update) your (bank|payment|card|billing) (details|information)\b", r"\bp i n\b",
+                         r"\bcode (that )?(just )?(came|sent)\b", r"\bkeep your card ready\b",
+                         "ओटीपी", "पिन", "पासवर्ड", "ஓடிபி", "ওটিপি", "પિન"]),
     ("remote_access", 1.0, [r"\banydesk\b", r"\bteamviewer\b", r"\bremote access\b", r"\baccess code\b",
-                            r"\binstall .{0,20}app\b"]),
+                            r"\binstall .{0,20}app\b", r"\bquick ?support\b", r"\bscreen shar", "एनीडेस्क"]),
     ("payment", 1.0, [r"\b(wire|transfer|process|release|send|pay|move|deposit|bhej|daal)\b.{0,60}(₹|rs\.?|inr|rupees?|lakh|crore|\d{4,}|account|upi|payment)",
                       r"(₹|rs\.?|inr)\s?[\d,.]+.{0,40}\b(transfer|bhej|send|wire|pay)", r"\b(paise|pise|paisa|pais)\b.{0,20}\bbhej", r"\bbhej\w*\b.{0,25}\d{3,}", r"\d[\d,]{3,}.{0,25}\bbhej",
                       r"\bपैसे\b|\bभेज\b|\bट्रांसफर\b", r"\bbank details have changed\b", r"\bnew (beneficiary|account)\b",
                       r"\bsecurity deposit\b", r"\bfee\b.{0,30}(upi|@)",
-                      r"\bgift ?cards?\b", r"\b(voucher|redeem|redemption) codes?\b", r"\bscratch (off )?(the )?codes?\b"]),
+                      r"\bgift ?cards?\b", r"\b(voucher|redeem|redemption) codes?\b", r"\bscratch (off )?(the )?codes?\b",
+                      r"\b(fee|charge|deposit|gst)\b.{0,40}\b(rs\.?|₹|inr|\d{3,})", r"\b(rs\.?|₹)\s?[\d,]+.{0,30}\b(fee|charge|deposit|gst)\b",
+                      r"\binvest\b.{0,30}(rs\.?|₹|\d{4,})", r"\bremit\b", r"\bpay\b.{0,40}\binvoice\b",
+                      "रुपये", "रुपए", "पाठव", "அனுப்ப", "ரூபாய்", "পাঠিয়ে", "পাঠান", "টাকা", "મોકલ", "રૂપિયા"]),
     ("data", 0.6, [r"\bsend (me )?(the )?(employee|customer|payroll) (data|list|records)\b", r"\bpan card\b",
-                   r"\baadhaar\b.{0,30}(send|share)", r"\bshare (the )?(file|database|records)\b"]),
+                   r"\baadhaar\b.{0,30}(send|share)", r"\bshare (the )?(file|database|records)\b",
+                   r"\bpan, aadhaar\b", r"\b(customer|client|employee) list\b", r"\bexport (it|the data|the list)\b",
+                   r"\b(salary slips?|bank details|pan)\b.{0,60}\bpersonal (id|email|gmail|mail)\b"]),
     ("info", 0.3, [r"\bshare\b", r"\bupdate\b", r"\bconfirm\b"]),
 ]
 
@@ -151,13 +184,21 @@ def extract_entities(text: str) -> dict[str, list[str]]:
     return out
 
 
+# Notices that mention an OTP, a PIN or money without asking for them (field test: 5 of 8 real notices read as MEDIUM).
+NOTICE_CREDENTIAL = re.compile(r"(do not|don'?t|never) share|never ask|will never|(otp|code)\b.{0,40}\bis:?\s*\d{4,}|"
+                               r"share it with (your )?(driver|rider)|किसी के साथ साझा न", re.I)
+NOTICE_PAYMENT = re.compile(r"\b(debited|credited|avl bal|available balance|statement .{0,20}ready|bill .{0,30}generated|"
+                            r"processed successfully|has been shipped|not you\?|ignore if already paid|via the official app)\b", re.I)
+
+
 def requested_action(text: str) -> tuple[str, float]:
     low = text.lower()
     for name, sens, pats in ACTIONS:
         if any(re.search(p, low, re.I) for p in pats):
-            # an OTP mentioned with "do not share" is a bank notice, not a request
-            if name == "credential" and re.search(r"(do not|don'?t|never) share|किसी के साथ साझा न", low):
-                continue
+            if name == "credential" and NOTICE_CREDENTIAL.search(low):
+                continue  # an OTP notice or a "we never ask" reminder is not a request
+            if name == "payment" and NOTICE_PAYMENT.search(low) and not re.search(r"\b(urgent|immediately|new account|transfer to)\b", low):
+                continue  # a transaction alert or a bill reminder is not a payment request
             return name, sens
     return "none", 0.0
 
@@ -303,7 +344,8 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
     # Zero-shot intents add tactics the lexicon missed (paraphrases, Devanagari, other Indian languages), but only when
     # something else already says "scam": on its own the NLI model reads urgency and payment into harmless reminders
     # (demo_inputs/04_messages/05). Corroboration = a lexicon tactic, an extracted payment identifier, or p_text >= 0.5.
-    corroborated = bool(spans) or bool(ents.get("upi") or ents.get("account") or bad_domains) or p_text >= 0.5
+    # field test: the style score alone let the model read urgency and fear into harmless Hindi and Marathi family texts
+    corroborated = bool(spans) or bool(ents.get("upi") or ents.get("account") or bad_domains) or (p_text >= 0.5 and action != "none")
     if it and corroborated:
         for lever, tactic in (("urgency", "urgency"), ("secrecy", "secrecy"), ("impersonation", "authority"), ("threat", "fear"), ("reward", "reward")):
             if it.get(lever, 0) >= 0.9 and tactic not in tactics:
@@ -311,7 +353,8 @@ def analyse(text: str, style_profile: dict | None = None, source: str = "message
                 res.evidence.append(Evidence(witness="words", kind=tactic, label=tactic.replace("_", " "), score=it[lever], severity=2,
                                              detail=f"{tactic.capitalize()} intent read by the multilingual model ({it[lever]:.2f}), "
                                                     f"without a fixed phrase."))
-        if action == "none":
+        notice = NOTICE_PAYMENT.search(text) or NOTICE_CREDENTIAL.search(text)
+        if action == "none" and not notice:  # a transaction alert or OTP notice is never read as a request
             ask = max(("payment", "credential", "remote_access"), key=lambda k: it.get(k, 0))
             if it.get(ask, 0) >= 0.9:
                 action, sens = ask, 1.0

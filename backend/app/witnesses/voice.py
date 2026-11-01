@@ -65,6 +65,21 @@ def _pool(p: np.ndarray) -> float:
 NOISY_SNR_DB = 19.0
 
 
+# Field test (testing/TEST_REPORT.md): the anti-spoofing models score music, tones and noise 0.97-0.99 "synthetic",
+# because they only ever saw speech. Silero VAD (bundled with faster-whisper) found 0% speech in every such clip and at
+# least 44% in every real or fake speech clip, noisy and laundered ones included, so a 15% floor is a safe gate.
+MIN_SPEECH = 0.15
+
+
+def speech_fraction(x: np.ndarray) -> float | None:
+    try:
+        from faster_whisper.vad import VadOptions, get_speech_timestamps
+    except ImportError:  # optional: without it every clip is scored as before
+        return None
+    ts = get_speech_timestamps(x.astype(np.float32), VadOptions(min_silence_duration_ms=300))
+    return round(sum(t["end"] - t["start"] for t in ts) / max(len(x), 1), 3)
+
+
 def chunk_score(x: np.ndarray) -> tuple[float, str]:
     """Synthetic-speech probability for one short live chunk: pretrained ensemble when installed, else our model."""
     pre = pretrained.audio_scores(x, noisy=channel_profile(x)["snr_db"] < NOISY_SNR_DB)
@@ -115,7 +130,16 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
         res.details["waveform"] = dsp.waveform_peaks(x)
         if dur < 2.0 or np.abs(x).max() < 1e-3:
             res.status = "insufficient"
-            res.summary = f"Only {dur:.1f}s of usable audio. Too short to judge; result treated as inconclusive."
+            res.summary = (f"Only {dur:.1f}s of audio. Too short to judge; result treated as inconclusive." if dur < 2.0 else
+                           "The recording is silent. Nothing to judge; result treated as inconclusive.")
+            res.confidence = 0.1
+            return res
+        sp = speech_fraction(x)
+        res.details["speech_fraction"] = sp
+        if sp is not None and sp < MIN_SPEECH:
+            res.status = "insufficient"
+            res.summary = (f"No speech found ({sp:.0%} of the clip). Music, tones and noise are not scored as voices; "
+                           "result treated as inconclusive.")
             res.confidence = 0.1
             return res
         win, hop = (4.0, 1.0) if dur >= 12 else (2.0, 0.5)
@@ -198,7 +222,9 @@ def analyse(path: Path, claimed_voiceprint: list[float] | None = None, artifact_
         else:
             res.evidence.append(Evidence(
                 witness="voice", kind="voiceprint_match", label="voiceprint matches", score=round(sim, 3), severity=0,
-                exculpatory=True, detail=f"Speaker similarity {sim:.2f} to {who}'s enrolled voiceprint.", artifact_id=artifact_id,
+                exculpatory=True, detail=(f"Speaker similarity {sim:.2f} to {who}'s enrolled voiceprint: consistent with them, not proof. "
+                                          "In the field test this threshold also accepted 28% of different-speaker pairs, and a "
+                                          "voice clone is built to match."), artifact_id=artifact_id,
             ))
     noisy = chan["snr_db"] < NOISY_SNR_DB
     res.details["noisy"] = noisy

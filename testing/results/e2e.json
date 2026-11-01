@@ -1,0 +1,817 @@
+{
+ "scripts": [
+  {
+   "script": "en_cfo_payment",
+   "voice": "en-IN-PrabhatNeural",
+   "expected": "CRITICAL",
+   "severity": "CRITICAL",
+   "synthetic": "ai",
+   "score": 0.9729,
+   "language": "en",
+   "transcript": "Hi, this is Rajesh, the CFO. I'm in a board meeting. Transfer 12 lakh rupees to the new vendor account today and keep it confidential. Don't call me, just do it",
+   "action": "payment",
+   "tactics": [
+    "authority",
+    "secrecy"
+   ],
+   "category": "payment_fraud",
+   "ok": true
+  },
+  {
+   "script": "hinglish_family",
+   "voice": "en-IN-NeerjaNeural",
+   "expected": "CRITICAL",
+   "severity": "CRITICAL",
+   "synthetic": "ai",
+   "score": 0.978,
+   "language": "hi-Latn (Hinglish)",
+   "transcript": "Papa, Marya, I am speaking. My accident is done. I am in the hospital. Send Rs. 50 ,000 on this number. Don't tell your mom.",
+   "action": "payment",
+   "tactics": [
+    "fear",
+    "authority"
+   ],
+   "category": "family_emergency",
+   "ok": true
+  },
+  {
+   "script": "hi_digital_arrest",
+   "voice": "hi-IN-SwaraNeural",
+   "expected": "CRITICAL",
+   "severity": "CRITICAL",
+   "synthetic": "ai",
+   "score": 0.9871,
+   "language": "hi-Latn (Hinglish)",
+   "transcript": "I am speaking with CBI. Your name is Drugs parcel. Don't call anyone. Send two lakh rupees to the judge.",
+   "action": "payment",
+   "tactics": [
+    "authority",
+    "secrecy",
+    "urgency"
+   ],
+   "category": "digital_arrest",
+   "ok": true
+  },
+  {
+   "script": "ta_otp",
+   "voice": "ta-IN-ValluvarNeural",
+   "expected": "CRITICAL",
+   "severity": "CRITICAL",
+   "synthetic": "ai",
+   "score": 0.9998,
+   "language": "ta",
+   "transcript": "\u0bb5\u0ba3\u0b95\u0bcd\u0b95\u0bae\u0bcd \u0ba8\u0bbe\u0ba9\u0bcd \u0bb5\u0ba3\u0bcd\u0b95\u0bbf\u0baf\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1 \u0baa\u0bc7\u0b9a\u0bc1\u0b95\u0bbf\u0bb1\u0bc7\u0ba9\u0bcd \u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b95\u0ba3\u0b95\u0bcd\u0b95\u0bc1 \u0b8e\u0ba9\u0bcd\u0bb1\u0bc1 \u0bae\u0bc1\u0b9f\u0b95\u0bcd\u0b95\u0baa\u0bcd\u0baa\u0b9f\u0bc1\u0bae\u0bcd \u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0bae\u0bc1\u0baa\u0bcd\u0baa\u0bc8\u0baf\u0bbf\u0bb2\u0bcd \u0b95\u0bc1 \u0bb5\u0ba8\u0bcd\u0ba4\u0bc1 OTP -NNI \u0b89\u0b9f\u0ba9\u0bc7 \u0b9a\u0bca\u0bb2\u0bcd\u0bb2\u0b99\u0bcd\u0b95\u0bb3\u0bcd",
+   "action": "credential",
+   "tactics": [
+    "fear",
+    "urgency",
+    "authority"
+   ],
+   "category": "credential_theft",
+   "ok": true
+  },
+  {
+   "script": "mr_family",
+   "voice": "mr-IN-ManoharNeural",
+   "expected": "CRITICAL",
+   "severity": "MEDIUM",
+   "synthetic": "ai",
+   "score": 0.9989,
+   "language": null,
+   "transcript": "",
+   "action": null,
+   "tactics": null,
+   "category": null,
+   "ok": false
+  },
+  {
+   "script": "bn_payment",
+   "voice": "bn-IN-BashkarNeural",
+   "expected": "CRITICAL",
+   "severity": "MEDIUM",
+   "synthetic": "ai",
+   "score": 0.9997,
+   "language": null,
+   "transcript": "",
+   "action": null,
+   "tactics": null,
+   "category": null,
+   "ok": false
+  },
+  {
+   "script": "en_us_giftcards",
+   "voice": "en-US-AriaNeural",
+   "expected": "CRITICAL",
+   "severity": "CRITICAL",
+   "synthetic": "ai",
+   "score": 0.992,
+   "language": "en",
+   "transcript": "Hey, it's Sarah from the CEO's office. I need you to buy 5 Google Play gift cards worth 10 ,000 rupees each and send me the codes right away. Keep this between ",
+   "action": "payment",
+   "tactics": [
+    "authority",
+    "secrecy",
+    "urgency"
+   ],
+   "category": "payment_fraud",
+   "ok": true
+  },
+  {
+   "script": "en_benign_townhall",
+   "voice": "en-IN-NeerjaNeural",
+   "expected": "LOW",
+   "severity": "LOW",
+   "synthetic": "ai",
+   "score": 0.9609,
+   "language": "en",
+   "transcript": "Reminder, the quarterly town hall moves to Friday at 4pm the agenda is in your calendar invite. See you there.",
+   "action": "none",
+   "tactics": [],
+   "category": "benign",
+   "ok": true
+  },
+  {
+   "script": "hi_benign",
+   "voice": "hi-IN-MadhurNeural",
+   "expected": "LOW",
+   "severity": "LOW",
+   "synthetic": "ai",
+   "score": 0.9982,
+   "language": "hi-Latn (Hinglish)",
+   "transcript": "Namaste, kalki bhatak do pehr teeen bhaje hogi. Sabeh log apne report saath laai. Bhanye wad.",
+   "action": "none",
+   "tactics": [],
+   "category": "benign",
+   "ok": true
+  },
+  {
+   "script": "ta_benign",
+   "voice": "ta-IN-PallaviNeural",
+   "expected": "LOW",
+   "severity": "LOW",
+   "synthetic": "ai",
+   "score": 0.9998,
+   "language": "ta",
+   "transcript": "\u0bb5\u0bb4\u0b95\u0bae\u0bcd \u0ba8\u0bbe\u0bb3\u0bbf\u0b95\u0bbe\u0bb2\u0bc8 \u0baa\u0ba4\u0bcd\u0ba4 \u0bae\u0ba9\u0bbf\u0b95\u0bcd\u0b95\u0bc1 \u0b95\u0bc2\u0b9f\u0bcd\u0b9f\u0bae\u0bcd \u0ba8\u0b9f\u0bc8\u0baa\u0bc7\u0bb0\u0bc1\u0bae\u0bcd \u0b85\u0ba9\u0bc8\u0bb5\u0bb0\u0bae\u0bcd \u0bb5\u0bb0\u0bb5\u0bc7\u0ba3\u0bcd\u0b9f\u0bc1\u0bae\u0bcd",
+   "action": "none",
+   "tactics": [],
+   "category": "benign",
+   "ok": true
+  }
+ ],
+ "cases": [
+  {
+   "case": "AI voice asks payment",
+   "id": "MRG-0465",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 97.4,
+   "rule": "sensitive_action_unverified",
+   "action": "payment",
+   "seconds": 10.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.7459,
+    "voice": 0.9729,
+    "identity": 0.8872
+   },
+   "ok": true
+  },
+  {
+   "case": "AI voice, Hindi digital arrest",
+   "id": "MRG-0466",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 89.5,
+   "rule": "sensitive_action_unverified",
+   "action": "payment",
+   "seconds": 10.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.7675,
+    "voice": 0.9871,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "AI voice, harmless announcement",
+   "id": "MRG-0467",
+   "expected": [
+    "LOW"
+   ],
+   "band": "LOW",
+   "risk": 28.3,
+   "rule": "synthetic_no_fraud_indicators",
+   "action": "none",
+   "seconds": 7.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.0011,
+    "voice": 0.9609,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "Real human voice + scam text",
+   "id": "MRG-0468",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 97.5,
+   "rule": "sensitive_action_unverified",
+   "action": "payment",
+   "seconds": 7.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.9046,
+    "voice": 0.0002,
+    "identity": 0.9688
+   },
+   "ok": true
+  },
+  {
+   "case": "Real human voice + benign text",
+   "id": "MRG-0469",
+   "expected": [
+    "LOW"
+   ],
+   "band": "LOW",
+   "risk": 12.6,
+   "rule": null,
+   "action": "none",
+   "seconds": 7.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.0015,
+    "voice": 0.0002,
+    "identity": 0.12
+   },
+   "ok": true
+  },
+  {
+   "case": "AI photo + vendor bank change",
+   "id": "MRG-0470",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 97.5,
+   "rule": "synthetic_media_with_sensitive_ask",
+   "action": "payment",
+   "seconds": 4.6,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.8988,
+    "provenance": 0.9993,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "Real photo + benign text",
+   "id": "MRG-0471",
+   "expected": [
+    "LOW"
+   ],
+   "band": "LOW",
+   "risk": 29.9,
+   "rule": null,
+   "action": "none",
+   "seconds": 3.1,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.0011,
+    "provenance": 0.0046,
+    "identity": 0.604
+   },
+   "ok": true
+  },
+  {
+   "case": "Text only: indirect payment ask",
+   "id": "MRG-0472",
+   "expected": [
+    "HIGH",
+    "MEDIUM"
+   ],
+   "band": "HIGH",
+   "risk": 80.6,
+   "rule": "sensitive_action_unverified",
+   "action": "payment",
+   "seconds": 3.1,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.7734,
+    "identity": 0.6158
+   },
+   "ok": true
+  },
+  {
+   "case": "Text only: legit OTP notice",
+   "id": "MRG-0473",
+   "expected": [
+    "LOW"
+   ],
+   "band": "LOW",
+   "risk": 25.2,
+   "rule": null,
+   "action": "info",
+   "seconds": 3.0,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.0017,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "Text only: urgent but legitimate",
+   "id": "MRG-0474",
+   "expected": [
+    "LOW",
+    "MEDIUM"
+   ],
+   "band": "LOW",
+   "risk": 15.4,
+   "rule": null,
+   "action": "none",
+   "seconds": 3.0,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.1844,
+    "identity": 0.12
+   },
+   "ok": true
+  },
+  {
+   "case": "Text only: Hindi family emergency",
+   "id": "MRG-0475",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 93.4,
+   "rule": "sensitive_action_unverified",
+   "action": "payment",
+   "seconds": 3.1,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.9635,
+    "identity": 0.6619
+   },
+   "ok": true
+  },
+  {
+   "case": "Text only: Tamil OTP scam",
+   "id": "MRG-0476",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 85.0,
+   "rule": "credential_request",
+   "action": "credential",
+   "seconds": 3.1,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.7127,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "AI voice, Tamil OTP",
+   "id": "MRG-0477",
+   "expected": [
+    "HIGH"
+   ],
+   "band": "HIGH",
+   "risk": 95.5,
+   "rule": "credential_request",
+   "action": "credential",
+   "seconds": 9.1,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.7178,
+    "voice": 0.9998,
+    "identity": 0.3
+   },
+   "ok": true
+  },
+  {
+   "case": "Noisy real voice + benign",
+   "id": "MRG-0478",
+   "expected": [
+    "INCONCLUSIVE",
+    "LOW",
+    "MEDIUM"
+   ],
+   "band": "LOW",
+   "risk": 27.8,
+   "rule": null,
+   "action": "none",
+   "seconds": 4.5,
+   "status": "complete",
+   "witnesses": {
+    "words": 0.3391,
+    "voice": 0.0015,
+    "identity": 0.384
+   },
+   "ok": true
+  }
+ ],
+ "live": {
+  "en_cfo_payment": {
+   "chunks": [
+    {
+     "t": 0,
+     "spoof": 1.0,
+     "action": "none",
+     "manip": 0.41,
+     "tactics": [
+      "authority"
+     ]
+    },
+    {
+     "t": 3,
+     "spoof": 0.112,
+     "action": "none",
+     "manip": 0.48,
+     "tactics": [
+      "authority"
+     ]
+    },
+    {
+     "t": 6,
+     "spoof": 0.851,
+     "action": "payment",
+     "manip": 0.82,
+     "tactics": [
+      "authority"
+     ]
+    },
+    {
+     "t": 9,
+     "spoof": 0.884,
+     "action": "payment",
+     "manip": 0.91,
+     "tactics": [
+      "authority",
+      "secrecy"
+     ]
+    },
+    {
+     "t": 12,
+     "spoof": 0.991,
+     "action": "payment",
+     "manip": 0.92,
+     "tactics": [
+      "authority",
+      "secrecy"
+     ]
+    },
+    {
+     "t": 15,
+     "spoof": 0.194,
+     "action": "payment",
+     "manip": 0.92,
+     "tactics": [
+      "authority",
+      "secrecy"
+     ]
+    }
+   ],
+   "alert_at_s": 6,
+   "transcript": "Hi, this is Rajesh, the CFO. I am in a board meeting. Transfer 12 lock rupees to the new vendor account. Today, and keep it confidential. Don't call me, just do it before. 4"
+  },
+  "hinglish_family": {
+   "chunks": [
+    {
+     "t": 0,
+     "spoof": 0.998,
+     "action": "none",
+     "manip": 0.05,
+     "tactics": []
+    },
+    {
+     "t": 3,
+     "spoof": 0.998,
+     "action": "none",
+     "manip": 0.43,
+     "tactics": [
+      "fear"
+     ]
+    },
+    {
+     "t": 6,
+     "spoof": 0.89,
+     "action": "none",
+     "manip": 0.72,
+     "tactics": [
+      "fear",
+      "urgency"
+     ]
+    },
+    {
+     "t": 9,
+     "spoof": 0.969,
+     "action": "none",
+     "manip": 0.83,
+     "tactics": [
+      "fear",
+      "urgency"
+     ]
+    }
+   ],
+   "alert_at_s": 6,
+   "transcript": "Papa, Maria, Boil. Meter Accident Hogueer, Hospital Mehu. Jaldi Pachas, 1000 is Nam. Papa, send him, don't tell your mom."
+  },
+  "en_benign_townhall": {
+   "chunks": [
+    {
+     "t": 0,
+     "spoof": 0.917,
+     "action": "none",
+     "manip": 0.01,
+     "tactics": []
+    },
+    {
+     "t": 3,
+     "spoof": 0.008,
+     "action": "none",
+     "manip": 0.01,
+     "tactics": []
+    },
+    {
+     "t": 6,
+     "spoof": 0.915,
+     "action": "none",
+     "manip": 0.01,
+     "tactics": []
+    }
+   ],
+   "alert_at_s": null,
+   "transcript": "Reminder, the quarterly town hall moves to... Friday at 4pm the agenda is in your calendar. See you there."
+  }
+ },
+ "robust": [
+  {
+   "input": "empty.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"empty.wav: the file is empty.\"}"
+  },
+  {
+   "input": "empty.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"empty.wav: the file is empty.\"}"
+  },
+  {
+   "input": "empty.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 422,
+   "ok": true,
+   "body": "{\"detail\":\"Empty audio chunk.\"}"
+  },
+  {
+   "input": "empty.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"bcc247ad75b7\",\"intent\":null,\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\"tone\":\"ambe"
+  },
+  {
+   "input": "garbage.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"garbage.wav: unrecognised file type. Use audio, video, image or text.\"}"
+  },
+  {
+   "input": "garbage.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"garbage.wav: unrecognised file type. Use audio, video, image or text.\"}"
+  },
+  {
+   "input": "garbage.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"The live shield needs audio (16-bit WAV chunks).\"}"
+  },
+  {
+   "input": "garbage.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"4e6e41a68311\",\"intent\":null,\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\"tone\":\"ambe"
+  },
+  {
+   "input": "fake_exe.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"fake_exe.wav: executables and archives are not accepted as evidence.\"}"
+  },
+  {
+   "input": "fake_exe.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"fake_exe.wav: executables and archives are not accepted as evidence.\"}"
+  },
+  {
+   "input": "fake_exe.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"The live shield needs audio (16-bit WAV chunks).\"}"
+  },
+  {
+   "input": "fake_exe.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"c52b2ff4d664\",\"intent\":null,\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\"tone\":\"ambe"
+  },
+  {
+   "input": "half_second.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 200,
+   "ok": true,
+   "body": "{\"sha256\":\"2f291eae0c4930f44b61bee907c17cd24a5bf0fbc49e967b40b5acdc5fb566b3\",\"stage1\":{\"label\":\"Uncertain\",\"verdict\":\"uncertain\",\"score\":nul"
+  },
+  {
+   "input": "half_second.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Use the voice check for audio; images and videos are supported here.\"}"
+  },
+  {
+   "input": "half_second.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 200,
+   "ok": true,
+   "body": "{\"spoof\":null,\"level\":0.2121,\"text\":\"\",\"lang\":\"en\",\"tactics\":[],\"action\":\"none\",\"manipulation\":0.0,\"amount\":null,\"spans\":[]}"
+  },
+  {
+   "input": "half_second.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"e51ea67510c3\",\"intent\":\"analyse_voice\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\""
+  },
+  {
+   "input": "silence_5s.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 200,
+   "ok": true,
+   "body": "{\"sha256\":\"262d1f34f300560a4c82ba8127ddea9e1d72946f187fdbd3e8f70ee096077aec\",\"stage1\":{\"label\":\"Uncertain\",\"verdict\":\"uncertain\",\"score\":nul"
+  },
+  {
+   "input": "silence_5s.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Use the voice check for audio; images and videos are supported here.\"}"
+  },
+  {
+   "input": "silence_5s.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 200,
+   "ok": true,
+   "body": "{\"spoof\":null,\"level\":0.0,\"text\":\"\",\"lang\":null,\"tactics\":[],\"action\":\"none\",\"manipulation\":0.0,\"amount\":null,\"spans\":[]}"
+  },
+  {
+   "input": "silence_5s.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"8b6ffe7d8796\",\"intent\":\"analyse_voice\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\""
+  },
+  {
+   "input": "float32.wav",
+   "endpoint": "/v1/voice/triage",
+   "status": 200,
+   "ok": true,
+   "body": "{\"sha256\":\"024f9adb3bac9338be0b83b6a642e4e6e6c3e61f52a01a542c268b1c2924911e\",\"stage1\":{\"label\":\"Uncertain\",\"verdict\":\"uncertain\",\"score\":nul"
+  },
+  {
+   "input": "float32.wav",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Use the voice check for audio; images and videos are supported here.\"}"
+  },
+  {
+   "input": "float32.wav",
+   "endpoint": "/v1/live/chunk",
+   "status": 200,
+   "ok": true,
+   "body": "{\"spoof\":null,\"level\":0.2121,\"text\":\"\",\"lang\":\"en\",\"tactics\":[],\"action\":\"none\",\"manipulation\":0.0,\"amount\":null,\"spans\":[]}"
+  },
+  {
+   "input": "float32.wav",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"84ea546972bf\",\"intent\":\"analyse_voice\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"callout\",\""
+  },
+  {
+   "input": "doc.pdf",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Voice check needs an audio or video file.\"}"
+  },
+  {
+   "input": "doc.pdf",
+   "endpoint": "/v1/quick/media",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Use the voice check for audio; images and videos are supported here.\"}"
+  },
+  {
+   "input": "doc.pdf",
+   "endpoint": "/v1/live/chunk",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"The live shield needs audio (16-bit WAV chunks).\"}"
+  },
+  {
+   "input": "doc.pdf",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"e5b25df31a54\",\"intent\":\"analyse_text\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"lead\",\"text"
+  },
+  {
+   "input": "truncated.jpg",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Voice check needs an audio or video file.\"}"
+  },
+  {
+   "input": "truncated.jpg",
+   "endpoint": "/v1/quick/media",
+   "status": 200,
+   "ok": true,
+   "body": "{\"kind\":\"image\",\"sha256\":\"b06d89e24fe61723b6980231efb6bc763c14757322a691ba7b57e6bca8039734\",\"score\":0.0,\"label\":\"Likely authentic\",\"summary\""
+  },
+  {
+   "input": "truncated.jpg",
+   "endpoint": "/v1/live/chunk",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"The live shield needs audio (16-bit WAV chunks).\"}"
+  },
+  {
+   "input": "truncated.jpg",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"4f21d2ee167a\",\"intent\":\"analyse_media\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"lead\",\"tex"
+  },
+  {
+   "input": "tiny.png",
+   "endpoint": "/v1/voice/triage",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"Voice check needs an audio or video file.\"}"
+  },
+  {
+   "input": "tiny.png",
+   "endpoint": "/v1/quick/media",
+   "status": 200,
+   "ok": true,
+   "body": "{\"kind\":\"image\",\"sha256\":\"4a0945534329d26ce523a2f096e203aae59a9fffaec71895599fa3ef42d23f22\",\"score\":0.0,\"label\":\"Likely authentic\",\"summary\""
+  },
+  {
+   "input": "tiny.png",
+   "endpoint": "/v1/live/chunk",
+   "status": 415,
+   "ok": true,
+   "body": "{\"detail\":\"The live shield needs audio (16-bit WAV chunks).\"}"
+  },
+  {
+   "input": "tiny.png",
+   "endpoint": "/v1/assistant/chat",
+   "status": 200,
+   "ok": true,
+   "body": "{\"session_id\":\"88f5379c838a\",\"intent\":\"analyse_media\",\"confidence\":1.0,\"method\":\"attachment\",\"did_you_mean\":[],\"blocks\":[{\"type\":\"lead\",\"tex"
+  }
+ ]
+}

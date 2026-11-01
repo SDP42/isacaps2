@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -107,16 +108,34 @@ async def live_chunk(file: UploadFile = File(...), context: str = Form(""), lang
     from ..witnesses import transcribe as tr
 
     raw = await file.read()
-    with wave.open(io.BytesIO(raw), "rb") as w:
-        sr = w.getframerate()
-        x = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
-    if sr != dsp.SR:
-        from scipy.signal import resample_poly
+    if not raw:
+        raise HTTPException(422, "Empty audio chunk.")
+    try:  # the shield sends 16-bit PCM WAV; anything else goes through the general decoder
+        with wave.open(io.BytesIO(raw), "rb") as w:
+            if w.getsampwidth() != 2:
+                raise wave.Error("not 16-bit PCM")
+            sr = w.getframerate()
+            x = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
+            if w.getnchannels() > 1:
+                x = x.reshape(-1, w.getnchannels()).mean(axis=1)
+        if sr != dsp.SR:
+            from scipy.signal import resample_poly
 
-        x = resample_poly(x, dsp.SR, sr).astype(np.float32)
+            x = resample_poly(x, dsp.SR, sr).astype(np.float32)
+    except (wave.Error, EOFError, ValueError):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "chunk.bin"
+            p.write_bytes(raw)
+            try:
+                x = dsp.load_audio(p)
+            except Exception:
+                raise HTTPException(415, "The live shield needs audio (16-bit WAV chunks).") from None
     level = float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
     spoof = None
-    if level > 0.0015 and len(x) >= dsp.SR:
+    speech = voice.speech_fraction(x) if level > 0.0015 else 0.0
+    if level > 0.0015 and len(x) >= dsp.SR and (speech is None or speech >= voice.MIN_SPEECH):
         spoof = round(voice.chunk_score(x)[0], 3)
     text, detected = "", lang or None
     if level > 0.0015:

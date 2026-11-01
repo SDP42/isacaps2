@@ -38,7 +38,7 @@ never used for training. The run writes `models_store/assistant_eval.json`.
 | Measure | Result |
 |---|---|
 | Held-out routing accuracy (router alone) | **90.7 %** (98 of 108) |
-| End-to-end conversation test (`scripts/test_assistant.py`, 60 turns over 7 conversations: files, follow-ups, cases, scenarios, judge questions) | **60 / 60**: right intent, required visual blocks and key facts present, no errors. First run was 54 / 60; the fixes are listed below, so this number is partly fitted |
+| End-to-end conversation test (`scripts/check_assistant.py`, 60 turns over 7 conversations: files, follow-ups, cases, scenarios, judge questions) | **60 / 60**: right intent, required visual blocks and key facts present, no errors. First run was 54 / 60; the fixes are listed below, so this number is partly fitted |
 | Unseen spot check after the fixes (12 new twisted / Hinglish questions) | 10 / 12 before the last phrasing round, both misses since fixed |
 | Answer time | about 20 ms on the server for text questions; 40–70 ms in the browser. File checks take what the detectors take (voice with transcription 9–13 s, image about 1 s) |
 | Misses | Mostly neighbouring intents (e.g. *where* answered as *why*), which still return a relevant, correct answer; low-confidence answers show "Not what you meant?" chips |

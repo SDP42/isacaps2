@@ -191,6 +191,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Shared evidence components | `frontend/src/components/kit/*` (StateKit, ConfidenceBand, VerdictMatrix, EvidenceTimeline) |
 | Share target (phone) | `frontend/public/manifest.webmanifest`, `public/share-sw.js`, `pages/app/Share.tsx` |
 | WhatsApp Web chip | `extension/whatsapp.js`, `extension/whatsapp-hook.js` |
+| Field tests (data, detectors, end to end) | `backend/scripts/field_data.py`, `field_test.py`, `field_e2e.py`, `testing/` |
 | Copilot: intents, router, answers, UI | `backend/app/assistant/{catalog,router,engine,skills,knowledge,eval_set}.py`, `routers/assistant.py`, `scripts/train_assistant.py`, `frontend/src/components/assistant/*`, `lib/assistant.ts`, `pages/app/Assistant.tsx` |
 | Voice / face / image / text logic | `backend/app/witnesses/{voice,face,provenance,words,identity}.py` |
 | Risk fusion, policy rules | `backend/app/fusion/risk.py` |
@@ -230,6 +231,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
 | Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
 | Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
+| Field test | See [testing/TEST_REPORT.md](../testing/TEST_REPORT.md): TTS 50/50; an undocumented fake corpus 0/37; real voices with reverb or replay called AI 92–100 %, WhatsApp/phone 25–33 %; text HIGH 97 % (held-out 85–90 %); decision matrix 14/14; robustness 36/36 |
 | Copilot | 90.7 % routing accuracy on 108 held-out twisted questions; answers grounded in data |
 | Tests / CI | 29/29 pass in light mode (as CI runs them); the full GPU suite was last run at 27 tests |
 
@@ -251,6 +253,10 @@ How far the models agree sets the confidence. Every load and every GPU inference
   descendants) can pass it by design.
 - Demo authentication only. There is no licence file yet; the owner has to choose one.
 - Cure connectors are simulated.
+
+- Field-test gaps (testing/TEST_REPORT.md §4): unseen voice generators can score "human"; reverberant or replayed real
+  voices and clean real Indian-language speech score "AI"; Marathi and Bengali speech is not transcribed by
+  Whisper-base; voiceprint false accept 28 % at 0.86.
 
 **Next steps, in priority order:**
 
@@ -287,5 +293,9 @@ Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [U
 - **Copilot:** never let an LLM write facts (measured: local Llama 3.1 and Phi-3 misstated a three-sentence context).
   Add a question type by adding phrasings to `catalog.py`, a skill to `skills.py`, then rerun `train_assistant.py`
   and check the held-out number. Actions with side effects stay behind the 0.6 confidence gate in `engine.py`.
+- **Never name a script `test_*.py` outside `tests/`.** Pytest collected one, the app read the real database URL first,
+  and the suite reset the demo data and zeroed an audit hash. `backend/pytest.ini` now limits discovery to `tests/`.
+- **Indic text patterns:** Python's `` does not match after Indic vowel signs; use plain substrings (`INDIC_TACTICS`)
+  and whole-word checks for short words ("आई" is inside "सीबीआई").
 - **Tests:** the test DB is shared across tests and one test breaks the audit chain on purpose; do not assert the chain
   is intact in later tests. Use `DATABASE_URL` (not `MIRAGE_DB`) to point a script at another database.

@@ -468,6 +468,7 @@ History: [CHANGELOG.md](CHANGELOG.md).
 
 | Document | Contents |
 |---|---|
+| [testing/TEST_REPORT.md](testing/TEST_REPORT.md) | Field test: unseen data, laundered real voices, Indian languages, decision matrix, gaps and why |
 | [docs/COPILOT.md](docs/COPILOT.md) | The MIRAGE Copilot: local router, grounded answers, measured accuracy, block types |
 | [docs/HANDOVER.md](docs/HANDOVER.md) | Start here to take over: constraints, workflow, architecture, file map, results, next steps |
 | [demo_inputs/README.md](demo_inputs/README.md) | 32 test inputs across every feature, with expected and measured results |

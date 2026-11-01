@@ -1,5 +1,28 @@
 # Changelog
 
+## 1 November 2026 (morning): field test and the fixes it forced
+
+- **Field test** (`testing/TEST_REPORT.md`): about 340 public clips and 40 photos never measured before, plus TTS in
+  12 voices, Windows SAPI, SD-Turbo images, non-speech audio, laundered real voices and images, 140 labelled scam and
+  legitimate messages in 8 languages (40 held out), spoken scams in 7 languages, a 14-case decision matrix, the live
+  shield and broken inputs. Scripts: `field_data.py`, `field_test.py`, `field_e2e.py`.
+- Found and **fixed**:
+  - Music, tones and noise scored "AI voice" 0.97–0.99; a Silero VAD speech gate now marks them inconclusive.
+  - Tamil, Marathi and Bengali calls were transcribed as empty and called harmless; native-script transcription, plus
+    an "AI voice, words unreadable" MEDIUM outcome.
+  - Scam text in Bengali, Gujarati, Marathi and Tamil read as LOW; multilingual lexicons, notice handling, severity
+    from tactics. Text HIGH 63 → 97 % (held-out 85 → 90 %), category 48 → 95 %, false MEDIUM+ 20 → 0 % (held-out 5 %).
+  - `/v1/live/chunk` returned 500 on non-PCM input (robustness 29/36 → 36/36).
+  - Voiceprint matches were treated as exculpatory despite a measured 28 % false-accept rate; reworded.
+- Found and **documented**:
+  - An undocumented deepfake corpus missed 35/37.
+  - Real voices with reverb or speaker replay called AI 92–100 %.
+  - Clean real Hindi and Tamil speech called AI.
+  - WhatsApp, phone and MP3 real voices called AI 21–33 %.
+- Test isolation: `scripts/test_assistant.py` was collected by pytest and pointed the suite at the real database (which
+  reset the demo data and zeroed one audit hash, since restored). Renamed `check_assistant.py`; `backend/pytest.ini`
+  limits discovery to `tests/`.
+
 ## 1 November 2026 (late night): MIRAGE Copilot
 
 - **Copilot** (`/app/copilot`, and an *Ask MIRAGE* dock on every screen, `Ctrl+J`): drop a voice note, call, image,
@@ -15,7 +38,7 @@
   Phi-3 misstated simple facts given to them); both stay off.
 - Triage endpoints now share `voice_core`, `media_core` and `text_core` with the copilot. Fix: the evidence timeline no
   longer overflows narrow screens.
-- Tested end to end with `scripts/test_assistant.py` (60 turns: files, follow-ups, cases, scenarios, judge questions):
+- Tested end to end with `scripts/check_assistant.py` (60 turns: files, follow-ups, cases, scenarios, judge questions):
   54/60 at first, 60/60 after fixes (doc-fallback relevance floor, low-confidence follow-ups stay on the subject, no
   message-check without a message, action confidence gate, more phrasings).
 - Speed: the Vite dev proxy now targets `127.0.0.1` instead of `localhost`, removing ~1.4 s of IPv6 fallback from every
