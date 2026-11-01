@@ -63,7 +63,7 @@ casebook, WhatsApp chip, Android share target) and the noise-conditional voice e
   or merges.
   - Push with `git -c http.postBuffer=157286400 push origin main`. Large pushes time out with HTTP 408, so push big
     binaries in batches.
-  - End commit messages with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+  - Plain commit messages: no `Co-Authored-By` trailer.
 - **Before the full test suite, stop the API.** Both loading models together exhausts GPU memory.
 - **Network quirks on this machine:**
   - The npm registry is blocked, so `frontend/.npmrc` points to `registry.yarnpkg.com`.
