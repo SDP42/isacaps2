@@ -35,3 +35,6 @@ skills-lock.json
 
 # Pretrained model weights (download with backend/scripts/download_models.py)
 backend/models_hf/
+
+# Copilot intent router (retrained at startup in seconds; scripts/train_assistant.py)
+backend/models_store/assistant_router.joblib

@@ -99,7 +99,7 @@ export function EvidenceTimeline({
         </span>
       </div>
 
-      <div className="grid grid-cols-[64px_1fr] gap-x-2 px-3 py-3">
+      <div className="grid grid-cols-[64px_minmax(0,1fr)] gap-x-2 px-3 py-3">
         <div className="space-y-2 pt-0.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-dim">
           <p className="flex h-12 items-center">Audio</p>
           <p className="flex h-5 items-center">Synthetic</p>

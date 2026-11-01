@@ -312,3 +312,30 @@ def test_noisy_audio_is_judged_by_the_noise_robust_model(monkeypatch):
     assert noisy["windows"][0]["p"] > clean["windows"][0]["p"]
     monkeypatch.setattr(pretrained, "available", lambda k: k == "nii")  # without DF_Arena, NII still answers
     assert not pretrained.audio_scores(x, noisy=True)["noise_mode"]
+
+
+def test_assistant_routes_twisted_questions():
+    from app.assistant import router
+
+    cases = {"kya ye fake hai, kyun?": "why", "I already sent the money, help": "scammed_help",
+             "how do you know a voice is cloned": "voice_how", "what's the weather today": "out_of_scope",
+             "show case MRG-0501": "open_case"}
+    for q, want in cases.items():
+        assert router.route(q, has_subject=want == "why")["intent"] == want, q
+    assert router.payload("is this a scam: 'Your account is blocked, share the OTP now to unlock it'").startswith("Your account")
+
+
+def test_assistant_conversation_is_grounded(client, token):
+    h = {"authorization": f"Bearer {token}"}
+    r = client.post("/v1/assistant/chat", data={"message": "is this a scam: 'Dear customer, your KYC expired. Share the OTP sent to "
+                                                           "your phone in 10 minutes or your account will be blocked.'"}, headers=h).json()
+    assert r["intent"] == "analyse_text" and r["subject"]["kind"] == "text"
+    assert any(b["type"] == "verdict" for b in r["blocks"])
+    sid = r["session_id"]
+    why = client.post("/v1/assistant/chat", data={"message": "why?", "session_id": sid}, headers=h).json()
+    assert why["intent"] == "why" and why["blocks"]
+    now = client.post("/v1/assistant/chat", data={"message": "ok so what do I do now", "session_id": sid}, headers=h).json()
+    assert now["intent"] == "what_now" and any(b["type"] == "steps" for b in now["blocks"])
+    # an action with side effects is never run on a guess
+    vague = client.post("/v1/assistant/chat", data={"message": "maybe something with a scenario thing", "session_id": sid}, headers=h).json()
+    assert vague["intent"] != "run_scenario" or "Did you want" in vague["blocks"][0]["text"]

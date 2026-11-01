@@ -120,3 +120,13 @@ See [CURE.md](CURE.md).
 | POST | `/v1/liveness/start` | `{count}` | `{session, challenges[{key, prompt}], limit_s}`: random head movements |
 | POST | `/v1/liveness/frame` | multipart `session`, `file` (JPEG) | face box, pose (yaw, pitch, roll), current prompt, whether it advanced |
 | POST | `/v1/liveness/finish` | `{session}` | `{verdict: LIVE \| FAILED \| SUSPECT, results[], deepfake_score, median_reaction_s}` |
+
+## Copilot
+
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| POST | `/v1/assistant/chat` | multipart form: `message`, `session_id`, optional `file` (audio, image, video, `.eml`, `.txt`), `sample` (built-in sample key), `page` (JSON `{"case_id": "MRG-…"}`) | `{session_id, intent, confidence, method, did_you_mean, blocks, suggestions, go, subject, trace, ms}`; `blocks` are typed visual answer parts (see [COPILOT.md](COPILOT.md)) |
+| GET | `/v1/assistant/meta` | | starter prompts, samples, router held-out accuracy |
+| GET | `/v1/assistant/sample/{key}` | | the built-in sample file, for playback |
+| POST | `/v1/assistant/reset` | form: `session_id` | `{ok: true}` |
+

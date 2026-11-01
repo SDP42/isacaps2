@@ -73,10 +73,15 @@ async def voice_triage(file: UploadFile = File(...), claimed_sender: str = Form(
     data = await file.read()
     with tempfile.TemporaryDirectory() as d:
         path, sf = _save(d, file, data)
-        if sf.kind not in ("audio", "video"):
-            raise HTTPException(415, "Voice check needs an audio or video file.")
-        v = voice.analyse(path)
-        asr = transcribe.transcribe(path)
+        return voice_core(path, sf, claimed_sender, org, actor=user.persona_id)
+
+
+def voice_core(path: Path, sf, claimed_sender: str = "", org: bool = False, actor: str = "assistant") -> dict:
+    """The voice check on a stored file (also called by the assistant)."""
+    if sf.kind not in ("audio", "video"):
+        raise HTTPException(415, "Voice check needs an audio or video file.")
+    v = voice.analyse(path)
+    asr = transcribe.transcribe(path)
     if v.status == "error":
         raise HTTPException(422, v.summary)
     score = v.score
@@ -96,7 +101,7 @@ async def voice_triage(file: UploadFile = File(...), claimed_sender: str = Form(
     category = sem["category"] if sem else "benign"
     if kind == "synthetic_benign":
         category = "synthetic_benign"
-    ops("triage.voice", actor=user.persona_id, severity=severity, label=stage1["label"], category=category)
+    ops("triage.voice", actor=actor, severity=severity, label=stage1["label"], category=category)
     return {"sha256": sf.sha256, "stage1": stage1,
             "stage2": {"transcript": text, "language": asr.get("language") if asr else None,
                        "words": asr.get("words", []) if asr else [], "semantics": sem},
@@ -112,15 +117,19 @@ class TextIn(BaseModel):
 
 @router.post("/quick/text")
 def quick_text(body: TextIn, user: Principal = Depends(current_principal)) -> dict:
-    sem = _semantics(body.text, "message")
+    return text_core(body.text, body.org, actor=user.persona_id)
+
+
+def text_core(text: str, org: bool = False, actor: str = "assistant") -> dict:
+    sem = _semantics(text, "message")
     if not sem:
         raise HTTPException(422, "Paste at least a few words.")
     s = sem["score"]
     severity = "HIGH" if s >= 0.7 and sem["action"] in SENSITIVE else "MEDIUM" if s >= 0.5 or sem["action"] in SENSITIVE else "LOW"
     if sem["category"] == "digital_arrest":
         severity = "CRITICAL"
-    ops("triage.text", actor=user.persona_id, severity=severity, category=sem["category"])
-    return {"semantics": sem, "severity": severity, "response": resp.build(sem["category"], severity, None, org=body.org)}
+    ops("triage.text", actor=actor, severity=severity, category=sem["category"])
+    return {"semantics": sem, "severity": severity, "response": resp.build(sem["category"], severity, None, org=org)}
 
 
 @router.post("/quick/media")
@@ -129,20 +138,24 @@ async def quick_media(file: UploadFile = File(...), user: Principal = Depends(cu
     data = await file.read()
     with tempfile.TemporaryDirectory() as d:
         path, sf = _save(d, file, data)
-        if sf.kind == "image":
-            r = provenance.analyse(path)
-        elif sf.kind == "video":
-            r = face.analyse(path)
-            v = voice.analyse(path)  # many fake "video calls" are a still face over a cloned voice: judge the track too
-            if v.status == "ok" and (v.score or 0) > (r.score or 0):
-                r.summary = f"{r.summary} The audio track scores {v.score:.2f} for synthetic speech."
-                r.score = v.score
-        else:
-            raise HTTPException(415, "Use the voice check for audio; images and videos are supported here.")
+        return media_core(path, sf, actor=user.persona_id)
+
+
+def media_core(path: Path, sf, actor: str = "assistant") -> dict:
+    if sf.kind == "image":
+        r = provenance.analyse(path)
+    elif sf.kind == "video":
+        r = face.analyse(path)
+        v = voice.analyse(path)  # many fake "video calls" are a still face over a cloned voice: judge the track too
+        if v.status == "ok" and (v.score or 0) > (r.score or 0):
+            r.summary = f"{r.summary} The audio track scores {v.score:.2f} for synthetic speech."
+            r.score = v.score
+    else:
+        raise HTTPException(415, "Use the voice check for audio; images and videos are supported here.")
     s = r.score or 0.0
     label = "Likely AI-generated or manipulated" if s >= 0.7 else "Likely authentic" if s <= 0.3 else "Uncertain"
     severity = "MEDIUM" if s >= 0.7 else "INCONCLUSIVE" if s > 0.3 else "LOW"
-    ops("triage.media", actor=user.persona_id, severity=severity, label=label, modality=sf.kind)
+    ops("triage.media", actor=actor, severity=severity, label=label, modality=sf.kind)
     return {"kind": sf.kind, "sha256": sf.sha256, "score": s, "label": label, "summary": r.summary,
             "models": (r.details.get("pretrained") or {}).get("models"), "meta": (r.details.get("pretrained") or {}).get("meta"),
             "evidence": [e.as_dict() for e in r.evidence if not e.exculpatory][:5],

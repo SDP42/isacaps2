@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { LogOut, Menu, Presentation, Search, X } from "lucide-react";
+import { LogOut, Maximize2, Menu, Presentation, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Logo, LogoMark } from "@/components/ui/Logo";
@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { cx } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import ClickSpark from "@/components/reactbits/ClickSpark";
+import { Copilot, Orb } from "@/components/assistant/Copilot";
 import { CommandPalette } from "./CommandPalette";
 import { NAV } from "./nav";
 import { PresenterBar, setDemoStep, useDemoStep } from "./Presenter";
@@ -67,6 +68,7 @@ export default function AppShell() {
   const { persona, logout } = useAuth();
   const [palette, setPalette] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const [dock, setDock] = useState(false);
   const loc = useLocation();
   const nav = useNavigate();
   const demo = useDemoStep();
@@ -76,6 +78,10 @@ export default function AppShell() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setPalette((v) => !v);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        setDock((v) => !v);
       }
       if (e.key === "Escape") setPalette(false);
       if (!e.metaKey && !e.ctrlKey && (e.target as HTMLElement)?.tagName !== "INPUT" && (e.target as HTMLElement)?.tagName !== "TEXTAREA") {
@@ -153,6 +159,33 @@ export default function AppShell() {
         </main>
       </div>
       <CommandPalette open={palette} setOpen={setPalette} />
+      {!loc.pathname.startsWith("/app/copilot") && (
+        <>
+          {!dock && (
+            <button onClick={() => setDock(true)} aria-label="Open the MIRAGE copilot (Ctrl+J)"
+              className="group fixed bottom-5 right-5 z-[60] flex items-center gap-2.5 rounded-full border border-cyan/30 bg-ink-1/90 py-2 pl-2 pr-4 text-[13px] text-fg shadow-[0_10px_40px_-10px_rgb(103_232_249/0.45)] backdrop-blur-xl transition-transform hover:-translate-y-0.5">
+              <Orb size={30} /> Ask MIRAGE <span className="hidden font-mono text-[10px] text-dim sm:inline">Ctrl J</span>
+            </button>
+          )}
+          <AnimatePresence>
+            {dock && (
+              <motion.aside initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 40, opacity: 0 }} transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                className="fixed inset-y-0 right-0 z-[65] flex w-full flex-col border-l border-line-2 bg-ink-0/95 shadow-[-30px_0_60px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl sm:w-[460px]">
+                <div className="flex items-center gap-2.5 border-b border-line px-4 py-3">
+                  <Orb size={26} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13.5px] font-medium text-fg">MIRAGE Copilot</p>
+                    <p className="text-[11px] text-dim">Local · grounded in MIRAGE's own data</p>
+                  </div>
+                  <button onClick={() => { setDock(false); nav("/app/copilot"); }} className="grid size-8 place-items-center rounded-lg text-muted hover:bg-white/[0.04] hover:text-fg" aria-label="Open full screen"><Maximize2 size={15} /></button>
+                  <button onClick={() => setDock(false)} className="grid size-8 place-items-center rounded-lg text-muted hover:bg-white/[0.04] hover:text-fg" aria-label="Close the copilot"><X size={16} /></button>
+                </div>
+                <div className="min-h-0 flex-1"><Copilot variant="dock" /></div>
+              </motion.aside>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </div>
     </ClickSpark>
   );

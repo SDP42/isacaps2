@@ -5,7 +5,7 @@ built it. Read this first, then [SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) and [DE
 
 State as of 1 November 2026 (evening): see the top of [CHANGELOG.md](../CHANGELOG.md) for the latest round (command
 centre rebuild, evidence kit, Trustbook admin, Drill mode, liveness, SyncNet lip-sync, C2PA validation, semantic
-casebook, WhatsApp chip, Android share target) and the noise-conditional voice ensemble. 27 backend tests pass.
+casebook, WhatsApp chip, Android share target) and the noise-conditional voice ensemble, then the MIRAGE Copilot ([COPILOT.md](COPILOT.md)). 29 backend tests pass.
 
 ## 1. What MIRAGE is
 
@@ -97,7 +97,7 @@ cd frontend && npm install && npm run dev                 # http://localhost:517
   - `MIRAGE_PRETRAINED=off`, `MIRAGE_ASR=off`, `MIRAGE_OCR=off` give the light mode used by CI.
   - `ANTHROPIC_API_KEY` enables the optional Claude judge in the words witness.
   - `MIRAGE_ASR_MODEL` sets the Whisper size (default `base`).
-- **Tests:** `cd backend && .venv/Scripts/python -m pytest -q` runs 27 tests.
+- **Tests:** `cd backend && .venv/Scripts/python -m pytest -q` runs 29 tests.
 - **Demo inputs:** with the API running, `python backend/scripts/verify_demo_inputs.py` rewrites
   `demo_inputs/RESULTS.md`.
 - **Benchmarks:** `scripts/fetch_benchmark.py`, then `scripts/benchmark_models.py`, which writes
@@ -191,6 +191,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Shared evidence components | `frontend/src/components/kit/*` (StateKit, ConfidenceBand, VerdictMatrix, EvidenceTimeline) |
 | Share target (phone) | `frontend/public/manifest.webmanifest`, `public/share-sw.js`, `pages/app/Share.tsx` |
 | WhatsApp Web chip | `extension/whatsapp.js`, `extension/whatsapp-hook.js` |
+| Copilot: intents, router, answers, UI | `backend/app/assistant/{catalog,router,engine,skills,knowledge,eval_set}.py`, `routers/assistant.py`, `scripts/train_assistant.py`, `frontend/src/components/assistant/*`, `lib/assistant.ts`, `pages/app/Assistant.tsx` |
 | Voice / face / image / text logic | `backend/app/witnesses/{voice,face,provenance,words,identity}.py` |
 | Risk fusion, policy rules | `backend/app/fusion/risk.py` |
 | Scam categories, helplines, "what now" plans | `backend/app/fusion/response.py` |
@@ -202,7 +203,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | DB schema | `backend/app/models.py` |
 | Screens | `frontend/src/pages/app/*.tsx` (VoiceCheck, RedTeam, CaseView, LiveShield, AttackChain, System, …) |
 | Case components | `frontend/src/components/case/*` (CureConsole, RiskWaterfall, WhatIf, MediaStudio) |
-| Tests | `backend/tests/test_mirage.py` (27) |
+| Tests | `backend/tests/test_mirage.py` (29) |
 | Benchmarks | `scripts/benchmark_models.py` (ROC + calibration), `scripts/noise_robustness.py`, `scripts/measure_claude_judge.py` |
 | CI | `.github/workflows/ci.yml` (CPU torch, light mode; frontend `tsc` and `vite build`; extension `node --check`) |
 | Demo inputs | `demo_inputs/`, `backend/scripts/make_demo_inputs.py`, `verify_demo_inputs.py` |
@@ -229,7 +230,8 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
 | Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
 | Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
-| Tests / CI | 27/27 pass, both full and light mode; CI green on `main` |
+| Copilot | 90.7 % routing accuracy on 108 held-out twisted questions; answers grounded in data |
+| Tests / CI | 29/29 pass in light mode (as CI runs them); the full GPU suite was last run at 27 tests |
 
 ## 9. Known limits and next steps
 
@@ -282,5 +284,8 @@ Further planning lives in [ROADMAP.md](../ROADMAP.md), [PLAN.md](PLAN.md) and [U
   `case.stage` "verdict" event (published after commit), not on `verdict.issued`.
 - **Attack clock and hours:** case timestamps are stored on the clock the identity witness reads as local time; the
   command centre reads hours in UTC to match it.
+- **Copilot:** never let an LLM write facts (measured: local Llama 3.1 and Phi-3 misstated a three-sentence context).
+  Add a question type by adding phrasings to `catalog.py`, a skill to `skills.py`, then rerun `train_assistant.py`
+  and check the held-out number. Actions with side effects stay behind the 0.6 confidence gate in `engine.py`.
 - **Tests:** the test DB is shared across tests and one test breaks the audit chain on purpose; do not assert the chain
   is intact in later tests. Use `DATABASE_URL` (not `MIRAGE_DB`) to point a script at another database.

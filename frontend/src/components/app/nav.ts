@@ -1,4 +1,4 @@
-import { AudioLines, BookOpenText, BookUser, Crosshair, ScanFace, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Skull, Waypoints, type LucideIcon } from "lucide-react";
+import { Sparkles, AudioLines, BookOpenText, BookUser, Crosshair, ScanFace, Clapperboard, Eye, Radio, FlaskConical, Gauge, Gavel, Network, Route, ScanSearch, Server, ShieldCheck, Skull, Waypoints, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -11,7 +11,10 @@ export interface NavItem {
 export const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Overview",
-    items: [{ to: "/app/dashboard", label: "Command centre", icon: Gauge, roles: ["analyst", "admin", "employee"] }],
+    items: [
+      { to: "/app/copilot", label: "Copilot", icon: Sparkles },
+      { to: "/app/dashboard", label: "Command centre", icon: Gauge, roles: ["analyst", "admin", "employee"] },
+    ],
   },
   {
     group: "Detect",

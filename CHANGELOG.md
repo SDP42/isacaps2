@@ -1,5 +1,27 @@
 # Changelog
 
+## 1 November 2026 (late night): MIRAGE Copilot
+
+- **Copilot** (`/app/copilot`, and an *Ask MIRAGE* dock on every screen, `Ctrl+J`): drop a voice note, call, image,
+  video or `.eml`, paste a message, or pick a built-in sample, then cross-question the result: why, which part, how sure,
+  which models, what if it were a real person, how the score was built, what to do, how to report. It also explains
+  every part of MIRAGE, runs scenarios, opens cases (and knows the case you are looking at), reads the dashboard and
+  red-team results, and navigates.
+- **Grounded by design**: a router trained locally on 2,702 phrasings of 51 intents (MiniLM sentence vectors, nearest
+  phrasings and character / word n-grams) picks the question; answers are visual blocks whose numbers come from the
+  detectors, `benchmark.json`, the red-team campaign and the case database. Unknown questions fall back to cited
+  retrieval over the docs. **90.7 %** on 108 held-out twisted / Hinglish / misspelt questions (`scripts/train_assistant.py`).
+- Measured and rejected: a local Phi-3 routing tie-break (88.9 % vs 91.7 %) and LLM-written answers (Llama 3.1 and
+  Phi-3 misstated simple facts given to them); both stay off.
+- Triage endpoints now share `voice_core`, `media_core` and `text_core` with the copilot. Fix: the evidence timeline no
+  longer overflows narrow screens.
+- Tested end to end with `scripts/test_assistant.py` (60 turns: files, follow-ups, cases, scenarios, judge questions):
+  54/60 at first, 60/60 after fixes (doc-fallback relevance floor, low-confidence follow-ups stay on the subject, no
+  message-check without a message, action confidence gate, more phrasings).
+- Speed: the Vite dev proxy now targets `127.0.0.1` instead of `localhost`, removing ~1.4 s of IPv6 fallback from every
+  API call in the browser on Windows (copilot answers 40–70 ms).
+- Tests: 27 → 29.
+
 ## 1 November 2026 (night): noise-conditional voice ensemble
 
 - Below 19 dB SNR the voice witness (and the live shield) scores with DF_Arena alone, the model that degraded least

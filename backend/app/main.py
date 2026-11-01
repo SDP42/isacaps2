@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, SessionLocal, engine
-from .routers import auth, cases, liveness, misc, ops, redteam, triage, trustbook
+from .routers import assistant, auth, cases, liveness, misc, ops, redteam, triage, trustbook
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("mirage")
@@ -31,6 +31,10 @@ def _warm() -> None:
     from .witnesses import pretrained, transcribe
 
     pretrained.warm()
+    try:
+        assistant.warm()  # trains the copilot's router on first run (seconds) and indexes the docs
+    except Exception as exc:
+        log.warning("assistant unavailable: %s", exc)
     try:
         transcribe._whisper()
     except Exception as exc:
@@ -67,6 +71,7 @@ app.include_router(redteam.router)
 app.include_router(ops.router)
 app.include_router(trustbook.router)
 app.include_router(liveness.router)
+app.include_router(assistant.router)
 
 
 @app.get("/v1/health")

@@ -68,6 +68,7 @@ flowchart LR
 | **The cure, not a checklist** | A live response run per scam type: exposure meter, golden-hour clock, challenge questions, pre-filled cybercrime.gov.in / 1930 / bank / Chakshu / CERT-In drafts, evidence-pack ZIP, scam-network blocklist, "who else was targeted", red-team drill. |
 | **Thinks like the attacker** | The red-team lab forges labelled scams (neural voices, SD-Turbo portraits, avatar video) and launders them through phone, WhatsApp, MP3, reverb, noise and screenshots: 41/42 voice and 15/15 image variants caught. |
 | **Where scams arrive** | Voice check, live call shield, and the MIRAGE Shield Chrome extension (right-click checks, tab-call shield, Gmail banners). |
+| **A copilot that never makes things up** | Ask anything, drop any file, cross-question the verdict (why, which part, how sure, what if it were real). A router trained locally (MiniLM + n-grams, 90.7% on 108 held-out twisted questions) picks the question; every number comes from MIRAGE's own detectors, benchmark and cases. |
 | **Built for India** | English, Hindi and Hinglish; UPI / IFSC / Indian amount extraction; 1930, cybercrime.gov.in, Sanchar Saathi, CERT-In. |
 
 ## Screens
@@ -396,6 +397,7 @@ The script is in [docs/DEMO.md](docs/DEMO.md).
 | Cure | `GET /v1/cases/{id}/cure`, `POST …/cure/actions/{action}`, `POST …/cure/paid`, `GET …/cure/drafts`, `GET …/cure/evidence-pack` |
 | Triage | `POST /v1/voice/triage`, `POST /v1/quick/text`, `POST /v1/quick/media`, `POST /v1/live/chunk` |
 | Red team | `GET /v1/redteam/catalog`, `POST /v1/redteam/generate`, `POST /v1/redteam/campaign`, `GET /v1/redteam/campaigns/latest` |
+| Copilot | `POST /v1/assistant/chat` (message, file or sample; returns visual answer blocks), `GET /v1/assistant/meta` |
 | Platform | `/v1/auth/*`, `/v1/dashboard`, `/v1/models`, `/v1/audit`, `/v1/scenarios` |
 
 Full reference: [docs/API.md](docs/API.md); interactive OpenAPI at http://localhost:8000/docs.
@@ -438,11 +440,12 @@ cd backend && MIRAGE_PRETRAINED=off MIRAGE_ASR=off MIRAGE_OCR=off python -m pyte
 cd frontend && npx tsc -b --noEmit && npx vite build
 ```
 
-26 tests (light mode, as CI runs them) cover the Scenario Lab verdicts (with citation integrity and Tribunal order),
+29 tests (light mode, as CI runs them) cover the Scenario Lab verdicts (with citation integrity and Tribunal order),
 upload rejection, auth, text extraction, the credential and harmless-synthetic rules, Shapley additivity, audit-chain
 tamper detection, the voice-check matrix, response plans, red-team laundering, the full Cure Console flow, the
 command-centre overview and demo reset, Trustbook editing and consent rules, Drill mode, liveness pose directions and
-C2PA validation (including a tampered image). GitHub Actions runs the
+C2PA validation (including a tampered image), and the copilot (twisted-question routing and a grounded multi-turn
+conversation that never runs an action on a guess). GitHub Actions runs the
 backend suite, the frontend typecheck and build, and extension syntax checks on every push and pull request.
 
 ## Security, privacy and responsible use
@@ -465,6 +468,7 @@ History: [CHANGELOG.md](CHANGELOG.md).
 
 | Document | Contents |
 |---|---|
+| [docs/COPILOT.md](docs/COPILOT.md) | The MIRAGE Copilot: local router, grounded answers, measured accuracy, block types |
 | [docs/HANDOVER.md](docs/HANDOVER.md) | Start here to take over: constraints, workflow, architecture, file map, results, next steps |
 | [demo_inputs/README.md](demo_inputs/README.md) | 32 test inputs across every feature, with expected and measured results |
 | [docs/SYSTEM_OVERVIEW.md](docs/SYSTEM_OVERVIEW.md) | What is built, architecture, flow, features, use cases, results |

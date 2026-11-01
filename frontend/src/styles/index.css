@@ -237,3 +237,8 @@ button:not(:disabled):active { transform: translateY(1px); }
   50% { transform: translate(6%, 8%) scale(1.15) rotate(8deg); }
   100% { transform: translate(-5%, 4%) scale(0.95) rotate(-6deg); }
 }
+
+/* Copilot answers: blocks rise in one after another (only under .motion-ok, so a paused tab never hides them) */
+@keyframes copilot-in { from { opacity: 0; transform: translateY(6px); } }
+.motion-ok .copilot-in { animation: copilot-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .motion-ok .copilot-in { animation: none; } }
