@@ -109,7 +109,8 @@ ACTIONS: list[tuple[str, float, list[str]]] = [
 # Whisper writes "20 ,000" (field report: an avatar's "invest 20 ,000" read as no request), so a space may precede a comma
 _NUM = r"\d[\d,]*(?: ,\d{2,3})*(?:\.\d+)?"
 _AMOUNT = re.compile(rf"(?:₹|rs\.?|inr)\s?({_NUM})(?:\s*(lakh|lac|crore|cr|k)\b)?|([\d.]+)\s*(lakh|lac|crore|cr)\b|"
-                     rf"\b(?:invest|pay|send|transfer|deposit)\w*\s+(?:just |only )?({_NUM})(?![\d.,])(?!\s*(?:lakh|lac|crore|cr|k)\b)", re.I)
+                     rf"\b(?:invest|pay|send|transfer|deposit)\w*\s+(?:just |only )?({_NUM})(?![\d.,])(?!\s*(?:lakh|lac|crore|cr|k)\b)|"
+                     rf"\b({_NUM})\s*(?:rupees|rupaye|rupay)\b", re.I)  # spoken calls: "48,50,000 rupees"
 ENTITY_RX = {
     "upi": re.compile(r"\b[\w.\-]{2,40}@(ok\w+|ybl|paytm|ibl|axl|upi|icici|sbi|hdfc\w*|apl|kotak)\b", re.I),
     "ifsc": re.compile(r"\b[A-Z]{4}0[A-Z0-9]{6}\b"),
@@ -160,7 +161,7 @@ class RequestObject:
 def parse_amount(text: str) -> int | None:
     best = None
     for m in _AMOUNT.finditer(text):
-        num = m.group(1) or m.group(3) or m.group(5)
+        num = m.group(1) or m.group(3) or m.group(5) or m.group(6)
         unit = (m.group(2) or m.group(4) or "").lower()
         try:
             v = float(num.replace(",", "").replace(" ", ""))

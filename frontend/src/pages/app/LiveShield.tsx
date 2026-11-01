@@ -8,13 +8,18 @@ import { BAND_COLOR, cx } from "@/lib/format";
 import { simulate, type Action } from "@/lib/risk";
 import { RiskRiver } from "@/components/app/RiskRiver";
 import { WhatNow, type ResponsePlan } from "@/components/app/WhatNow";
+import { DEMO_CALLS, type DemoWindow } from "./liveDemo";
 
 const CHUNK_S = 3;
+// challenge: what to do on the alert, for this caller (a CFO has no family code word)
 const SAMPLES = [
-  { file: "cfo_voice_note.wav", label: "“CFO” asks for a wire", caller: "+91 70451 88213" },
-  { file: "papa_voice_note.wav", label: "“Papa” emergency (Hinglish)", caller: "+91 73040 99812" },
-  { file: "it_helpdesk.wav", label: "“IT helpdesk” wants the OTP", caller: "+91 88002 31109" },
-  { file: "townhall_avatar.wav", label: "AI townhall announcement", caller: "Acme Events" },
+  { file: "cfo_voice_note.wav", label: "“CFO” asks for a wire", caller: "+91 70451 88213", lang: "en",
+    challenge: "Say you'll call Rajesh back on his directory number, and hang up. Then confirm with a second approver." },
+  { file: "papa_voice_note.wav", label: "“Papa” emergency (Hinglish)", caller: "+91 73040 99812", lang: "hi",
+    challenge: "Ask for the family code word, then call Papa on his saved number." },
+  { file: "it_helpdesk.wav", label: "“IT helpdesk” wants the OTP", caller: "+91 88002 31109", lang: "hi",
+    challenge: "Never read out an OTP. Hang up and call IT on the helpdesk number in the directory." },
+  { file: "townhall_avatar.wav", label: "AI townhall announcement", caller: "Acme Events", lang: "en", challenge: "" },
 ];
 const CHALLENGES = [
   "Ask for this week's verification phrase.",
@@ -64,6 +69,8 @@ export default function LiveShield() {
   const langRef = useRef<string | null>(null);
   const applied = useRef(-1);
   const parts = useRef<string[]>([]);
+  const runningRef = useRef<string | null>(null);
+  const [mode, setMode] = useState<"replay" | "live">("replay");
   const caller = SAMPLES.find((s) => s.file === running)?.caller ?? "Unknown caller";
 
   const reset = () => {
@@ -80,24 +87,30 @@ export default function LiveShield() {
     try {
       const r = await fetch("/v1/live/chunk", { method: "POST", body: fd, headers: { authorization: `Bearer ${getToken() ?? ""}` } }).then((x) => x.json());
       if (r.text && r.lang && !langRef.current) langRef.current = r.lang;
-      if (r.text) {
-        parts.current[i] = r.text;
-        textRef.current = parts.current.filter(Boolean).join(" ");
-        setTranscript(textRef.current);
-      }
-      // responses can arrive out of order; only the newest chunk may update the rolling read
-      if (i >= applied.current) {
-        applied.current = i;
-        setRolling({ tactics: r.tactics ?? [], action: r.action ?? "none", manipulation: r.manipulation ?? 0, spans: r.spans ?? [], amount: r.amount ?? null });
-      }
-      const action = (["payment", "credential", "data", "info"].includes(r.action) ? r.action : "none") as Action;
-      const risk = simulate(r.spoof ?? 0, r.manipulation ?? 0, 0.35, action, (r.tactics ?? []).some((t: string) => t === "secrecy" || t === "bypass")).risk;
-      setChunks((c) => [...c, { i, spoof: r.spoof, risk, text: r.text, tactics: r.tactics ?? [] }].sort((a, b) => a.i - b.i));
-      if ((r.action === "payment" || r.action === "credential") && risk >= 70) {
-        setAlert((a) => a ?? CHALLENGES[Math.floor(Math.random() * (r.action === "credential" ? 4 : CHALLENGES.length))]);
-      }
+      apply(i, r);
     } catch {
       /* drop a chunk rather than stall the call */
+    }
+  };
+
+  /** One analysed window, from the API (live) or from the recording (demo replay). */
+  const apply = (i: number, r: Partial<DemoWindow>) => {
+    if (r.text) {
+      parts.current[i] = r.text;
+      textRef.current = parts.current.filter(Boolean).join(" ");
+      setTranscript(textRef.current);
+    }
+    // responses can arrive out of order; only the newest chunk may update the rolling read
+    if (i >= applied.current) {
+      applied.current = i;
+      setRolling({ tactics: r.tactics ?? [], action: r.action ?? "none", manipulation: r.manipulation ?? 0, spans: r.spans ?? [], amount: r.amount ?? null });
+    }
+    const action = (["payment", "credential", "data", "info"].includes(r.action ?? "") ? r.action : "none") as Action;
+    const risk = simulate(r.spoof ?? 0, r.manipulation ?? 0, 0.35, action, (r.tactics ?? []).some((t: string) => t === "secrecy" || t === "bypass")).risk;
+    setChunks((c) => [...c, { i, spoof: r.spoof ?? null, risk, text: r.text ?? "", tactics: r.tactics ?? [] }].sort((a, b) => a.i - b.i));
+    if ((r.action === "payment" || r.action === "credential") && risk >= 70) {
+      const own = SAMPLES.find((s) => s.file === runningRef.current)?.challenge;
+      setAlert((a) => a ?? (own || CHALLENGES[Math.floor(Math.random() * (r.action === "credential" ? 4 : CHALLENGES.length))]));
     }
   };
 
@@ -139,6 +152,7 @@ export default function LiveShield() {
       const stopMeter = meter(analyser);
       const timer = setInterval(() => setSecs((s) => s + 1), 1000);
       stopRef.current = () => { stopMeter(); clearInterval(timer); proc.disconnect(); stream.getTracks().forEach((t) => t.stop()); ctx.close(); };
+      runningRef.current = "mic";
       setRunning("mic");
     } catch (e) {
       ctx.close().catch(() => {});
@@ -163,19 +177,30 @@ export default function LiveShield() {
     const data = audio.getChannelData(0);
     const n = Math.floor(audio.sampleRate * CHUNK_S);
     let pos = 0;
+    // replay: the recorded analysis of each window lands as that window finishes playing; live: the API scores it
+    const demo = mode === "replay" ? DEMO_CALLS[file] : undefined;
+    langRef.current = demo ? null : SAMPLES.find((s) => s.file === file)?.lang ?? null;  // 3 s Hinglish slices misdetect as English
+    const emit = (slice: Float32Array) => {
+      const k = idx.current;
+      if (demo) {
+        idx.current++;
+        if (demo.windows[k]) apply(k, demo.windows[k]);
+      } else send(downsample(slice, audio.sampleRate));
+    };
     // emit each 3-second slice as it finishes playing, exactly like a live call
     const step = setInterval(() => {
       if (pos >= data.length) return;
-      send(downsample(data.slice(pos, pos + n), audio.sampleRate));
+      emit(data.slice(pos, pos + n));
       pos += n;
     }, CHUNK_S * 1000);
     const timer = setInterval(() => setSecs((s) => s + 1), 1000);
     node.onended = () => {
-      if (pos < data.length) send(downsample(data.slice(pos), audio.sampleRate));
-      setTimeout(() => stop(), 600);
+      if (pos < data.length) emit(data.slice(pos));
+      setTimeout(() => stop(), demo ? 300 : 600);
     };
     node.start();
     stopRef.current = () => { stopMeter(); clearInterval(step); clearInterval(timer); try { node.stop(); } catch { /* already ended */ } ctx.close(); };
+    runningRef.current = file;
     setRunning(file);
   };
 
@@ -233,7 +258,20 @@ export default function LiveShield() {
             <span><span className="block text-[15px] text-fg">Listen with the microphone</span><span className="text-[12.5px] text-muted">Play a call on a phone speaker, or speak yourself</span></span>
           </button>
           <div className="panel p-4">
-            <p className="label mb-2">Or play a suspicious call through the shield</p>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="label">Or play a suspicious call through the shield</p>
+              <div className="flex rounded-full border border-line p-0.5 text-[11.5px]" role="radiogroup" aria-label="Analysis source">
+                {([["replay", "Recorded analysis"], ["live", "Live detectors"]] as const).map(([v, l]) => (
+                  <button key={v} role="radio" aria-checked={mode === v} onClick={() => setMode(v)}
+                    className={cx("rounded-full px-2.5 py-1 transition-colors", mode === v ? "bg-ink-3 text-fg" : "text-muted hover:text-fg")}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <p className="mb-2.5 text-[11.5px] text-dim">
+              {mode === "replay"
+                ? "Replays scores the detectors produced on these calls, in sync with the audio. Instant and repeatable."
+                : "Sends each 3 s window to the voice ensemble, Whisper and the words witness. Needs the API and GPU; each window takes a few seconds."}
+            </p>
             <div className="grid gap-2 sm:grid-cols-2">
               {SAMPLES.map((s) => (
                 <button key={s.file} onClick={() => startSample(s.file)} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2.5 text-left text-[13px] text-silver hover:border-cyan/40 hover:text-fg">
