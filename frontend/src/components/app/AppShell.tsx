@@ -105,9 +105,12 @@ export default function AppShell() {
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-[420px] bg-[radial-gradient(ellipse_at_30%_-10%,rgb(103_232_249/0.07),transparent_60%),radial-gradient(ellipse_at_85%_-20%,rgb(167_139_250/0.06),transparent_55%)]" />
       {/* desktop rail */}
       <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 flex-col border-r border-line bg-ink-1/60 px-3 py-4 lg:flex">
-        <NavLink to="/" className="mb-7 px-3"><Logo /></NavLink>
-        <SideNav />
-        <div className="mt-auto rounded-xl border border-line bg-ink-2/70 p-3">
+        <NavLink to="/" className="mb-7 shrink-0 px-3"><Logo /></NavLink>
+        {/* the menu scrolls on its own; the logo and the persona card stay put */}
+        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-3">
+          <SideNav />
+        </div>
+        <div className="mt-3 shrink-0 rounded-xl border border-line bg-ink-2/70 p-3">
           <div className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-lg bg-ink-4 text-[13px] font-medium text-cyan">{initials}</span>
             <div className="min-w-0">
@@ -126,7 +129,7 @@ export default function AppShell() {
         {drawer && (
           <motion.div className="fixed inset-0 z-[70] bg-ink-0/70 backdrop-blur-sm lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDrawer(false)}>
             <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="h-full w-[260px] border-r border-line bg-ink-1 px-3 py-4" onClick={(e) => e.stopPropagation()}>
+              className="h-full w-[260px] overflow-y-auto overscroll-contain border-r border-line bg-ink-1 px-3 py-4" onClick={(e) => e.stopPropagation()}>
               <div className="mb-6 flex items-center justify-between px-3">
                 <Logo />
                 <button onClick={() => setDrawer(false)} aria-label="Close navigation"><X size={18} /></button>
