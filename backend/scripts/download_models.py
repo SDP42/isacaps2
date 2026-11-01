@@ -18,6 +18,8 @@ Each witness keeps working without its models; the models are the primary detect
   text    MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7 multilingual zero-shot intent (100 languages)
   text    sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 dense casebook retrieval
   redteam stabilityai/sd-turbo (fp16)                             image generator for the red-team lab (optional)
+  study   SpeechAntiSpoofingBenchmarks/MMS-300M-AntiDeepfake,      NII siblings, ONNX; only scripts/noise_robustness.py
+          SpeechAntiSpoofingBenchmarks/Wav2Vec2-Small-AntiDeepfake uses them (optional)
   speech-to-text  faster-whisper (downloaded on first use)
 """
 import sys
@@ -58,10 +60,14 @@ GROUPS = {
                                   "unet/diffusion_pytorch_model.fp16.safetensors", "vae/config.json",
                                   "vae/diffusion_pytorch_model.fp16.safetensors"]),
     ],
+    "study": [
+        ("SpeechAntiSpoofingBenchmarks/MMS-300M-AntiDeepfake", ["config.json", "README.md", "*.onnx"]),
+        ("SpeechAntiSpoofingBenchmarks/Wav2Vec2-Small-AntiDeepfake", ["config.json", "README.md", "*.onnx"]),
+    ],
 }
 YUNET = "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
 
-wanted = sys.argv[1:] or [g for g in GROUPS if g != "redteam"]
+wanted = sys.argv[1:] or [g for g in GROUPS if g not in ("redteam", "study")]
 for group in wanted:
     for repo, allow in GROUPS[group]:
         path = snapshot_download(repo, local_dir=ROOT / repo.split("/")[1], allow_patterns=allow)
