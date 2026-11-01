@@ -28,6 +28,7 @@ const Drills = lazy(() => import("./pages/app/Drills"));
 const Liveness = lazy(() => import("./pages/app/Liveness"));
 const Share = lazy(() => import("./pages/app/Share"));
 const Assistant = lazy(() => import("./pages/app/Assistant"));
+const TechnicalDemonstration = lazy(() => import("./pages/technical_demonstration/TechnicalDemonstration"));
 
 function Splash() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/technical_demonstration" element={<TechnicalDemonstration />} />
             <Route path="/app" element={<Protected><AppShell /></Protected>}>
               <Route index element={<HomeRedirect />} />
               <Route path="dashboard" element={<Dashboard />} />

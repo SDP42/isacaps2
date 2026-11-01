@@ -1,5 +1,11 @@
 # Changelog
 
+## 1 November 2026 (afternoon): technical demonstration page
+
+- `/technical_demonstration`: scroll through a real case as it moves through MIRAGE. A laptop shows the user's
+  screens; a backend lens zooms into each engine (custody, dissection, five witnesses, risk rules and formula,
+  Tribunal, cure) with the real rules and numbers. Three cases, all from real runs (MRG-0518, MRG-0519, MRG-0522).
+
 ## 1 November 2026 (midday): Simple mode, honest video verdicts, the Truth Lens
 
 - **Simple / Expert switch** in the header (like a theme toggle; the family persona starts in Simple):

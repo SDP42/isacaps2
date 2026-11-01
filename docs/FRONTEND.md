@@ -46,6 +46,19 @@ with per-particle delay and turbulence:
 ScrollTrigger, and runs SplitText word-mask reveals on `[data-split]` headings. Lenis is driven by `gsap.ticker`
 (one RAF). The cursor is tracked through R3F's `eventSource` because the canvas sits behind the page.
 
+## Technical demonstration (`/technical_demonstration`)
+
+`pages/technical_demonstration/` is a scroll-driven walkthrough for presentations. A sticky stage holds:
+
+- an architecture rail (Intake → Dissect → five witnesses → Decide → Explain → Respond, clickable);
+- a laptop rendering the MIRAGE screens a user sees at that step (`Laptop.tsx`);
+- a backend lens that zooms into the engine at work (`Lens.tsx`): custody hex and hash, dissection streams, each
+  witness's detectors and thresholds, the policy-rule ladder and formula, the Tribunal, the cure.
+
+Scroll progress through each stage (motion `useScroll`, Lenis smoothing) drives every animation. Three real cases
+(`data.ts`: MRG-0518 cloned CFO voice note, MRG-0519 AI "CBI officer" video, MRG-0522 harmless AI announcement)
+replay the same path with their real values; witnesses a case does not need show as "not called".
+
 ## Application
 
 ### Simple and Expert views
