@@ -124,7 +124,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 
 | Modality | Models (threshold) | Notes |
 |---|---|---|
-| Voice | DF_Arena 500M (0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, index 0 = fake) | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": DF_Arena alone scores it (measured in the noise study), confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
+| Voice | DF_Arena 500M (0.5, weight 0.5, index 0 = spoof, 64,600 samples) + NII Wav2Vec2-Large AntiDeepfake ONNX (0.5, weight 0.2, index 0 = fake) + NII MMS-300M multilingual ONNX (0.3, weight 0.65), members in `pretrained.AUDIO_KEYS` | Pretrained layer has weight 0.9 in `voice.py`. SNR below 19 dB marks the evidence "noisy": DF_Arena alone scores it (measured in the noise study), confidence drops 0.25 and triage widens the uncertain band to 0.1–0.9 |
 | Voiceprint | WavLM-base-plus-sv | Cosine match at 0.86; guided enrolment needs three takes agreeing at 0.75 |
 | Lip-sync | SyncNet v2 (vendored, `weights_only`) | Flags "lips do not follow the voice" below confidence 3.0; still pictures are not scored |
 | Casebook | paraphrase-multilingual MiniLM-L12 | Dense vectors join BM25 and TF-IDF in the rank fusion |
@@ -231,6 +231,7 @@ How far the models agree sets the confidence. Every load and every GPU inference
 | Faces | FaceForensics++ AUC 0.92; OpenForensics 0.71 (weakest) |
 | Text | Indian scam SMS set: 0.94 (re-measured 1 November after the corroboration fixes; UCI SMS 0.73) |
 | Demo inputs | 32/32 match expected ([RESULTS.md](../demo_inputs/RESULTS.md)) |
+| Third voice detector | MMS-300M chosen from six candidates (`voice_candidates.py`, `voice_fusion.py`): held-out error 0.257 → 0.160; real Hindi called AI 100 → 70 %, reverb 100 → 79 %, replay 92 → 58 %; benchmark and red team unchanged (TEST_REPORT §6) |
 | Field test | See [testing/TEST_REPORT.md](../testing/TEST_REPORT.md): TTS 50/50; an undocumented fake corpus 0/37; real voices with reverb or replay called AI 92–100 %, WhatsApp/phone 25–33 %; text HIGH 97 % (held-out 85–90 %); decision matrix 14/14; robustness 36/36 |
 | Copilot | 90.7 % routing accuracy on 108 held-out twisted questions; answers grounded in data |
 | Tests / CI | 29/29 pass in light mode (as CI runs them); the full GPU suite was last run at 27 tests |

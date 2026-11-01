@@ -68,10 +68,11 @@ MODELS = {
 # Operating thresholds: the probability of "fake" that each model's scores are recentred on. Measured with
 # scripts/benchmark_models.py on public labelled samples (real-class 90th percentile vs fake-class 25th percentile,
 # rounded conservatively); 0.5 where the model was already balanced. Nothing is trained.
-THRESHOLDS = {"df_arena": 0.5, "nii": 0.5, "commfor": 0.01, "swinv2": 0.1, "gend": 0.75, "gend_pe": 0.75}
+THRESHOLDS = {"df_arena": 0.5, "nii": 0.5, "nii_mms": 0.3, "commfor": 0.01, "swinv2": 0.1, "gend": 0.75, "gend_pe": 0.75}
 # ensemble weights: stronger measured generalisation gets more say (Organika/sdxl-detector is excluded: it scored the
 # median real photo at 0.40 on our benchmark, so it would only add false alarms)
-WEIGHTS = {"df_arena": 0.6, "nii": 0.4, "commfor": 0.55, "swinv2": 0.45, "gend": 0.5, "gend_pe": 0.5}
+# voice weights from scripts/voice_fusion.py (chosen on even clips, validated on odd clips): field-test error 0.257 -> 0.160
+WEIGHTS = {"df_arena": 0.5, "nii": 0.2, "nii_mms": 0.65, "commfor": 0.55, "swinv2": 0.45, "gend": 0.5, "gend_pe": 0.5}
 
 
 def enabled() -> bool:
@@ -88,7 +89,7 @@ def available(key: str) -> bool:
     if not enabled():
         return False
     d = _dir(key)
-    if key in ("nii", "nii_mms", "nii_small"):
+    if key.startswith("nii"):  # every AntiDeepfake ONNX export, whatever its size
         return any(d.glob("*.onnx"))
     if key == "yunet":
         return any(d.glob("*.onnx"))
@@ -108,6 +109,7 @@ def name(key: str) -> str:
 CARDS = {  # witness, role, published result (source)
     "df_arena": ("voice", "Synthetic-speech detection (primary)", "In-the-Wild EER 1.87% · 24-dataset mean EER 5.1% (Speech Anti-Spoofing Arena)"),
     "nii": ("voice", "Synthetic-speech detection (primary)", "In-the-Wild EER 2.9% · Deepfake-Eval-2024 EER 30% (arXiv 2506.21090)"),
+    "nii_mms": ("voice", "Synthetic-speech detection (multilingual, primary)", "In-the-Wild EER 4.8% · DeepVoice (RVC) EER 4.6% · MMS pretraining on 1,400 languages (arXiv 2506.21090)"),
     "wavlm": ("voice", "Speaker verification (voiceprint)", "VoxCeleb1 EER 0.84% (model card)"),
     "commfor": ("provenance", "AI-generated image detection (primary)", "Trained on 4,803 generators (CVPR 2025)"),
     "swinv2": ("provenance", "AI-generated image detection", "SwinV2, modern diffusion generators (model card)"),
@@ -263,12 +265,16 @@ def nii_fake(chunk: np.ndarray, key: str = "nii") -> float | None:
 # (white noise at 10 dB: AUC 0.52 vs 0.86; street noise at 5 dB: 0.71 vs 0.96) and pulls every ensemble below DF_Arena
 # alone. The NII models trained with augmentation did no better. So noisy audio is judged by DF_Arena alone.
 NOISY_AUDIO_KEYS = ("df_arena",)
+# Members of the clean-audio ensemble. The third (multilingual MMS AntiDeepfake) was chosen by scripts/voice_candidates.py
+# and scripts/voice_fusion.py on the field-test corpora: it removes most false alarms on real Indian-language speech and
+# on reverberant or replayed real voices, which DF_Arena and the English-pretrained NII model raise (testing/TEST_REPORT.md).
+AUDIO_KEYS = ("df_arena", "nii", "nii_mms")
 
 
 def audio_scores(x: np.ndarray, noisy: bool = False) -> dict | None:
     """Per-window scores from the anti-spoofing models, plus the ensemble per window. In noisy audio only the models
     that held up in the noise study vote (when they are installed)."""
-    keys = [k for k in ("df_arena", "nii") if available(k)]
+    keys = [k for k in AUDIO_KEYS if available(k)]
     if not keys:
         return None
     noise_mode = noisy and any(k in keys for k in NOISY_AUDIO_KEYS)
@@ -278,10 +284,10 @@ def audio_scores(x: np.ndarray, noisy: bool = False) -> dict | None:
     rows = []
     for t0, t1, c in wins:
         s = {}
-        if "df_arena" in keys and (v := df_arena_fake(c)) is not None:
-            s["df_arena"] = v
-        if "nii" in keys and (v := nii_fake(c)) is not None:
-            s["nii"] = v
+        for k in keys:
+            v = df_arena_fake(c) if k == "df_arena" else nii_fake(c, k)
+            if v is not None:
+                s[k] = v
         if s:
             p, agree = ensemble(s)
             rows.append({"t0": t0, "t1": t1, "models": s, "p": p, "agree": agree})
@@ -645,6 +651,7 @@ def warm() -> None:
     tests = {
         "df_arena": lambda: df_arena_fake(_np.zeros(SR * 2, _np.float32) + 1e-3),
         "nii": lambda: nii_fake(_np.random.randn(SR * 2).astype(_np.float32) * 0.01),
+        "nii_mms": lambda: nii_fake(_np.random.randn(SR * 2).astype(_np.float32) * 0.01, "nii_mms"),
         "wavlm": lambda: speaker_embedding(_np.random.randn(SR * 2).astype(_np.float32) * 0.01),
         "commfor": lambda: commfor_fake([Image.new("RGB", (64, 64))]),
         "swinv2": lambda: hf_image_fake("swinv2", [Image.new("RGB", (64, 64))]),

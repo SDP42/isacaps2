@@ -443,42 +443,42 @@
    "real/google_tamil": {
     "n": 20,
     "correct": 7,
-    "wrong": 9,
-    "uncertain": 4,
+    "wrong": 7,
+    "uncertain": 6,
     "errors": 0,
     "correct_rate": 0.35,
-    "wrong_rate": 0.45,
-    "mean_score": 0.523
+    "wrong_rate": 0.35,
+    "mean_score": 0.466
    },
    "real/google_tamil_m": {
     "n": 20,
-    "correct": 13,
-    "wrong": 3,
+    "correct": 14,
+    "wrong": 2,
     "uncertain": 4,
     "errors": 0,
-    "correct_rate": 0.65,
-    "wrong_rate": 0.15,
-    "mean_score": 0.231
+    "correct_rate": 0.7,
+    "wrong_rate": 0.1,
+    "mean_score": 0.198
    },
    "real/hemg": {
     "n": 50,
     "correct": 49,
-    "wrong": 1,
-    "uncertain": 0,
+    "wrong": 0,
+    "uncertain": 1,
     "errors": 0,
     "correct_rate": 0.98,
-    "wrong_rate": 0.02,
-    "mean_score": 0.037
+    "wrong_rate": 0.0,
+    "mean_score": 0.018
    },
    "real/indic_hindi": {
     "n": 30,
     "correct": 0,
-    "wrong": 30,
-    "uncertain": 0,
+    "wrong": 21,
+    "uncertain": 9,
     "errors": 0,
     "correct_rate": 0.0,
-    "wrong_rate": 1.0,
-    "mean_score": 0.975
+    "wrong_rate": 0.7,
+    "mean_score": 0.751
    },
    "real/librispeech": {
     "n": 40,
@@ -492,13 +492,13 @@
    },
    "real/ljspeech": {
     "n": 30,
-    "correct": 24,
-    "wrong": 2,
-    "uncertain": 4,
+    "correct": 28,
+    "wrong": 1,
+    "uncertain": 1,
     "errors": 0,
-    "correct_rate": 0.8,
-    "wrong_rate": 0.067,
-    "mean_score": 0.131
+    "correct_rate": 0.933,
+    "wrong_rate": 0.033,
+    "mean_score": 0.075
    },
    "fake/edge_multilang": {
     "n": 12,
@@ -513,12 +513,12 @@
    "fake/hemg": {
     "n": 37,
     "correct": 0,
-    "wrong": 35,
-    "uncertain": 2,
+    "wrong": 37,
+    "uncertain": 0,
     "errors": 0,
     "correct_rate": 0.0,
-    "wrong_rate": 0.946,
-    "mean_score": 0.045
+    "wrong_rate": 1.0,
+    "mean_score": 0.038
    },
    "fake/ljspeech": {
     "n": 30,
@@ -528,7 +528,7 @@
     "errors": 0,
     "correct_rate": 1.0,
     "wrong_rate": 0.0,
-    "mean_score": 0.997
+    "mean_score": 0.998
    },
    "fake/sapi": {
     "n": 8,
@@ -544,63 +544,63 @@
   "laundered_real": {
    "mp3": {
     "n": 24,
+    "correct": 17,
+    "wrong": 6,
+    "uncertain": 1,
+    "errors": 0,
+    "correct_rate": 0.708,
+    "wrong_rate": 0.25,
+    "mean_score": 0.251
+   },
+   "noise": {
+    "n": 24,
+    "correct": 15,
+    "wrong": 4,
+    "uncertain": 5,
+    "errors": 0,
+    "correct_rate": 0.625,
+    "wrong_rate": 0.167,
+    "mean_score": 0.259
+   },
+   "phone": {
+    "n": 24,
     "correct": 18,
     "wrong": 5,
     "uncertain": 1,
     "errors": 0,
     "correct_rate": 0.75,
     "wrong_rate": 0.208,
-    "mean_score": 0.231
-   },
-   "noise": {
-    "n": 24,
-    "correct": 16,
-    "wrong": 4,
-    "uncertain": 4,
-    "errors": 0,
-    "correct_rate": 0.667,
-    "wrong_rate": 0.167,
-    "mean_score": 0.249
-   },
-   "phone": {
-    "n": 24,
-    "correct": 18,
-    "wrong": 6,
-    "uncertain": 0,
-    "errors": 0,
-    "correct_rate": 0.75,
-    "wrong_rate": 0.25,
-    "mean_score": 0.238
+    "mean_score": 0.209
    },
    "replay": {
     "n": 24,
-    "correct": 0,
-    "wrong": 22,
-    "uncertain": 2,
+    "correct": 2,
+    "wrong": 14,
+    "uncertain": 8,
     "errors": 0,
-    "correct_rate": 0.0,
-    "wrong_rate": 0.917,
-    "mean_score": 0.913
+    "correct_rate": 0.083,
+    "wrong_rate": 0.583,
+    "mean_score": 0.757
    },
    "reverb": {
     "n": 24,
     "correct": 0,
-    "wrong": 24,
-    "uncertain": 0,
+    "wrong": 19,
+    "uncertain": 5,
     "errors": 0,
     "correct_rate": 0.0,
-    "wrong_rate": 1.0,
-    "mean_score": 0.97
+    "wrong_rate": 0.792,
+    "mean_score": 0.807
    },
    "whatsapp": {
     "n": 24,
-    "correct": 15,
+    "correct": 14,
     "wrong": 8,
-    "uncertain": 1,
+    "uncertain": 2,
     "errors": 0,
-    "correct_rate": 0.625,
+    "correct_rate": 0.583,
     "wrong_rate": 0.333,
-    "mean_score": 0.355
+    "mean_score": 0.387
    }
   },
   "duration": {
@@ -626,110 +626,110 @@
    },
    "3.0s/fake": {
     "n": 24,
-    "correct": 16,
-    "wrong": 7,
-    "uncertain": 1,
-    "errors": 0,
-    "correct_rate": 0.667,
-    "wrong_rate": 0.292,
-    "mean_score": 0.684
-   },
-   "3.0s/real": {
-    "n": 24,
-    "correct": 14,
-    "wrong": 6,
-    "uncertain": 3,
-    "errors": 1,
-    "correct_rate": 0.583,
-    "wrong_rate": 0.25,
-    "mean_score": 0.34
-   },
-   "5.0s/fake": {
-    "n": 22,
-    "correct": 14,
-    "wrong": 7,
-    "uncertain": 1,
-    "errors": 0,
-    "correct_rate": 0.636,
-    "wrong_rate": 0.318,
-    "mean_score": 0.659
-   },
-   "5.0s/real": {
-    "n": 21,
-    "correct": 12,
-    "wrong": 9,
-    "uncertain": 0,
-    "errors": 0,
-    "correct_rate": 0.571,
-    "wrong_rate": 0.429,
-    "mean_score": 0.423
-   },
-   "10.0s/fake": {
-    "n": 8,
-    "correct": 0,
-    "wrong": 8,
-    "uncertain": 0,
-    "errors": 0,
-    "correct_rate": 0.0,
-    "wrong_rate": 1.0,
-    "mean_score": 0.04
-   },
-   "10.0s/real": {
-    "n": 10,
-    "correct": 10,
+    "correct": 24,
     "wrong": 0,
     "uncertain": 0,
     "errors": 0,
     "correct_rate": 1.0,
     "wrong_rate": 0.0,
-    "mean_score": 0.015
+    "mean_score": 0.996
+   },
+   "3.0s/real": {
+    "n": 24,
+    "correct": 22,
+    "wrong": 0,
+    "uncertain": 2,
+    "errors": 0,
+    "correct_rate": 0.917,
+    "wrong_rate": 0.0,
+    "mean_score": 0.072
+   },
+   "5.0s/fake": {
+    "n": 22,
+    "correct": 22,
+    "wrong": 0,
+    "uncertain": 0,
+    "errors": 0,
+    "correct_rate": 1.0,
+    "wrong_rate": 0.0,
+    "mean_score": 0.99
+   },
+   "5.0s/real": {
+    "n": 19,
+    "correct": 17,
+    "wrong": 1,
+    "uncertain": 1,
+    "errors": 0,
+    "correct_rate": 0.895,
+    "wrong_rate": 0.053,
+    "mean_score": 0.098
+   },
+   "10.0s/fake": {
+    "n": 0,
+    "correct": 0,
+    "wrong": 0,
+    "uncertain": 0,
+    "errors": 0,
+    "correct_rate": null,
+    "wrong_rate": null,
+    "mean_score": NaN
+   },
+   "10.0s/real": {
+    "n": 9,
+    "correct": 9,
+    "wrong": 0,
+    "uncertain": 0,
+    "errors": 0,
+    "correct_rate": 1.0,
+    "wrong_rate": 0.0,
+    "mean_score": 0.005
    }
   },
   "edge": [
    {
     "file": "chords_music.wav",
-    "score": 0.9685,
-    "band": "ai",
-    "status": "ok",
-    "summary": "Synthetic-speech score 0.97 across 2 windows; 1 suspicious segment."
+    "score": null,
+    "band": "error",
+    "status": "insufficient",
+    "summary": "No speech found (0% of the clip). Music, tones and noise are not scored as voices; result treated as inconclusive."
    },
    {
     "file": "silence_6s.wav",
     "score": null,
     "band": "error",
     "status": "insufficient",
-    "summary": "Only 6.0s of usable audio. Too short to judge; result treated as inconclusive."
+    "summary": "The recording is silent. Nothing to judge; result treated as inconclusive."
    },
    {
     "file": "street_noise.wav",
-    "score": 0.9698,
-    "band": "ai",
-    "status": "ok",
-    "summary": "Synthetic-speech score 0.97 across 2 windows; 1 suspicious segment."
+    "score": null,
+    "band": "error",
+    "status": "insufficient",
+    "summary": "No speech found (0% of the clip). Music, tones and noise are not scored as voices; result treated as inconclusive."
    },
    {
     "file": "tone_440hz.wav",
-    "score": 0.9702,
-    "band": "ai",
-    "status": "ok",
-    "summary": "Synthetic-speech score 0.97 across 2 windows; 1 suspicious segment."
+    "score": null,
+    "band": "error",
+    "status": "insufficient",
+    "summary": "No speech found (0% of the clip). Music, tones and noise are not scored as voices; result treated as inconclusive."
    },
    {
     "file": "white_noise.wav",
-    "score": 0.9874,
-    "band": "ai",
-    "status": "ok",
-    "summary": "Synthetic-speech score 0.99 across 2 windows; 1 suspicious segment."
+    "score": null,
+    "band": "error",
+    "status": "insufficient",
+    "summary": "No speech found (0% of the clip). Music, tones and noise are not scored as voices; result treated as inconclusive."
    }
   ],
-  "auc_all": 0.7540963560772805,
-  "auc_hemg": 0.5681081081081081,
+  "auc_all": 0.7991562729273661,
+  "auc_hemg": 0.7329729729729729,
   "auc_ljspeech": 1.0,
   "rows": {
    "real/google_tamil": [
     {
      "file": "audio\\real\\google_tamil\\spk1484_013.wav",
-     "score": 0.225,
+     "score": 0.2768,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -737,14 +737,15 @@
      "dur": 9.05,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.47,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.004
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.004,
+      "NII MMS-300M AntiDeepfake": 0.038
      },
-     "ms": 27822,
-     "summary": "Synthetic-speech score 0.22 across 4 windows; no segment crossed 0.60."
+     "ms": 33682,
+     "summary": "Synthetic-speech score 0.28 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk2027_000.wav",
-     "score": 0.0475,
+     "score": 0.0838,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -752,29 +753,31 @@
      "dur": 7.42,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.669
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.669,
+      "NII MMS-300M AntiDeepfake": 0.076
      },
-     "ms": 2015,
-     "summary": "Synthetic-speech score 0.05 across 3 windows; no segment crossed 0.60."
+     "ms": 4326,
+     "summary": "Synthetic-speech score 0.08 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk2042_005.wav",
-     "score": 0.8494,
+     "score": 0.5512,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 59.3,
      "dur": 11.01,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.205,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.123
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.123,
+      "NII MMS-300M AntiDeepfake": 0.036
      },
-     "ms": 3340,
-     "summary": "Synthetic-speech score 0.85 across 5 windows; 1 suspicious segment."
+     "ms": 5492,
+     "summary": "Synthetic-speech score 0.55 across 5 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk3822_012.wav",
-     "score": 0.133,
+     "score": 0.1212,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -782,14 +785,15 @@
      "dur": 6.91,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.004,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.626
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.626,
+      "NII MMS-300M AntiDeepfake": 0.093
      },
-     "ms": 1994,
-     "summary": "Synthetic-speech score 0.13 across 3 windows; no segment crossed 0.60."
+     "ms": 3404,
+     "summary": "Synthetic-speech score 0.12 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk3822_016.wav",
-     "score": 0.0043,
+     "score": 0.0122,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -797,14 +801,15 @@
      "dur": 4.27,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.077
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.077,
+      "NII MMS-300M AntiDeepfake": 0.015
      },
-     "ms": 1371,
-     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
+     "ms": 2275,
+     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk4125_011.wav",
-     "score": 0.9119,
+     "score": 0.941,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -812,14 +817,15 @@
      "dur": 5.55,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.547,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.411
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.411,
+      "NII MMS-300M AntiDeepfake": 0.792
      },
-     "ms": 1391,
-     "summary": "Synthetic-speech score 0.91 across 2 windows; 1 suspicious segment."
+     "ms": 2265,
+     "summary": "Synthetic-speech score 0.94 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk5572_008.wav",
-     "score": 0.0037,
+     "score": 0.0341,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -827,58 +833,62 @@
      "dur": 3.07,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.009
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.009,
+      "NII MMS-300M AntiDeepfake": 0.151
      },
-     "ms": 720,
-     "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
+     "ms": 1152,
+     "summary": "Synthetic-speech score 0.03 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk5572_014.wav",
-     "score": 0.7831,
+     "score": 0.3467,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 68.1,
      "dur": 4.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.075,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.973
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.973,
+      "NII MMS-300M AntiDeepfake": 0.044
      },
-     "ms": 1345,
-     "summary": "Synthetic-speech score 0.78 across 2 windows; 1 suspicious segment."
+     "ms": 2238,
+     "summary": "Synthetic-speech score 0.35 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk6958_001.wav",
-     "score": 0.4155,
+     "score": 0.1657,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 52.3,
      "dur": 6.66,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.993,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1985,
-     "summary": "Synthetic-speech score 0.42 across 3 windows; no segment crossed 0.60."
+     "ms": 3430,
+     "summary": "Synthetic-speech score 0.17 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk6958_018.wav",
-     "score": 0.0086,
+     "score": 0.0113,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 55.2,
      "dur": 5.21,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.136
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.136,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 1346,
+     "ms": 2359,
      "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7049_003.wav",
-     "score": 0.7658,
+     "score": 0.7101,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -886,14 +896,15 @@
      "dur": 6.06,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.994,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.002
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.113
      },
-     "ms": 1887,
-     "summary": "Synthetic-speech score 0.77 across 3 windows; 1 suspicious segment."
+     "ms": 3384,
+     "summary": "Synthetic-speech score 0.71 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7049_004.wav",
-     "score": 0.6526,
+     "score": 0.6626,
      "noisy": false,
      "band": "uncertain",
      "status": "ok",
@@ -901,29 +912,31 @@
      "dur": 6.14,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.803,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.165
      },
-     "ms": 1916,
-     "summary": "Synthetic-speech score 0.65 across 3 windows; 1 suspicious segment."
+     "ms": 3400,
+     "summary": "Synthetic-speech score 0.66 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7049_007.wav",
-     "score": 0.8562,
+     "score": 0.6185,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 57.1,
      "dur": 6.23,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.857,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.027
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.027,
+      "NII MMS-300M AntiDeepfake": 0.026
      },
-     "ms": 1901,
-     "summary": "Synthetic-speech score 0.86 across 3 windows; 1 suspicious segment."
+     "ms": 3359,
+     "summary": "Synthetic-speech score 0.62 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7352_006.wav",
-     "score": 0.8379,
+     "score": 0.8806,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -931,44 +944,47 @@
      "dur": 6.57,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.997,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.003
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.514
      },
-     "ms": 1933,
-     "summary": "Synthetic-speech score 0.84 across 3 windows; 1 suspicious segment."
+     "ms": 3320,
+     "summary": "Synthetic-speech score 0.88 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7352_017.wav",
-     "score": 0.5816,
+     "score": 0.7343,
      "noisy": false,
-     "band": "uncertain",
+     "band": "ai",
      "status": "ok",
      "snr": 68.3,
      "dur": 5.72,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.972,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.245
      },
-     "ms": 1318,
-     "summary": "Synthetic-speech score 0.58 across 2 windows; 1 suspicious segment."
+     "ms": 2289,
+     "summary": "Synthetic-speech score 0.73 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7367_015.wav",
-     "score": 0.1624,
+     "score": 0.3099,
      "noisy": false,
-     "band": "human",
+     "band": "uncertain",
      "status": "ok",
      "snr": 61.7,
      "dur": 6.91,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.31,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.01
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.01,
+      "NII MMS-300M AntiDeepfake": 0.1
      },
-     "ms": 1940,
-     "summary": "Synthetic-speech score 0.16 across 3 windows; no segment crossed 0.60."
+     "ms": 3409,
+     "summary": "Synthetic-speech score 0.31 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk7910_019.wav",
-     "score": 0.7586,
+     "score": 0.7565,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -976,14 +992,15 @@
      "dur": 3.07,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.993,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.112
      },
-     "ms": 700,
+     "ms": 1104,
      "summary": "Synthetic-speech score 0.76 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil\\spk8213_002.wav",
-     "score": 0.9481,
+     "score": 0.7751,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -991,14 +1008,15 @@
      "dur": 5.12,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.827,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.968
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.968,
+      "NII MMS-300M AntiDeepfake": 0.043
      },
-     "ms": 1304,
-     "summary": "Synthetic-speech score 0.95 across 2 windows; 1 suspicious segment."
+     "ms": 2260,
+     "summary": "Synthetic-speech score 0.78 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk8_009.wav",
-     "score": 0.9146,
+     "score": 0.8316,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -1006,14 +1024,15 @@
      "dur": 6.83,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.84,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.337
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.337,
+      "NII MMS-300M AntiDeepfake": 0.146
      },
-     "ms": 1989,
-     "summary": "Synthetic-speech score 0.91 across 3 windows; 1 suspicious segment."
+     "ms": 3461,
+     "summary": "Synthetic-speech score 0.83 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil\\spk9689_010.wav",
-     "score": 0.5975,
+     "score": 0.5011,
      "noisy": false,
      "band": "uncertain",
      "status": "ok",
@@ -1021,16 +1040,17 @@
      "dur": 6.57,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.963,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.055
      },
-     "ms": 1935,
-     "summary": "Synthetic-speech score 0.60 across 3 windows; 1 suspicious segment."
+     "ms": 3244,
+     "summary": "Synthetic-speech score 0.50 across 3 windows; no segment crossed 0.60."
     }
    ],
    "real/google_tamil_m": [
     {
      "file": "audio\\real\\google_tamil_m\\spk1424_014.wav",
-     "score": 0.4139,
+     "score": 0.5763,
      "noisy": false,
      "band": "uncertain",
      "status": "ok",
@@ -1038,14 +1058,15 @@
      "dur": 8.79,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.101,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.233
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.233,
+      "NII MMS-300M AntiDeepfake": 0.413
      },
-     "ms": 2518,
-     "summary": "Synthetic-speech score 0.41 across 4 windows; no segment crossed 0.60."
+     "ms": 4538,
+     "summary": "Synthetic-speech score 0.58 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk1469_016.wav",
-     "score": 0.0025,
+     "score": 0.0076,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1053,28 +1074,30 @@
      "dur": 5.63,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 1356,
-     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
+     "ms": 2348,
+     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk1469_019.wav",
-     "score": 0.0004,
+     "score": 0.0022,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 65.7,
      "dur": 6.74,
      "models": {
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2018,
+     "ms": 3243,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk3191_002.wav",
-     "score": 0.0009,
+     "score": 0.0037,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1082,14 +1105,15 @@
      "dur": 4.86,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 1519,
+     "ms": 2352,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk3777_000.wav",
-     "score": 0.9312,
+     "score": 0.9685,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -1097,14 +1121,15 @@
      "dur": 6.06,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.996,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.124
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.124,
+      "NII MMS-300M AntiDeepfake": 0.924
      },
-     "ms": 1940,
-     "summary": "Synthetic-speech score 0.93 across 3 windows; 1 suspicious segment."
+     "ms": 3327,
+     "summary": "Synthetic-speech score 0.97 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk3777_005.wav",
-     "score": 0.8815,
+     "score": 0.8356,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -1112,14 +1137,15 @@
      "dur": 4.86,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.074
      },
-     "ms": 1314,
-     "summary": "Synthetic-speech score 0.88 across 2 windows; 1 suspicious segment."
+     "ms": 2244,
+     "summary": "Synthetic-speech score 0.84 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk3777_017.wav",
-     "score": 0.6183,
+     "score": 0.5883,
      "noisy": false,
      "band": "uncertain",
      "status": "ok",
@@ -1127,42 +1153,45 @@
      "dur": 3.75,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.971,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.008
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.008,
+      "NII MMS-300M AntiDeepfake": 0.123
      },
-     "ms": 712,
-     "summary": "Synthetic-speech score 0.62 across 1 windows; no segment crossed 0.60."
+     "ms": 1164,
+     "summary": "Synthetic-speech score 0.59 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk4140_013.wav",
-     "score": 0.0003,
+     "score": 0.0012,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 55.3,
      "dur": 6.74,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1912,
+     "ms": 3297,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk5632_008.wav",
-     "score": 0.042,
+     "score": 0.0615,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 61.5,
      "dur": 3.58,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.746
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.746,
+      "NII MMS-300M AntiDeepfake": 0.006
      },
-     "ms": 694,
-     "summary": "Synthetic-speech score 0.04 across 1 windows; no segment crossed 0.60."
+     "ms": 1170,
+     "summary": "Synthetic-speech score 0.06 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk5935_007.wav",
-     "score": 0.483,
+     "score": 0.3234,
      "noisy": false,
      "band": "uncertain",
      "status": "ok",
@@ -1170,14 +1199,15 @@
      "dur": 9.47,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.522,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.008
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.008,
+      "NII MMS-300M AntiDeepfake": 0.023
      },
-     "ms": 2542,
-     "summary": "Synthetic-speech score 0.48 across 4 windows; no segment crossed 0.60."
+     "ms": 4486,
+     "summary": "Synthetic-speech score 0.32 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk7925_004.wav",
-     "score": 0.0009,
+     "score": 0.0209,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1185,14 +1215,15 @@
      "dur": 7.34,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.194
      },
-     "ms": 1942,
-     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
+     "ms": 3363,
+     "summary": "Synthetic-speech score 0.02 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk7925_009.wav",
-     "score": 0.005,
+     "score": 0.0135,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1200,14 +1231,15 @@
      "dur": 4.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.002
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.009
      },
-     "ms": 1386,
-     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
+     "ms": 2349,
+     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk8228_010.wav",
-     "score": 0.0017,
+     "score": 0.0082,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1215,29 +1247,31 @@
      "dur": 4.61,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.006
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.006,
+      "NII MMS-300M AntiDeepfake": 0.027
      },
-     "ms": 1281,
-     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
+     "ms": 2222,
+     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk8228_012.wav",
-     "score": 0.3408,
+     "score": 0.1065,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 38.6,
      "dur": 3.93,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.187,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.101
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.101,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 705,
-     "summary": "Synthetic-speech score 0.34 across 1 windows; no segment crossed 0.60."
+     "ms": 1168,
+     "summary": "Synthetic-speech score 0.11 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk8288_011.wav",
-     "score": 0.0016,
+     "score": 0.0025,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1245,14 +1279,15 @@
      "dur": 3.75,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 685,
+     "ms": 1155,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk8288_018.wav",
-     "score": 0.0056,
+     "score": 0.0093,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1260,14 +1295,15 @@
      "dur": 4.18,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.051,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1284,
+     "ms": 2190,
      "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk9162_001.wav",
-     "score": 0.0041,
+     "score": 0.0065,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1275,14 +1311,15 @@
      "dur": 7.77,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.059
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.059,
+      "NII MMS-300M AntiDeepfake": 0.007
      },
-     "ms": 1941,
-     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
+     "ms": 3321,
+     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk9162_015.wav",
-     "score": 0.0076,
+     "score": 0.0096,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1290,29 +1327,31 @@
      "dur": 5.8,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.158
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.158,
+      "NII MMS-300M AntiDeepfake": 0.007
      },
-     "ms": 1321,
+     "ms": 2355,
      "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk929_003.wav",
-     "score": 0.8673,
+     "score": 0.408,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 55.0,
      "dur": 4.86,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.004
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.004,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1368,
-     "summary": "Synthetic-speech score 0.87 across 2 windows; 1 suspicious segment."
+     "ms": 2253,
+     "summary": "Synthetic-speech score 0.41 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\google_tamil_m\\spk9674_006.wav",
-     "score": 0.0017,
+     "score": 0.006,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1320,30 +1359,32 @@
      "dur": 7.08,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.005
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.005,
+      "NII MMS-300M AntiDeepfake": 0.016
      },
-     "ms": 1905,
-     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
+     "ms": 3362,
+     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
     }
    ],
    "real/hemg": [
     {
      "file": "audio\\real\\hemg\\000.wav",
-     "score": 0.0013,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 28.5,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2546,
+     "ms": 4510,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\001.wav",
-     "score": 0.0231,
+     "score": 0.015,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1351,28 +1392,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.188,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2666,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4607,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\002.wav",
-     "score": 0.0007,
+     "score": 0.0016,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 27.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2553,
+     "ms": 4516,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\003.wav",
-     "score": 0.0799,
+     "score": 0.0214,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1380,28 +1423,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.231,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2552,
-     "summary": "Synthetic-speech score 0.08 across 4 windows; no segment crossed 0.60."
+     "ms": 4522,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\004.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 29.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2643,
+     "ms": 4483,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\005.wav",
-     "score": 0.0006,
+     "score": 0.0014,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1409,14 +1454,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2544,
+     "ms": 4536,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\006.wav",
-     "score": 0.0005,
+     "score": 0.0012,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1424,9 +1470,10 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2652,
+     "ms": 4465,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
@@ -1438,14 +1485,15 @@
      "snr": 28.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.025
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.025,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2567,
+     "ms": 4503,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\008.wav",
-     "score": 0.0221,
+     "score": 0.0126,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1453,168 +1501,180 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.234,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2635,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4447,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\009.wav",
-     "score": 0.0004,
+     "score": 0.0012,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 31.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2550,
+     "ms": 4539,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\010.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 44.2,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2666,
+     "ms": 4404,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\011.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 49.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2565,
+     "ms": 4481,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\012.wav",
-     "score": 0.0003,
+     "score": 0.0008,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 45.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2574,
+     "ms": 4508,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\013.wav",
-     "score": 0.0179,
+     "score": 0.0084,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 43.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.206
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.206,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2657,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4516,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\014.wav",
-     "score": 0.0085,
+     "score": 0.0054,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 48.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.152
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.152,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 2547,
+     "ms": 4519,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\015.wav",
-     "score": 0.0003,
+     "score": 0.0006,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 48.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2609,
+     "ms": 4444,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\016.wav",
-     "score": 0.0008,
+     "score": 0.0025,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 49.8,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2618,
+     "ms": 4656,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\017.wav",
-     "score": 0.0039,
+     "score": 0.0033,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 47.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.072
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.072,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2591,
+     "ms": 4669,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\018.wav",
-     "score": 0.0009,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 44.7,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.004
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.004,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2553,
+     "ms": 4591,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\019.wav",
-     "score": 0.0077,
+     "score": 0.0062,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 45.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.149
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.149,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 2667,
+     "ms": 4463,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\020.wav",
-     "score": 0.0032,
+     "score": 0.0094,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1622,42 +1682,45 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.005,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2541,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4555,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\021.wav",
-     "score": 0.1695,
+     "score": 0.034,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 46.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.275
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.275,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2638,
-     "summary": "Synthetic-speech score 0.17 across 4 windows; no segment crossed 0.60."
+     "ms": 4491,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\022.wav",
-     "score": 0.0055,
+     "score": 0.0067,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 41.7,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.06
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.06,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2581,
+     "ms": 4503,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\023.wav",
-     "score": 0.0996,
+     "score": 0.0305,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1665,29 +1728,31 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.404,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.002
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2606,
-     "summary": "Synthetic-speech score 0.10 across 4 windows; no segment crossed 0.60."
+     "ms": 4468,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\024.wav",
-     "score": 0.8544,
+     "score": 0.5383,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 45.0,
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.984,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.006
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.006,
+      "NII MMS-300M AntiDeepfake": 0.006
      },
-     "ms": 2594,
-     "summary": "Synthetic-speech score 0.85 across 4 windows; 1 suspicious segment."
+     "ms": 4551,
+     "summary": "Synthetic-speech score 0.54 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\025.wav",
-     "score": 0.144,
+     "score": 0.0275,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1695,28 +1760,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.422,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2507,
-     "summary": "Synthetic-speech score 0.14 across 4 windows; no segment crossed 0.60."
+     "ms": 4547,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\026.wav",
-     "score": 0.0124,
+     "score": 0.0068,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 48.3,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.12
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.12,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2567,
+     "ms": 4452,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\027.wav",
-     "score": 0.0433,
+     "score": 0.0168,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1724,28 +1791,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.207,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.006
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.006,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2541,
-     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
+     "ms": 4596,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\028.wav",
-     "score": 0.0013,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 28.5,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2580,
+     "ms": 4553,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\029.wav",
-     "score": 0.0231,
+     "score": 0.015,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1753,28 +1822,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.188,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2561,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4452,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\030.wav",
-     "score": 0.0007,
+     "score": 0.0016,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 27.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2667,
+     "ms": 4548,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\031.wav",
-     "score": 0.0799,
+     "score": 0.0214,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1782,28 +1853,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.231,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2532,
-     "summary": "Synthetic-speech score 0.08 across 4 windows; no segment crossed 0.60."
+     "ms": 4417,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\032.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 29.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2691,
+     "ms": 4442,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\033.wav",
-     "score": 0.0006,
+     "score": 0.0014,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1811,14 +1884,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2514,
+     "ms": 4576,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\034.wav",
-     "score": 0.0005,
+     "score": 0.0012,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1826,9 +1900,10 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2662,
+     "ms": 4534,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
@@ -1840,14 +1915,15 @@
      "snr": 28.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.025
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.025,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2565,
+     "ms": 4418,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\036.wav",
-     "score": 0.0221,
+     "score": 0.0126,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -1855,168 +1931,180 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.234,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2578,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4434,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\037.wav",
-     "score": 0.0004,
+     "score": 0.0012,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 31.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2657,
+     "ms": 4533,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\038.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 44.2,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2548,
+     "ms": 4431,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\039.wav",
-     "score": 0.0003,
+     "score": 0.0007,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 49.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2616,
+     "ms": 4461,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\040.wav",
-     "score": 0.0003,
+     "score": 0.0008,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 45.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2552,
+     "ms": 4573,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\041.wav",
-     "score": 0.0179,
+     "score": 0.0084,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 43.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.206
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.206,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2676,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4581,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\042.wav",
-     "score": 0.0085,
+     "score": 0.0054,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 48.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.152
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.152,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 2549,
+     "ms": 4414,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\043.wav",
-     "score": 0.0003,
+     "score": 0.0006,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 48.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2645,
+     "ms": 4478,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\044.wav",
-     "score": 0.0008,
+     "score": 0.0025,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 49.8,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2539,
+     "ms": 4491,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\045.wav",
-     "score": 0.0039,
+     "score": 0.0033,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 47.9,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.072
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.072,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2628,
+     "ms": 4485,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\046.wav",
-     "score": 0.0009,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 44.7,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.004
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.004,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2635,
+     "ms": 4641,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\047.wav",
-     "score": 0.0077,
+     "score": 0.0062,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 45.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.149
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.149,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 2544,
+     "ms": 4497,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\048.wav",
-     "score": 0.0032,
+     "score": 0.0094,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -2024,60 +2112,64 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.005,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2659,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4553,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\hemg\\049.wav",
-     "score": 0.1695,
+     "score": 0.034,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 46.1,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.275
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.275,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2545,
-     "summary": "Synthetic-speech score 0.17 across 4 windows; no segment crossed 0.60."
+     "ms": 4470,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     }
    ],
    "real/indic_hindi": [
     {
      "file": "audio\\real\\indic_hindi\\000.wav",
-     "score": 0.9799,
+     "score": 0.6289,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 45.5,
      "dur": 7.67,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.605,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.932
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.932,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1933,
-     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
+     "ms": 3377,
+     "summary": "Synthetic-speech score 0.63 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\001.wav",
-     "score": 0.9562,
+     "score": 0.5911,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 53.7,
      "dur": 5.88,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.987,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.435
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.435,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1308,
-     "summary": "Synthetic-speech score 0.96 across 2 windows; 1 suspicious segment."
+     "ms": 2299,
+     "summary": "Synthetic-speech score 0.59 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\002.wav",
-     "score": 0.9703,
+     "score": 0.7362,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2085,29 +2177,31 @@
      "dur": 7.8,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.989,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.825
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.825,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1945,
-     "summary": "Synthetic-speech score 0.97 across 3 windows; 1 suspicious segment."
+     "ms": 3458,
+     "summary": "Synthetic-speech score 0.74 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\003.wav",
-     "score": 0.9765,
+     "score": 0.6371,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 51.7,
      "dur": 7.31,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.981,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.918
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.918,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2042,
-     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
+     "ms": 3240,
+     "summary": "Synthetic-speech score 0.64 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\004.wav",
-     "score": 0.9272,
+     "score": 0.8402,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2115,29 +2209,31 @@
      "dur": 5.07,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.982,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.511
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.511,
+      "NII MMS-300M AntiDeepfake": 0.007
      },
-     "ms": 1325,
-     "summary": "Synthetic-speech score 0.93 across 2 windows; 1 suspicious segment."
+     "ms": 2346,
+     "summary": "Synthetic-speech score 0.84 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\005.wav",
-     "score": 0.9419,
+     "score": 0.475,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 47.9,
      "dur": 6.66,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.355,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.837
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.837,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1921,
-     "summary": "Synthetic-speech score 0.94 across 3 windows; 1 suspicious segment."
+     "ms": 3400,
+     "summary": "Synthetic-speech score 0.47 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\indic_hindi\\006.wav",
-     "score": 0.9526,
+     "score": 0.7177,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2145,29 +2241,31 @@
      "dur": 7.89,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.884,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.905
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.905,
+      "NII MMS-300M AntiDeepfake": 0.012
      },
-     "ms": 1966,
-     "summary": "Synthetic-speech score 0.95 across 3 windows; 1 suspicious segment."
+     "ms": 3402,
+     "summary": "Synthetic-speech score 0.72 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\007.wav",
-     "score": 0.9558,
+     "score": 0.6718,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 44.8,
      "dur": 6.44,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.991,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.639
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.639,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 1908,
-     "summary": "Synthetic-speech score 0.96 across 3 windows; 1 suspicious segment."
+     "ms": 3388,
+     "summary": "Synthetic-speech score 0.67 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\008.wav",
-     "score": 0.9706,
+     "score": 0.7229,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2175,14 +2273,15 @@
      "dur": 5.68,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.993,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.841
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.841,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1326,
-     "summary": "Synthetic-speech score 0.97 across 2 windows; 1 suspicious segment."
+     "ms": 2173,
+     "summary": "Synthetic-speech score 0.72 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\009.wav",
-     "score": 0.9577,
+     "score": 0.8522,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2190,14 +2289,15 @@
      "dur": 9.77,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.584,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.799
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.799,
+      "NII MMS-300M AntiDeepfake": 0.006
      },
-     "ms": 2532,
-     "summary": "Synthetic-speech score 0.96 across 4 windows; 1 suspicious segment."
+     "ms": 4454,
+     "summary": "Synthetic-speech score 0.85 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\010.wav",
-     "score": 0.9988,
+     "score": 0.8869,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2205,14 +2305,15 @@
      "dur": 6.23,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 1883,
-     "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
+     "ms": 3348,
+     "summary": "Synthetic-speech score 0.89 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\011.wav",
-     "score": 0.9956,
+     "score": 0.8858,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2220,14 +2321,15 @@
      "dur": 5.78,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.957
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.957,
+      "NII MMS-300M AntiDeepfake": 0.012
      },
-     "ms": 1326,
-     "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
+     "ms": 2227,
+     "summary": "Synthetic-speech score 0.89 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\012.wav",
-     "score": 0.99,
+     "score": 0.892,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2235,14 +2337,15 @@
      "dur": 6.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.87
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.87,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 1413,
-     "summary": "Synthetic-speech score 0.99 across 2 windows; 1 suspicious segment."
+     "ms": 2236,
+     "summary": "Synthetic-speech score 0.89 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\013.wav",
-     "score": 0.9898,
+     "score": 0.7645,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2250,14 +2353,15 @@
      "dur": 4.73,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.711
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.711,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1324,
-     "summary": "Synthetic-speech score 0.99 across 2 windows; 1 suspicious segment."
+     "ms": 2304,
+     "summary": "Synthetic-speech score 0.76 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\014.wav",
-     "score": 0.9984,
+     "score": 0.7182,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2265,14 +2369,15 @@
      "dur": 4.82,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.997
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.997,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1315,
-     "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
+     "ms": 2222,
+     "summary": "Synthetic-speech score 0.72 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\015.wav",
-     "score": 0.9996,
+     "score": 0.9201,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2280,14 +2385,15 @@
      "dur": 5.02,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 1305,
-     "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
+     "ms": 2242,
+     "summary": "Synthetic-speech score 0.92 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\016.wav",
-     "score": 0.9998,
+     "score": 0.9706,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2295,14 +2401,15 @@
      "dur": 3.48,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.013
      },
-     "ms": 787,
-     "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
+     "ms": 1151,
+     "summary": "Synthetic-speech score 0.97 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\017.wav",
-     "score": 0.9935,
+     "score": 0.7114,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2310,14 +2417,15 @@
      "dur": 6.52,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.975
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.975,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 1765,
-     "summary": "Synthetic-speech score 0.99 across 3 windows; 1 suspicious segment."
+     "ms": 3414,
+     "summary": "Synthetic-speech score 0.71 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\018.wav",
-     "score": 0.9994,
+     "score": 0.7739,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2325,29 +2433,31 @@
      "dur": 3.96,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 677,
-     "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
+     "ms": 1120,
+     "summary": "Synthetic-speech score 0.77 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\019.wav",
-     "score": 0.979,
+     "score": 0.4884,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 52.1,
      "dur": 5.1,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.652
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.652,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1308,
-     "summary": "Synthetic-speech score 0.98 across 2 windows; 1 suspicious segment."
+     "ms": 2263,
+     "summary": "Synthetic-speech score 0.49 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\indic_hindi\\020.wav",
-     "score": 0.9792,
+     "score": 0.8281,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2355,14 +2465,15 @@
      "dur": 8.97,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.6
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.6,
+      "NII MMS-300M AntiDeepfake": 0.015
      },
-     "ms": 2550,
-     "summary": "Synthetic-speech score 0.98 across 4 windows; 1 suspicious segment."
+     "ms": 4508,
+     "summary": "Synthetic-speech score 0.83 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\021.wav",
-     "score": 0.9818,
+     "score": 0.7748,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2370,29 +2481,31 @@
      "dur": 9.44,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.752,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.775
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.775,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 2501,
-     "summary": "Synthetic-speech score 0.98 across 4 windows; 1 suspicious segment."
+     "ms": 4551,
+     "summary": "Synthetic-speech score 0.77 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\022.wav",
-     "score": 0.9482,
+     "score": 0.6073,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 43.4,
      "dur": 6.43,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.988,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.438
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.438,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1905,
-     "summary": "Synthetic-speech score 0.95 across 3 windows; 1 suspicious segment."
+     "ms": 3398,
+     "summary": "Synthetic-speech score 0.61 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\023.wav",
-     "score": 0.9981,
+     "score": 0.7824,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2400,14 +2513,15 @@
      "dur": 4.23,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.953
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.953,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1281,
-     "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
+     "ms": 2194,
+     "summary": "Synthetic-speech score 0.78 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\024.wav",
-     "score": 0.9999,
+     "score": 0.9733,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2415,14 +2529,15 @@
      "dur": 3.88,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.016
      },
-     "ms": 699,
-     "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
+     "ms": 1178,
+     "summary": "Synthetic-speech score 0.97 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\025.wav",
-     "score": 0.9983,
+     "score": 0.9794,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2430,44 +2545,47 @@
      "dur": 4.92,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.944
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.944,
+      "NII MMS-300M AntiDeepfake": 0.285
      },
-     "ms": 1297,
-     "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
+     "ms": 2250,
+     "summary": "Synthetic-speech score 0.98 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\026.wav",
-     "score": 0.9511,
+     "score": 0.5387,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 41.3,
      "dur": 12.64,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.982,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.48
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.48,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 3801,
-     "summary": "Synthetic-speech score 0.95 across 6 windows; 1 suspicious segment."
+     "ms": 6766,
+     "summary": "Synthetic-speech score 0.54 across 6 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\027.wav",
-     "score": 0.929,
+     "score": 0.5028,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 41.8,
      "dur": 8.56,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.561,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.473
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.473,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2650,
-     "summary": "Synthetic-speech score 0.93 across 4 windows; 1 suspicious segment."
+     "ms": 4365,
+     "summary": "Synthetic-speech score 0.50 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\indic_hindi\\028.wav",
-     "score": 0.9995,
+     "score": 0.8593,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2475,14 +2593,15 @@
      "dur": 2.52,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 679,
-     "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
+     "ms": 1157,
+     "summary": "Synthetic-speech score 0.86 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\indic_hindi\\029.wav",
-     "score": 0.9453,
+     "score": 0.7942,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -2490,23 +2609,26 @@
      "dur": 6.14,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.832,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.948
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.948,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1904,
-     "summary": "Synthetic-speech score 0.95 across 3 windows; 1 suspicious segment."
+     "ms": 3423,
+     "summary": "Synthetic-speech score 0.79 across 3 windows; 1 suspicious segment."
     }
    ],
    "real/librispeech": [
     {
      "file": "audio\\real\\librispeech\\spk6930_000.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.2,
      "dur": 10.81,
-     "models": {},
-     "ms": 3237,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 5544,
      "summary": "Synthetic-speech score 0.00 across 5 windows; no segment crossed 0.60."
     },
     {
@@ -2517,8 +2639,10 @@
      "status": "ok",
      "snr": 21.7,
      "dur": 11.65,
-     "models": {},
-     "ms": 3172,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 5613,
      "summary": "Synthetic-speech score 0.00 across 5 windows; no segment crossed 0.60."
     },
     {
@@ -2529,46 +2653,53 @@
      "status": "ok",
      "snr": 26.1,
      "dur": 14.4,
-     "models": {},
-     "ms": 4370,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 7728,
      "summary": "Synthetic-speech score 0.00 across 7 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_003.flac",
-     "score": 0.0003,
+     "score": 0.0006,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 30.3,
      "dur": 3.02,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 764,
+     "ms": 1210,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_004.flac",
-     "score": 0.0001,
+     "score": 0.0002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.9,
      "dur": 3.2,
-     "models": {},
-     "ms": 621,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 1159,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_005.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.6,
      "dur": 5.56,
-     "models": {},
-     "ms": 1258,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2337,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
@@ -2579,20 +2710,24 @@
      "status": "ok",
      "snr": 32.8,
      "dur": 3.38,
-     "models": {},
-     "ms": 665,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 1099,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_007.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.2,
      "dur": 6.15,
-     "models": {},
-     "ms": 1902,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 3300,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
@@ -2603,8 +2738,10 @@
      "status": "ok",
      "snr": 27.8,
      "dur": 5.04,
-     "models": {},
-     "ms": 1308,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2248,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
@@ -2615,20 +2752,24 @@
      "status": "ok",
      "snr": 22.4,
      "dur": 4.46,
-     "models": {},
-     "ms": 1285,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2222,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_010.flac",
-     "score": 0.0001,
+     "score": 0.0002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 30.0,
      "dur": 2.82,
-     "models": {},
-     "ms": 680,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 1206,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
@@ -2639,20 +2780,24 @@
      "status": "ok",
      "snr": 29.6,
      "dur": 5.18,
-     "models": {},
-     "ms": 1301,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2226,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_012.flac",
-     "score": 0.0002,
+     "score": 0.0004,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 29.4,
      "dur": 3.4,
-     "models": {},
-     "ms": 768,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 1248,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
@@ -2663,20 +2808,24 @@
      "status": "ok",
      "snr": 35.2,
      "dur": 2.69,
-     "models": {},
-     "ms": 613,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 1143,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_014.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.0,
      "dur": 9.24,
-     "models": {},
-     "ms": 2380,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 4510,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
@@ -2687,8 +2836,10 @@
      "status": "ok",
      "snr": 22.6,
      "dur": 4.66,
-     "models": {},
-     "ms": 1304,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2108,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
@@ -2699,8 +2850,10 @@
      "status": "ok",
      "snr": 26.8,
      "dur": 4.3,
-     "models": {},
-     "ms": 1283,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 2271,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
@@ -2711,70 +2864,81 @@
      "status": "ok",
      "snr": 27.1,
      "dur": 4.72,
-     "models": {},
-     "ms": 1285,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2249,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_018.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.6,
      "dur": 12.4,
-     "models": {},
-     "ms": 3769,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 6666,
      "summary": "Synthetic-speech score 0.00 across 6 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_019.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 23.7,
      "dur": 9.21,
-     "models": {},
-     "ms": 2635,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 4492,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_020.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.8,
      "dur": 5.41,
-     "models": {},
-     "ms": 1282,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 2181,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_021.flac",
-     "score": 0.0001,
+     "score": 0.0002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 26.1,
      "dur": 2.14,
-     "models": {},
-     "ms": 656,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 1118,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_022.flac",
-     "score": 0.0002,
+     "score": 0.0004,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.8,
      "dur": 2.58,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 649,
+     "ms": 1199,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
@@ -2785,20 +2949,24 @@
      "status": "ok",
      "snr": 24.0,
      "dur": 6.32,
-     "models": {},
-     "ms": 1921,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 3753,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_024.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 26.1,
      "dur": 7.36,
-     "models": {},
-     "ms": 1911,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 3357,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
@@ -2810,57 +2978,64 @@
      "snr": null,
      "dur": 1.9,
      "models": {},
-     "ms": 44,
-     "summary": "Only 1.9s of usable audio. Too short to judge; result treated as inconclusive."
+     "ms": 49,
+     "summary": "Only 1.9s of audio. Too short to judge; result treated as inconclusive."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_026.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.8,
      "dur": 4.85,
-     "models": {},
-     "ms": 1269,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 2250,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_027.flac",
-     "score": 0.0001,
+     "score": 0.0002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 19.1,
      "dur": 4.05,
-     "models": {},
-     "ms": 1298,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.001
+     },
+     "ms": 2355,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_028.flac",
-     "score": 0.0003,
+     "score": 0.001,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.5,
      "dur": 4.12,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1291,
+     "ms": 2405,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_029.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.9,
      "dur": 3.08,
-     "models": {},
-     "ms": 689,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 1103,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
@@ -2871,8 +3046,10 @@
      "status": "ok",
      "snr": 21.3,
      "dur": 8.27,
-     "models": {},
-     "ms": 2642,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 4422,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
@@ -2883,74 +3060,83 @@
      "status": "ok",
      "snr": 24.4,
      "dur": 9.88,
-     "models": {},
-     "ms": 2533,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 4456,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_032.flac",
-     "score": 0.0002,
+     "score": 0.0003,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 23.2,
      "dur": 12.89,
-     "models": {},
-     "ms": 3824,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 6595,
      "summary": "Synthetic-speech score 0.00 across 6 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_033.flac",
-     "score": 0.0003,
+     "score": 0.0005,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 23.0,
      "dur": 17.48,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 5122,
+     "ms": 8943,
      "summary": "Synthetic-speech score 0.00 across 8 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_034.flac",
-     "score": 0.0003,
+     "score": 0.0006,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 26.2,
      "dur": 3.31,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 744,
+     "ms": 1101,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_035.flac",
-     "score": 0.0005,
+     "score": 0.0011,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.4,
      "dur": 3.29,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 634,
+     "ms": 1148,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_036.flac",
-     "score": 0.0003,
+     "score": 0.0004,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 24.1,
      "dur": 9.56,
-     "models": {},
-     "ms": 2418,
+     "models": {
+      "NII MMS-300M AntiDeepfake": 0.0
+     },
+     "ms": 4490,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
@@ -2962,42 +3148,44 @@
      "snr": null,
      "dur": 1.81,
      "models": {},
-     "ms": 42,
-     "summary": "Only 1.8s of usable audio. Too short to judge; result treated as inconclusive."
+     "ms": 46,
+     "summary": "Only 1.8s of audio. Too short to judge; result treated as inconclusive."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_038.flac",
-     "score": 0.0018,
+     "score": 0.0028,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 22.8,
      "dur": 6.8,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.012
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.012,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1913,
+     "ms": 3292,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\librispeech\\spk6930_039.flac",
-     "score": 0.0001,
+     "score": 0.0002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 25.5,
      "dur": 4.37,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1273,
+     "ms": 2308,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     }
    ],
    "real/ljspeech": [
     {
      "file": "audio\\real\\ljspeech\\000.wav",
-     "score": 0.0066,
+     "score": 0.0036,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3005,14 +3193,15 @@
      "dur": 5.38,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.054
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.054,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1327,
-     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
+     "ms": 2241,
+     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\001.wav",
-     "score": 0.0427,
+     "score": 0.0985,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3020,29 +3209,31 @@
      "dur": 8.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.174,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.017
      },
-     "ms": 2551,
-     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
+     "ms": 4430,
+     "summary": "Synthetic-speech score 0.10 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\002.wav",
-     "score": 0.6294,
+     "score": 0.2562,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 38.7,
      "dur": 8.51,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.428,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2523,
-     "summary": "Synthetic-speech score 0.63 across 4 windows; 1 suspicious segment."
+     "ms": 4373,
+     "summary": "Synthetic-speech score 0.26 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\003.wav",
-     "score": 0.0016,
+     "score": 0.0026,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3050,29 +3241,31 @@
      "dur": 5.91,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1326,
+     "ms": 2362,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\004.wav",
-     "score": 0.4016,
+     "score": 0.057,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 32.6,
      "dur": 7.29,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.339,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.003
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.003,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1912,
-     "summary": "Synthetic-speech score 0.40 across 3 windows; no segment crossed 0.60."
+     "ms": 3263,
+     "summary": "Synthetic-speech score 0.06 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\005.wav",
-     "score": 0.0032,
+     "score": 0.0059,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3080,14 +3273,15 @@
      "dur": 4.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.003,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 700,
-     "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
+     "ms": 1253,
+     "summary": "Synthetic-speech score 0.01 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\006.wav",
-     "score": 0.0517,
+     "score": 0.0128,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3095,14 +3289,15 @@
      "dur": 8.91,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.071,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.009
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.009,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2514,
-     "summary": "Synthetic-speech score 0.05 across 4 windows; no segment crossed 0.60."
+     "ms": 4480,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\007.wav",
-     "score": 0.0038,
+     "score": 0.0044,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3110,29 +3305,31 @@
      "dur": 4.92,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.012,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1284,
+     "ms": 2240,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\008.wav",
-     "score": 0.7571,
+     "score": 0.4158,
      "noisy": false,
-     "band": "ai",
+     "band": "uncertain",
      "status": "ok",
      "snr": 39.3,
      "dur": 3.57,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.01
      },
-     "ms": 697,
-     "summary": "Synthetic-speech score 0.76 across 1 windows; 1 suspicious segment."
+     "ms": 1220,
+     "summary": "Synthetic-speech score 0.42 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\009.wav",
-     "score": 0.2628,
+     "score": 0.0664,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3140,28 +3337,30 @@
      "dur": 8.08,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.144,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.211
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.211,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2519,
-     "summary": "Synthetic-speech score 0.26 across 4 windows; no segment crossed 0.60."
+     "ms": 4401,
+     "summary": "Synthetic-speech score 0.07 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\010.wav",
-     "score": 0.0003,
+     "score": 0.0008,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 32.3,
      "dur": 7.82,
      "models": {
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2020,
+     "ms": 3363,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\011.wav",
-     "score": 0.8562,
+     "score": 0.9032,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3169,14 +3368,15 @@
      "dur": 6.46,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.338,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.059
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.059,
+      "NII MMS-300M AntiDeepfake": 0.472
      },
-     "ms": 2083,
-     "summary": "Synthetic-speech score 0.86 across 3 windows; 1 suspicious segment."
+     "ms": 3408,
+     "summary": "Synthetic-speech score 0.90 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\real\\ljspeech\\012.wav",
-     "score": 0.0029,
+     "score": 0.0085,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3184,14 +3384,15 @@
      "dur": 7.87,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.04
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.04,
+      "NII MMS-300M AntiDeepfake": 0.023
      },
-     "ms": 1932,
-     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
+     "ms": 3299,
+     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\013.wav",
-     "score": 0.0193,
+     "score": 0.0092,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3199,14 +3400,15 @@
      "dur": 6.4,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.113,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1898,
-     "summary": "Synthetic-speech score 0.02 across 3 windows; no segment crossed 0.60."
+     "ms": 3334,
+     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\014.wav",
-     "score": 0.0065,
+     "score": 0.0036,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3214,14 +3416,15 @@
      "dur": 6.65,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.034,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 1906,
-     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
+     "ms": 3328,
+     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\015.wav",
-     "score": 0.0246,
+     "score": 0.0097,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3229,14 +3432,15 @@
      "dur": 9.76,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.075,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.002
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2596,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4635,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\016.wav",
-     "score": 0.002,
+     "score": 0.0019,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3244,14 +3448,15 @@
      "dur": 2.2,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 675,
+     "ms": 1080,
      "summary": "Synthetic-speech score 0.00 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\017.wav",
-     "score": 0.0006,
+     "score": 0.0014,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3259,14 +3464,15 @@
      "dur": 7.4,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1941,
+     "ms": 3321,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\018.wav",
-     "score": 0.0168,
+     "score": 0.0365,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3274,14 +3480,15 @@
      "dur": 7.97,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.065,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.012
      },
-     "ms": 2028,
-     "summary": "Synthetic-speech score 0.02 across 3 windows; no segment crossed 0.60."
+     "ms": 3352,
+     "summary": "Synthetic-speech score 0.04 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\019.wav",
-     "score": 0.0379,
+     "score": 0.0151,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3289,29 +3496,31 @@
      "dur": 9.83,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.222,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2534,
-     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
+     "ms": 4447,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\020.wav",
-     "score": 0.3805,
+     "score": 0.0337,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 46.7,
      "dur": 8.94,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.136,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.12
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.12,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2540,
-     "summary": "Synthetic-speech score 0.38 across 4 windows; no segment crossed 0.60."
+     "ms": 4451,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\021.wav",
-     "score": 0.0039,
+     "score": 0.0058,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3319,14 +3528,15 @@
      "dur": 4.59,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.014,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 1291,
-     "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
+     "ms": 2318,
+     "summary": "Synthetic-speech score 0.01 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\022.wav",
-     "score": 0.008,
+     "score": 0.006,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3334,14 +3544,15 @@
      "dur": 3.33,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.029,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 687,
+     "ms": 1155,
      "summary": "Synthetic-speech score 0.01 across 1 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\023.wav",
-     "score": 0.0012,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3349,14 +3560,15 @@
      "dur": 5.36,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 1308,
+     "ms": 2226,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\024.wav",
-     "score": 0.0005,
+     "score": 0.0017,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3364,29 +3576,31 @@
      "dur": 9.18,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2561,
+     "ms": 4509,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\025.wav",
-     "score": 0.3895,
+     "score": 0.2494,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 34.3,
      "dur": 9.24,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.249,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 2670,
-     "summary": "Synthetic-speech score 0.39 across 4 windows; no segment crossed 0.60."
+     "ms": 4425,
+     "summary": "Synthetic-speech score 0.25 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\026.wav",
-     "score": 0.0039,
+     "score": 0.0103,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3394,14 +3608,15 @@
      "dur": 7.3,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.013
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.013,
+      "NII MMS-300M AntiDeepfake": 0.015
      },
-     "ms": 1898,
-     "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
+     "ms": 3343,
+     "summary": "Synthetic-speech score 0.01 across 3 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\027.wav",
-     "score": 0.0009,
+     "score": 0.0103,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3409,14 +3624,15 @@
      "dur": 8.32,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.005
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.005,
+      "NII MMS-300M AntiDeepfake": 0.053
      },
-     "ms": 2523,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4395,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\028.wav",
-     "score": 0.0015,
+     "score": 0.0046,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3424,30 +3640,32 @@
      "dur": 4.22,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.002
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 1282,
+     "ms": 2348,
      "summary": "Synthetic-speech score 0.00 across 2 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\real\\ljspeech\\029.wav",
-     "score": 0.0003,
+     "score": 0.0006,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 29.6,
      "dur": 7.09,
      "models": {
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 1949,
+     "ms": 3259,
      "summary": "Synthetic-speech score 0.00 across 3 windows; no segment crossed 0.60."
     }
    ],
    "fake/edge_multilang": [
     {
      "file": "audio\\fake\\edge_multilang\\bn-IN-TanishaaNeural.wav",
-     "score": 0.9998,
+     "score": 0.9996,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3455,14 +3673,15 @@
      "dur": 6.34,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1885,
+     "ms": 3407,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\en-GB-SoniaNeural.wav",
-     "score": 0.9978,
+     "score": 0.9977,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3470,14 +3689,15 @@
      "dur": 5.4,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.881
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.881,
+      "NII MMS-300M AntiDeepfake": 0.989
      },
-     "ms": 1272,
+     "ms": 2301,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\en-IN-NeerjaNeural.wav",
-     "score": 0.9641,
+     "score": 0.9787,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3485,14 +3705,15 @@
      "dur": 8.06,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.922,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.223
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.223,
+      "NII MMS-300M AntiDeepfake": 0.757
      },
-     "ms": 2508,
-     "summary": "Synthetic-speech score 0.96 across 4 windows; 1 suspicious segment."
+     "ms": 4440,
+     "summary": "Synthetic-speech score 0.98 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\en-IN-PrabhatNeural.wav",
-     "score": 0.9604,
+     "score": 0.9845,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3500,14 +3721,15 @@
      "dur": 7.58,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.993,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.684
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.684,
+      "NII MMS-300M AntiDeepfake": 0.906
      },
-     "ms": 1979,
-     "summary": "Synthetic-speech score 0.96 across 3 windows; 1 suspicious segment."
+     "ms": 3413,
+     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\en-US-GuyNeural.wav",
-     "score": 0.9997,
+     "score": 0.9975,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3515,14 +3737,15 @@
      "dur": 7.42,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.937
      },
-     "ms": 1945,
+     "ms": 3381,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\gu-IN-NiranjanNeural.wav",
-     "score": 0.9992,
+     "score": 0.997,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3530,14 +3753,15 @@
      "dur": 8.74,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.978
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.978,
+      "NII MMS-300M AntiDeepfake": 0.905
      },
-     "ms": 2512,
+     "ms": 4405,
      "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\hi-IN-MadhurNeural.wav",
-     "score": 0.9771,
+     "score": 0.9496,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3545,14 +3769,15 @@
      "dur": 7.2,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.74
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.74,
+      "NII MMS-300M AntiDeepfake": 0.561
      },
-     "ms": 1930,
-     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
+     "ms": 3391,
+     "summary": "Synthetic-speech score 0.95 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\hi-IN-SwaraNeural.wav",
-     "score": 0.998,
+     "score": 0.9848,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3560,14 +3785,15 @@
      "dur": 9.7,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.998
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.998,
+      "NII MMS-300M AntiDeepfake": 0.778
      },
-     "ms": 2550,
-     "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
+     "ms": 4397,
+     "summary": "Synthetic-speech score 0.98 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\kn-IN-SapnaNeural.wav",
-     "score": 0.9998,
+     "score": 0.9996,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3575,14 +3801,15 @@
      "dur": 6.7,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.995
      },
-     "ms": 1921,
+     "ms": 3392,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\mr-IN-AarohiNeural.wav",
-     "score": 0.9996,
+     "score": 0.9994,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3590,14 +3817,15 @@
      "dur": 7.13,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.999
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.999,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 2059,
+     "ms": 3370,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\ta-IN-PallaviNeural.wav",
-     "score": 0.9998,
+     "score": 0.9997,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3605,14 +3833,15 @@
      "dur": 6.84,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1914,
+     "ms": 3450,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\edge_multilang\\te-IN-MohanNeural.wav",
-     "score": 0.9998,
+     "score": 0.9996,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -3620,30 +3849,32 @@
      "dur": 6.98,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 1988,
+     "ms": 3238,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     }
    ],
    "fake/hemg": [
     {
      "file": "audio\\fake\\hemg\\000.wav",
-     "score": 0.0072,
+     "score": 0.0055,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 50.8,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.154
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.154,
+      "NII MMS-300M AntiDeepfake": 0.0
      },
-     "ms": 2508,
+     "ms": 4569,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\001.wav",
-     "score": 0.1037,
+     "score": 0.1583,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3651,14 +3882,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.257,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.15
      },
-     "ms": 2548,
-     "summary": "Synthetic-speech score 0.10 across 4 windows; no segment crossed 0.60."
+     "ms": 4568,
+     "summary": "Synthetic-speech score 0.16 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\002.wav",
-     "score": 0.0253,
+     "score": 0.0179,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3666,14 +3898,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.067,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.001
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 2564,
-     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
+     "ms": 4441,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\003.wav",
-     "score": 0.0038,
+     "score": 0.0276,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3681,42 +3914,45 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.018,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.047
      },
-     "ms": 2619,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4559,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\004.wav",
-     "score": 0.0021,
+     "score": 0.0056,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 44.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.011
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.011,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2497,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4411,
+     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\005.wav",
-     "score": 0.121,
+     "score": 0.033,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 40.4,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.248
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.248,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2547,
-     "summary": "Synthetic-speech score 0.12 across 4 windows; no segment crossed 0.60."
+     "ms": 4547,
+     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\006.wav",
-     "score": 0.0013,
+     "score": 0.0203,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3724,14 +3960,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.117
      },
-     "ms": 2593,
-     "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
+     "ms": 4429,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\007.wav",
-     "score": 0.0162,
+     "score": 0.046,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3739,28 +3976,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.059,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.201
      },
-     "ms": 2562,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4531,
+     "summary": "Synthetic-speech score 0.05 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\008.wav",
-     "score": 0.0007,
+     "score": 0.0043,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 38.2,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2579,
+     "ms": 4497,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\009.wav",
-     "score": 0.0753,
+     "score": 0.2229,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3768,29 +4007,31 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.324,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.075
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.075,
+      "NII MMS-300M AntiDeepfake": 0.142
      },
-     "ms": 2582,
-     "summary": "Synthetic-speech score 0.08 across 4 windows; no segment crossed 0.60."
+     "ms": 4551,
+     "summary": "Synthetic-speech score 0.22 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\010.wav",
-     "score": 0.5019,
+     "score": 0.1474,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 40.7,
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.334,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.024
      },
-     "ms": 2620,
-     "summary": "Synthetic-speech score 0.50 across 4 windows; no segment crossed 0.60."
+     "ms": 4438,
+     "summary": "Synthetic-speech score 0.15 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\011.wav",
-     "score": 0.0164,
+     "score": 0.0356,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3798,28 +4039,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.139,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.007
      },
-     "ms": 2591,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4509,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\012.wav",
-     "score": 0.0005,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 31.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2477,
+     "ms": 4502,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\013.wav",
-     "score": 0.0124,
+     "score": 0.0364,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3827,56 +4070,60 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.131,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2570,
-     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
+     "ms": 4504,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\014.wav",
-     "score": 0.0007,
+     "score": 0.0028,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 30.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 2558,
+     "ms": 4495,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\015.wav",
-     "score": 0.0311,
+     "score": 0.0196,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 32.8,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.214
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.214,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2587,
-     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
+     "ms": 4527,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\016.wav",
-     "score": 0.0004,
+     "score": 0.0016,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 35.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2593,
+     "ms": 4450,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\017.wav",
-     "score": 0.0003,
+     "score": 0.0028,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3884,14 +4131,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2526,
+     "ms": 4487,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\018.wav",
-     "score": 0.0065,
+     "score": 0.007,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3899,14 +4147,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.018,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2604,
+     "ms": 4478,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\019.wav",
-     "score": 0.001,
+     "score": 0.0031,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3914,14 +4163,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 2615,
+     "ms": 4615,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\020.wav",
-     "score": 0.0454,
+     "score": 0.0384,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3929,28 +4179,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.249,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.005
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.005,
+      "NII MMS-300M AntiDeepfake": 0.006
      },
-     "ms": 2702,
-     "summary": "Synthetic-speech score 0.05 across 4 windows; no segment crossed 0.60."
+     "ms": 4374,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\021.wav",
-     "score": 0.0003,
+     "score": 0.002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 34.5,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2555,
+     "ms": 4481,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\022.wav",
-     "score": 0.0162,
+     "score": 0.046,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3958,28 +4210,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.059,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.201
      },
-     "ms": 2656,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4556,
+     "summary": "Synthetic-speech score 0.05 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\023.wav",
-     "score": 0.0007,
+     "score": 0.0043,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 38.2,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2550,
+     "ms": 4528,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\024.wav",
-     "score": 0.0753,
+     "score": 0.2229,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -3987,29 +4241,31 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.324,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.075
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.075,
+      "NII MMS-300M AntiDeepfake": 0.142
      },
-     "ms": 2567,
-     "summary": "Synthetic-speech score 0.08 across 4 windows; no segment crossed 0.60."
+     "ms": 4472,
+     "summary": "Synthetic-speech score 0.22 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\025.wav",
-     "score": 0.5019,
+     "score": 0.1474,
      "noisy": false,
-     "band": "uncertain",
+     "band": "human",
      "status": "ok",
      "snr": 40.7,
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.334,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.024
      },
-     "ms": 2651,
-     "summary": "Synthetic-speech score 0.50 across 4 windows; no segment crossed 0.60."
+     "ms": 4507,
+     "summary": "Synthetic-speech score 0.15 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\026.wav",
-     "score": 0.0164,
+     "score": 0.0356,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4017,28 +4273,30 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.139,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.007
      },
-     "ms": 2542,
-     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
+     "ms": 4460,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\027.wav",
-     "score": 0.0005,
+     "score": 0.0018,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 31.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2628,
+     "ms": 4576,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\028.wav",
-     "score": 0.0124,
+     "score": 0.0364,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4046,56 +4304,60 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.131,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2513,
-     "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
+     "ms": 4457,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\029.wav",
-     "score": 0.0007,
+     "score": 0.0028,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 30.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.003
      },
-     "ms": 2575,
+     "ms": 4527,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\030.wav",
-     "score": 0.0311,
+     "score": 0.0196,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 32.8,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.214
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.214,
+      "NII MMS-300M AntiDeepfake": 0.001
      },
-     "ms": 2526,
-     "summary": "Synthetic-speech score 0.03 across 4 windows; no segment crossed 0.60."
+     "ms": 4439,
+     "summary": "Synthetic-speech score 0.02 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\031.wav",
-     "score": 0.0004,
+     "score": 0.0016,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 35.6,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.001,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2563,
+     "ms": 4520,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\032.wav",
-     "score": 0.0003,
+     "score": 0.0028,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4103,14 +4365,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.008
      },
-     "ms": 2623,
+     "ms": 4500,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\033.wav",
-     "score": 0.0065,
+     "score": 0.007,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4118,14 +4381,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.018,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.002
      },
-     "ms": 2591,
+     "ms": 4549,
      "summary": "Synthetic-speech score 0.01 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\034.wav",
-     "score": 0.001,
+     "score": 0.0031,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4133,14 +4397,15 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.002,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.005
      },
-     "ms": 2603,
+     "ms": 4458,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\035.wav",
-     "score": 0.0454,
+     "score": 0.0384,
      "noisy": false,
      "band": "human",
      "status": "ok",
@@ -4148,30 +4413,32 @@
      "dur": 10.0,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.249,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.005
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.005,
+      "NII MMS-300M AntiDeepfake": 0.006
      },
-     "ms": 2575,
-     "summary": "Synthetic-speech score 0.05 across 4 windows; no segment crossed 0.60."
+     "ms": 4571,
+     "summary": "Synthetic-speech score 0.04 across 4 windows; no segment crossed 0.60."
     },
     {
      "file": "audio\\fake\\hemg\\036.wav",
-     "score": 0.0003,
+     "score": 0.002,
      "noisy": false,
      "band": "human",
      "status": "ok",
      "snr": 34.5,
      "dur": 10.0,
      "models": {
-      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0
+      "Speech-Arena-2025/DF_Arena_500M_V_1": 0.0,
+      "NII MMS-300M AntiDeepfake": 0.004
      },
-     "ms": 2660,
+     "ms": 4560,
      "summary": "Synthetic-speech score 0.00 across 4 windows; no segment crossed 0.60."
     }
    ],
    "fake/ljspeech": [
     {
      "file": "audio\\fake\\ljspeech\\000.wav",
-     "score": 0.9947,
+     "score": 0.9927,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4179,14 +4446,15 @@
      "dur": 9.35,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.996,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.967
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.967,
+      "NII MMS-300M AntiDeepfake": 0.979
      },
-     "ms": 2524,
+     "ms": 4336,
      "summary": "Synthetic-speech score 0.99 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\001.wav",
-     "score": 0.9987,
+     "score": 0.9989,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4194,14 +4462,15 @@
      "dur": 3.05,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.988
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.988,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 713,
+     "ms": 1151,
      "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\002.wav",
-     "score": 0.9991,
+     "score": 0.9984,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4209,9 +4478,10 @@
      "dur": 7.19,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 1927,
+     "ms": 3349,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4224,14 +4494,15 @@
      "dur": 3.72,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.994
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.994,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 696,
+     "ms": 1170,
      "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\004.wav",
-     "score": 0.9997,
+     "score": 0.9994,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4239,14 +4510,15 @@
      "dur": 7.75,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 1920,
+     "ms": 3401,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\005.wav",
-     "score": 0.9837,
+     "score": 0.9946,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4254,14 +4526,15 @@
      "dur": 6.38,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.986,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.848
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.848,
+      "NII MMS-300M AntiDeepfake": 0.996
      },
-     "ms": 1902,
-     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
+     "ms": 3329,
+     "summary": "Synthetic-speech score 0.99 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\006.wav",
-     "score": 0.9951,
+     "score": 0.995,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4269,14 +4542,15 @@
      "dur": 8.78,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.997,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.992
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.992,
+      "NII MMS-300M AntiDeepfake": 0.988
      },
-     "ms": 2508,
-     "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
+     "ms": 4545,
+     "summary": "Synthetic-speech score 0.99 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\007.wav",
-     "score": 0.9957,
+     "score": 0.998,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4284,14 +4558,15 @@
      "dur": 7.51,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.961
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.961,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 1929,
+     "ms": 3346,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\008.wav",
-     "score": 0.9984,
+     "score": 0.9981,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4299,14 +4574,15 @@
      "dur": 5.37,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.998
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.998,
+      "NII MMS-300M AntiDeepfake": 0.996
      },
-     "ms": 1379,
+     "ms": 2308,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\009.wav",
-     "score": 0.9946,
+     "score": 0.9973,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4314,14 +4590,15 @@
      "dur": 8.06,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.956
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.956,
+      "NII MMS-300M AntiDeepfake": 0.996
      },
-     "ms": 2528,
-     "summary": "Synthetic-speech score 0.99 across 4 windows; 1 suspicious segment."
+     "ms": 4479,
+     "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\010.wav",
-     "score": 0.9987,
+     "score": 0.9979,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4329,14 +4606,15 @@
      "dur": 9.54,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.992
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.992,
+      "NII MMS-300M AntiDeepfake": 0.993
      },
-     "ms": 2575,
+     "ms": 4408,
      "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\011.wav",
-     "score": 0.9991,
+     "score": 0.9985,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4344,14 +4622,15 @@
      "dur": 7.98,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.992
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.992,
+      "NII MMS-300M AntiDeepfake": 0.993
      },
-     "ms": 1935,
+     "ms": 3382,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\012.wav",
-     "score": 0.9985,
+     "score": 0.9981,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4359,14 +4638,15 @@
      "dur": 6.51,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.982
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.982,
+      "NII MMS-300M AntiDeepfake": 0.994
      },
-     "ms": 1945,
+     "ms": 3373,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\013.wav",
-     "score": 0.9991,
+     "score": 0.999,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4374,14 +4654,15 @@
      "dur": 8.84,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.996
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.996,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 2538,
+     "ms": 4465,
      "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\014.wav",
-     "score": 0.9998,
+     "score": 0.9996,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4389,14 +4670,15 @@
      "dur": 3.63,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 703,
+     "ms": 1173,
      "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\015.wav",
-     "score": 0.9993,
+     "score": 0.9988,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4404,14 +4686,15 @@
      "dur": 7.87,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 1914,
+     "ms": 3378,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\016.wav",
-     "score": 0.9975,
+     "score": 0.9973,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4419,9 +4702,10 @@
      "dur": 8.33,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.996
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.996,
+      "NII MMS-300M AntiDeepfake": 0.995
      },
-     "ms": 2524,
+     "ms": 4455,
      "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
@@ -4434,14 +4718,15 @@
      "dur": 7.41,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.995,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.999
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.999,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 1975,
+     "ms": 3368,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\018.wav",
-     "score": 0.9988,
+     "score": 0.9987,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4449,14 +4734,15 @@
      "dur": 9.04,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.998
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.998,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 2658,
+     "ms": 4536,
      "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\019.wav",
-     "score": 0.9963,
+     "score": 0.9964,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4464,14 +4750,15 @@
      "dur": 6.75,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.997,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.996
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.996,
+      "NII MMS-300M AntiDeepfake": 0.995
      },
-     "ms": 1894,
+     "ms": 3221,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\020.wav",
-     "score": 0.9976,
+     "score": 0.9985,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4479,14 +4766,15 @@
      "dur": 7.65,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.998
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.998,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 1966,
+     "ms": 3493,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\021.wav",
-     "score": 0.9978,
+     "score": 0.998,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4494,14 +4782,15 @@
      "dur": 7.82,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.999,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.995
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.995,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 1898,
+     "ms": 3346,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\022.wav",
-     "score": 0.9973,
+     "score": 0.9976,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4509,14 +4798,15 @@
      "dur": 5.45,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.974
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.974,
+      "NII MMS-300M AntiDeepfake": 0.995
      },
-     "ms": 1311,
+     "ms": 2345,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\023.wav",
-     "score": 0.9947,
+     "score": 0.9927,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4524,14 +4814,15 @@
      "dur": 9.35,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.996,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.967
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.967,
+      "NII MMS-300M AntiDeepfake": 0.979
      },
-     "ms": 2531,
+     "ms": 4472,
      "summary": "Synthetic-speech score 0.99 across 4 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\024.wav",
-     "score": 0.9987,
+     "score": 0.9989,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4539,14 +4830,15 @@
      "dur": 3.05,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.988
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.988,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 695,
+     "ms": 1190,
      "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\025.wav",
-     "score": 0.9991,
+     "score": 0.9984,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4554,9 +4846,10 @@
      "dur": 7.19,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.998,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.997
      },
-     "ms": 1896,
+     "ms": 3377,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4569,14 +4862,15 @@
      "dur": 3.72,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.994
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.994,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 703,
+     "ms": 1262,
      "summary": "Synthetic-speech score 1.00 across 1 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\027.wav",
-     "score": 0.9997,
+     "score": 0.9994,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4584,14 +4878,15 @@
      "dur": 7.75,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.998
      },
-     "ms": 1918,
+     "ms": 3301,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\028.wav",
-     "score": 0.9837,
+     "score": 0.9946,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4599,14 +4894,15 @@
      "dur": 6.38,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.986,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.848
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.848,
+      "NII MMS-300M AntiDeepfake": 0.996
      },
-     "ms": 1923,
-     "summary": "Synthetic-speech score 0.98 across 3 windows; 1 suspicious segment."
+     "ms": 3448,
+     "summary": "Synthetic-speech score 0.99 across 3 windows; 1 suspicious segment."
     },
     {
      "file": "audio\\fake\\ljspeech\\029.wav",
-     "score": 0.9951,
+     "score": 0.995,
      "noisy": false,
      "band": "ai",
      "status": "ok",
@@ -4614,10 +4910,11 @@
      "dur": 8.78,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 0.997,
-      "NII Wav2Vec2-Large-AntiDeepfake": 0.992
+      "NII Wav2Vec2-Large-AntiDeepfake": 0.992,
+      "NII MMS-300M AntiDeepfake": 0.988
      },
-     "ms": 2657,
-     "summary": "Synthetic-speech score 1.00 across 4 windows; 1 suspicious segment."
+     "ms": 4420,
+     "summary": "Synthetic-speech score 0.99 across 4 windows; 1 suspicious segment."
     }
    ],
    "fake/sapi": [
@@ -4631,9 +4928,10 @@
      "dur": 6.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1912,
+     "ms": 3356,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4646,9 +4944,10 @@
      "dur": 5.62,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1398,
+     "ms": 2337,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
@@ -4661,9 +4960,10 @@
      "dur": 6.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1915,
+     "ms": 3243,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4676,9 +4976,10 @@
      "dur": 5.62,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1303,
+     "ms": 2350,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
@@ -4691,9 +4992,10 @@
      "dur": 6.95,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1945,
+     "ms": 3271,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4706,9 +5008,10 @@
      "dur": 5.62,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1304,
+     "ms": 2343,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     },
     {
@@ -4721,9 +5024,10 @@
      "dur": 6.96,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1898,
+     "ms": 3401,
      "summary": "Synthetic-speech score 1.00 across 3 windows; 1 suspicious segment."
     },
     {
@@ -4736,14 +5040,15 @@
      "dur": 5.63,
      "models": {
       "Speech-Arena-2025/DF_Arena_500M_V_1": 1.0,
-      "NII Wav2Vec2-Large-AntiDeepfake": 1.0
+      "NII Wav2Vec2-Large-AntiDeepfake": 1.0,
+      "NII MMS-300M AntiDeepfake": 0.999
      },
-     "ms": 1314,
+     "ms": 2200,
      "summary": "Synthetic-speech score 1.00 across 2 windows; 1 suspicious segment."
     }
    ]
   },
-  "seconds": 922.7
+  "seconds": 1583.0
  },
  "speaker": {
   "speakers": 28,

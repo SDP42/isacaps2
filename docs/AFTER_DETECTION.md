@@ -7,7 +7,7 @@ check, quick text or media check, Chrome extension) in a response plan built by 
 
 Screen: **Voice check** (`/app/voice`); API: `POST /v1/voice/triage`.
 
-1. **Is the voice AI or human?** The voice ensemble (DF_Arena 500M + NII AntiDeepfake) scores 4-second windows.
+1. **Is the voice AI or human?** The voice ensemble (DF_Arena 500M, NII Wav2Vec2-Large and the multilingual NII MMS-300M) scores 4-second windows.
    ≥ 0.7 → *AI-generated voice*, ≤ 0.3 → *human voice*, otherwise *uncertain*. In noisy audio (SNR < 19 dB) the
    band widens to 0.1–0.9 because noise blurs the score (red-team finding).
 2. **What does it say?** Whisper transcribes; the Words witness reads tactics (urgency, authority, secrecy, fear,

@@ -40,6 +40,7 @@ burst still counts but one bad crop does not.
 |---|---|---|---|
 | Voice | DF_Arena_500M_V_1 (XLS-R 300M, layer-gated pooling, Conformer) | Speech-Arena-2025, arXiv 2603.06164 | In-the-Wild EER 1.87%, 24-dataset mean EER 5.1% |
 | Voice | Wav2Vec2-Large-AntiDeepfake (ONNX) | NII Yamagishi lab, arXiv 2506.21090 | In-the-Wild EER 2.9% |
+| Voice | MMS-300M-AntiDeepfake (ONNX, multilingual pretraining), threshold 0.3, weight 0.65 | NII Yamagishi lab, arXiv 2506.21090 | In-the-Wild EER 4.8%, DeepVoice (RVC) EER 4.6%; chosen from six candidates on the field test (`testing/TEST_REPORT.md` §6) |
 | Voiceprint | wavlm-base-plus-sv x-vectors, cosine ≥ 0.86 | Microsoft | VoxCeleb1 EER 0.84% |
 | Image | commfor-model-384 (ViT-S/16, 384 px) | Park & Owens, CVPR 2025 (4,803 generators) | — |
 | Image | ai-image-detector-deploy (SwinV2) | haywoodsloan | — |

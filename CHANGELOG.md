@@ -1,5 +1,16 @@
 # Changelog
 
+## 1 November 2026 (late morning): a third voice detector
+
+- **NII MMS-300M** (multilingual pretraining on 1,400 languages) joins DF_Arena and NII-Large in the voice ensemble.
+  It was chosen by measurement from six candidates (NII Small / MMS-300M / MMS-1B, two community classifiers; the Hemg
+  author's model was excluded for leakage) with `scripts/voice_candidates.py`. Weights and threshold come from
+  `scripts/voice_fusion.py` (chosen on even clips, validated on odd): held-out error 0.257 → 0.160.
+- **In the product:** real Hindi studio speech called AI 100 → 70 %, reverb 100 → 79 %, replay 92 → 58 %, Tamil
+  45 → 35 %. Benchmark AUC 1.00 (accuracy 0.988 → 1.00), TTS fakes 100 %, red team 41/42, demo inputs, copilot and
+  tests unchanged. MMS-300M is now part of the default `audio` download group.
+- Unseen-generator fakes (Hemg) are still below the line; see `testing/TEST_REPORT.md` §6.
+
 ## 1 November 2026 (morning): field test and the fixes it forced
 
 - **Field test** (`testing/TEST_REPORT.md`): about 340 public clips and 40 photos never measured before, plus TTS in

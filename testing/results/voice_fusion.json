@@ -1,0 +1,605 @@
+{
+ "current": {
+  "models": [
+   "df_arena",
+   "nii"
+  ],
+  "weights": [
+   0.6,
+   0.4
+  ],
+  "dev": [
+   0.19924242424242422,
+   0.1,
+   0.29848484848484846
+  ],
+  "val": [
+   0.25681818181818183,
+   0.18333333333333332,
+   0.3303030303030303
+  ],
+  "val_per_set": {
+   "real/google_tamil": 0.2,
+   "real/google_tamil_m": 0.1,
+   "real/hemg": 0.0,
+   "real/indic_hindi": 0.83,
+   "real/librispeech": 0.0,
+   "real/ljspeech": 0.0,
+   "fake/edge_multilang": 0.0,
+   "fake/hemg": 1.0,
+   "fake/ljspeech": 0.0,
+   "fake/sapi": 0.0,
+   "real+reverb": 1.0,
+   "redteam+reverb": 0.0,
+   "real+replay": 1.0,
+   "redteam+replay": 0.0,
+   "real+whatsapp": 0.25,
+   "redteam+whatsapp": 0.0,
+   "real+phone": 0.25,
+   "redteam+phone": 0.33,
+   "real+mp3": 0.0,
+   "redteam+mp3": 0.0,
+   "redteam+clean": 0.5
+  }
+ },
+ "top": [
+  {
+   "models": [
+    "df_arena",
+    "nii",
+    "nii_small"
+   ],
+   "weights": [
+    0.2,
+    0.5,
+    0.65
+   ],
+   "thresholds": {
+    "nii_small": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.1465909090909091
+   ],
+   "val": [
+    0.21704545454545454,
+    0.18333333333333332,
+    0.25075757575757573
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.3,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 1.0,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.08,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.5,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.5,
+    "redteam+replay": 0.0,
+    "real+whatsapp": 0.38,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.0,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.17,
+    "redteam+clean": 0.33
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms",
+    "gustking"
+   ],
+   "weights": [
+    0.35,
+    0.35,
+    0.2
+   ],
+   "thresholds": {
+    "gustking": 0.3
+   },
+   "rule": "mean",
+   "dev": [
+    0.15265151515151515
+   ],
+   "val": [
+    0.16856060606060608,
+    0.13333333333333336,
+    0.2037878787878788
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.1,
+    "real/google_tamil_m": 0.1,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.17,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.75,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.17,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.0,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.17
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii",
+    "nii_mms"
+   ],
+   "weights": [
+    0.5,
+    0.2,
+    0.65
+   ],
+   "thresholds": {
+    "nii_mms": 0.3
+   },
+   "rule": "mean",
+   "dev": [
+    0.1575757575757576
+   ],
+   "val": [
+    0.16022727272727272,
+    0.11666666666666667,
+    0.2037878787878788
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.2,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.17,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.75,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.17,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.0,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.0
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms",
+    "nii_mms1b"
+   ],
+   "weights": [
+    0.35,
+    0.35,
+    0.2
+   ],
+   "thresholds": {
+    "nii_mms1b": 0.5
+   },
+   "rule": "mean",
+   "dev": [
+    0.1609848484848485
+   ],
+   "val": [
+    0.17689393939393938,
+    0.15,
+    0.2037878787878788
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.1,
+    "real/google_tamil_m": 0.1,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.17,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.62,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.17,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.17,
+    "real+mp3": 0.12,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.17
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_small",
+    "nii_mms1b"
+   ],
+   "weights": [
+    0.2,
+    0.35,
+    0.5
+   ],
+   "thresholds": {
+    "nii_mms1b": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.1643939393939394
+   ],
+   "val": [
+    0.25037878787878787,
+    0.24999999999999994,
+    0.25075757575757573
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.3,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 1.0,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.08,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.25,
+    "redteam+reverb": 0.67,
+    "real+replay": 0.38,
+    "redteam+replay": 0.33,
+    "real+whatsapp": 0.38,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.25,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.17
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms"
+   ],
+   "weights": [
+    0.2,
+    0.35
+   ],
+   "thresholds": {
+    "nii_mms": 0.5
+   },
+   "rule": "mean",
+   "dev": [
+    0.16742424242424242
+   ],
+   "val": [
+    0.17083333333333334,
+    0.16666666666666666,
+    0.17500000000000002
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.2,
+    "real/google_tamil_m": 0.1,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.0,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.5,
+    "redteam+reverb": 0.5,
+    "real+replay": 0.75,
+    "redteam+replay": 0.17,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.0,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.0
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii",
+    "nii_mms1b"
+   ],
+   "weights": [
+    0.35,
+    0.65,
+    0.35
+   ],
+   "thresholds": {
+    "nii_mms1b": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.16893939393939394
+   ],
+   "val": [
+    0.24015151515151514,
+    0.25,
+    0.2303030303030303
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.2,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.83,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.75,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.5,
+    "redteam+replay": 0.67,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.0,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.17,
+    "redteam+clean": 0.33
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms",
+    "nii_small"
+   ],
+   "weights": [
+    0.5,
+    0.65,
+    0.2
+   ],
+   "thresholds": {
+    "nii_small": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.16969696969696968
+   ],
+   "val": [
+    0.17234848484848486,
+    0.11666666666666667,
+    0.22803030303030303
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.2,
+    "real/google_tamil_m": 0.1,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.33,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.75,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.17,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.0,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.0
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii"
+   ],
+   "weights": [
+    0.2,
+    0.35
+   ],
+   "thresholds": {
+    "nii": 0.5
+   },
+   "rule": "mean",
+   "dev": [
+    0.17196969696969697
+   ],
+   "val": [
+    0.2583333333333333,
+    0.23333333333333334,
+    0.2833333333333333
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.2,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.92,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 1.0,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.0,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.0,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.17,
+    "redteam+clean": 0.83
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii",
+    "gustking"
+   ],
+   "weights": [
+    0.5,
+    0.65,
+    0.5
+   ],
+   "thresholds": {
+    "gustking": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.17196969696969697
+   ],
+   "val": [
+    0.24166666666666664,
+    0.21666666666666665,
+    0.26666666666666666
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.1,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.83,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 1.0,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.75,
+    "redteam+replay": 0.0,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.0,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.0,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.83
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms1b"
+   ],
+   "weights": [
+    0.2,
+    0.65
+   ],
+   "thresholds": {
+    "nii_mms1b": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.17462121212121212
+   ],
+   "val": [
+    0.2549242424242424,
+    0.26666666666666666,
+    0.24318181818181817
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.3,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.75,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.5,
+    "redteam+reverb": 0.33,
+    "real+replay": 0.25,
+    "redteam+replay": 0.83,
+    "real+whatsapp": 0.38,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.25,
+    "redteam+phone": 0.33,
+    "real+mp3": 0.25,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.17
+   }
+  },
+  {
+   "models": [
+    "df_arena",
+    "nii_mms1b",
+    "gustking"
+   ],
+   "weights": [
+    0.2,
+    0.2,
+    0.35
+   ],
+   "thresholds": {
+    "gustking": 0.15
+   },
+   "rule": "mean",
+   "dev": [
+    0.17803030303030304
+   ],
+   "val": [
+    0.24848484848484848,
+    0.2833333333333333,
+    0.21363636363636365
+   ],
+   "val_per_set": {
+    "real/google_tamil": 0.1,
+    "real/google_tamil_m": 0.0,
+    "real/hemg": 0.0,
+    "real/indic_hindi": 0.75,
+    "real/librispeech": 0.0,
+    "real/ljspeech": 0.0,
+    "fake/edge_multilang": 0.0,
+    "fake/hemg": 1.0,
+    "fake/ljspeech": 0.0,
+    "fake/sapi": 0.0,
+    "real+reverb": 0.62,
+    "redteam+reverb": 0.0,
+    "real+replay": 0.38,
+    "redteam+replay": 0.5,
+    "real+whatsapp": 0.25,
+    "redteam+whatsapp": 0.0,
+    "real+phone": 0.12,
+    "redteam+phone": 0.5,
+    "real+mp3": 0.12,
+    "redteam+mp3": 0.0,
+    "redteam+clean": 0.83
+   }
+  }
+ ]
+}

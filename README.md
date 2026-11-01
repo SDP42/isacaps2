@@ -63,7 +63,7 @@ flowchart LR
 | | |
 |---|---|
 | **Request-aware, not just "is it fake"** | Five witnesses (voice, face, provenance, words, identity) feed a risk engine whose policy rules mean an uncertain detector can never talk a money or OTP request down. |
-| **Published detectors, measured by us** | DF_Arena 500M and NII AntiDeepfake for voice (In-the-Wild EER 1.87% / 2.9%), Community Forensics and SwinV2 for AI images, GenD (WACV 2026) for face swaps, multilingual NLI and a phishing model for text. Ensembled in logit space after recentring each model on its measured threshold. |
+| **Published detectors, measured by us** | DF_Arena 500M plus two NII AntiDeepfake models (English and multilingual MMS) for voice (In-the-Wild EER 1.87% / 2.9% / 4.8%), Community Forensics and SwinV2 for AI images, GenD (WACV 2026) for face swaps, multilingual NLI and a phishing model for text. Ensembled in logit space after recentring each model on its measured threshold. |
 | **Explainable to a non-expert** | Every claim cites exhibits (E1, E2…) tied to waveform seconds, words, frames and OCR boxes; a model jury shows each detector's vote; a waterfall shows how the score was built; an AI Tribunal argues both sides. |
 | **The cure, not a checklist** | A live response run per scam type: exposure meter, golden-hour clock, challenge questions, pre-filled cybercrime.gov.in / 1930 / bank / Chakshu / CERT-In drafts, evidence-pack ZIP, scam-network blocklist, "who else was targeted", red-team drill. |
 | **Thinks like the attacker** | The red-team lab forges labelled scams (neural voices, SD-Turbo portraits, avatar video) and launders them through phone, WhatsApp, MP3, reverb, noise and screenshots: 41/42 voice and 15/15 image variants caught. |

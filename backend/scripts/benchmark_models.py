@@ -69,14 +69,16 @@ def files(d: Path):
 
 
 def bench_audio(d: Path):
-    y, cols = [], {"df_arena": [], "nii": [], "ensemble": []}
+    cols = {k: [] for k in pretrained.AUDIO_KEYS}
+    cols["ensemble"] = []
+    y = []
     for f, lab in files(d):
         x = dsp.load_audio(f)
         r = pretrained.audio_scores(x)
         if not r:
             continue
         y.append(lab)
-        for k in ("df_arena", "nii"):
+        for k in pretrained.AUDIO_KEYS:
             vals = [w["models"][k] for w in r["windows"] if k in w["models"]]
             cols[k].append(float(np.mean(vals)) if vals else np.nan)
         cols["ensemble"].append(float(np.mean([w["p"] for w in r["windows"]])))

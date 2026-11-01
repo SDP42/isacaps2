@@ -313,3 +313,57 @@ so the app read the *real* database URL before the test suite could point it at 
 - The tests verifiably run on a temporary database again.
 - Entry #407's original hash was recomputed from its known payload. It matches the stored chain hash, which proves it
   is the original value. The chain verifies all entries.
+
+## 6. Third voice detector (added after this report)
+
+**Candidates:** six pretrained detectors were scored on identical audio (up to three 4 s windows per clip, every field
+corpus, laundered real voices, red-team fakes) by `scripts/voice_candidates.py`:
+
+- NII Wav2Vec2-Small, MMS-300M and MMS-1B (multilingual pretraining; MMS-1B has the best published RVC result).
+- Two community wav2vec2 classifiers, mo-thecreator and Gustking. Their training data is undocumented.
+- `Hemgg/Deepfake-audio-detection` was excluded: it is by the author of the Hemg dataset, so testing it on Hemg would
+  measure leakage.
+
+| Model | Hemg fakes vs real (AUC) | TTS vs real Indian speech (AUC) | Real Hindi called AI | Real + reverb called AI |
+|---|---|---|---|---|
+| DF_Arena (in MIRAGE) | 0.56 | 0.94 | 88 % | 100 % |
+| NII Wav2Vec2-Large (in MIRAGE) | 0.69 | 0.93 | 75 % | 19 % |
+| **NII MMS-300M (multilingual)** | **0.94** | **0.995** | **0 %** | **6 %** |
+| NII MMS-1B | 0.86 | 0.97 | 4 % | 6 % |
+| NII Wav2Vec2-Small | 0.59 | 0.79 | 100 % | 0 % |
+| mo-thecreator | 0.43 | 0.80 | 88 % | 81 % |
+| Gustking | 0.50 | 0.79 | 0 % (calls almost nothing AI) | 0 % |
+
+**Fusion.** `scripts/voice_fusion.py` chose members, weights and thresholds on even clips and validated on odd clips,
+using the product's own logit averaging and its 0.7 decision line.
+
+- **Winner:** DF_Arena + NII-Large + MMS-300M, weights 0.5 / 0.2 / 0.65, MMS line at 0.3.
+- **Held-out error:** 0.257 → **0.160**. Fakes missed went from 18 % to 12 %, and reals called AI from 33 % to 20 %.
+- MMS-1B was not better than MMS-300M and is three times larger, so the smaller model was kept.
+
+**Measured inside the product after integration:**
+
+| | Two-model ensemble | Three-model ensemble |
+|---|---|---|
+| Original voice benchmark (80 clips) | AUC 1.00, acc 0.988 | AUC 1.00, acc **1.00** |
+| Neural TTS, Windows SAPI, LJSpeech fakes caught | 100 % | 100 % |
+| Red-team voice campaign | 41 / 42 | 41 / 42 |
+| Real Hindi studio speech called AI | 100 % | **70 %** |
+| Real Tamil, female / male called AI | 45 % / 15 % | **35 % / 10 %** |
+| Real + reverb called AI | 100 % | **79 %** |
+| Real + speaker replay called AI | 92 % | **58 %** |
+| Real LJSpeech called AI | 7 % | **3 %** |
+| Real WhatsApp / phone / MP3 called AI | 33 / 25 / 21 % | 33 / 21 / 25 % |
+| Hemg fakes caught | 0 / 37 | 0 / 37 |
+| Demo inputs, copilot, unit tests | 32/32, 60/60, 29/29 | 32/32, 60/60, 29/29 |
+
+**Why the in-product gain is smaller than the sweep predicted:** the product pools a clip's windows with attention
+(`voice._pool`), so the most suspicious window dominates, and it blends MIRAGE's own acoustic model at a small weight.
+The sweep averaged three windows. DF_Arena, still essential for noisy audio, drives the high windows on reverberant
+and clean Indian speech.
+
+**What remains:**
+
+- Hemg-style fakes are ranked above real speech by MMS (AUC 0.94) but stay below the decision line. Lowering the line
+  to catch them would reintroduce false alarms.
+- The next lever is the pooling rule, re-measured end to end.

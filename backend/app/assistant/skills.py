@@ -849,7 +849,7 @@ def k_voice(ctx) -> dict:
     return {"blocks": [
         lead("A **two-stage voice check**. Stage 1 asks *is this voice machine-made?* Stage 2 asks *what does it want?* The answer combines both."),
         flow("Voice check", [("Channel", "Bandwidth, codec, SNR: is this a phone line, WhatsApp, noisy?"),
-                             ("Anti-spoofing", "DF_Arena 500M + NII Wav2Vec2-Large score each 4 s window"),
+                             ("Anti-spoofing", "DF_Arena 500M, NII Wav2Vec2-Large and the multilingual NII MMS-300M score each 4 s window"),
                              ("Speech to text", "faster-whisper, Hinglish kept in Roman script"),
                              ("Semantics", "Tactics, request, amount, category"),
                              ("Decision", "2×2: synthetic × sensitive → severity and plan")]),
